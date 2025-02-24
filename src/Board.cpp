@@ -65,10 +65,10 @@ ChessAI::Board::Board(const char* FEN)
 	// TODO:
 }
 
-void ChessAI::Board::GetBoard(std::vector<Piece>& outBoard)
+void ChessAI::Board::GetBoard(std::vector<Piece>& outBoard) const
 {
 	// Put all the pieces in the output vector
-	auto putPieces = [&](PiecePos* data, int size, PieceType pieceType)
+	auto putPieces = [&outBoard](const PiecePos* const data, int size, PieceType pieceType)
 		{
 			for (int i = 0; i < size; i++)
 			{

@@ -5,38 +5,10 @@
 #include <array>
 #include <unordered_map>
 
+#include "Utils.h"
+
 namespace ChessAI
 {
-    enum class PieceType
-    {
-        White_Pawn = 0,
-        White_Knight,
-        White_Bishop,
-        White_Rook,
-        White_Queen,
-        White_King,
-        Black_Pawn,
-        Black_Knight,
-        Black_Bishop,
-        Black_Rook,
-        Black_Queen,
-        Black_King,
-    };
-
-    struct Move
-    {
-        Move(int startSquare, int targetSquare) : StartSquare(startSquare), TargetSquare(targetSquare) {};
-        const int StartSquare;
-        const int TargetSquare;
-    };
-
-    struct Piece
-    {
-        Piece(int position, PieceType type) : Position(position), Type(type) {}
-        int Position;
-        PieceType Type;
-    };
-
     /**
     * Every piece type is stored in its own container
     * To check if a piece is in a given position, a map is used to locate
@@ -50,7 +22,7 @@ namespace ChessAI
         Board();
         Board(const char* FEN);
 
-        void GetBoard(std::vector<Piece>& outBoard);
+        void GetBoard(std::vector<Piece>& outBoard) const;
 
         void MakeMove(int startSquare, int targetSquare);
         void MakeMove(const Move& move);

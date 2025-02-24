@@ -17,12 +17,17 @@ set(SRC_FILES
     ${CMAKE_SOURCE_DIR}/src/main.cpp
     ${CMAKE_SOURCE_DIR}/src/Board.cpp
     ${CMAKE_SOURCE_DIR}/src/Renderer.cpp
+    ${CMAKE_SOURCE_DIR}/src/ResourceManager.cpp
+    ${CMAKE_SOURCE_DIR}/src/Application.cpp
 )
 
 # Header files
 set(HEADER_FILES
     ${CMAKE_SOURCE_DIR}/src/Board.h
     ${CMAKE_SOURCE_DIR}/src/Renderer.h
+    ${CMAKE_SOURCE_DIR}/src/ResourceManager.h
+    ${CMAKE_SOURCE_DIR}/src/Application.h
+    ${CMAKE_SOURCE_DIR}/src/Utils.h
 )
 
 # Grouping files into filters
@@ -32,4 +37,3 @@ source_group("src/Header Files" FILES ${HEADER_FILES})
 add_executable(main ${SRC_FILES} ${HEADER_FILES})
 target_compile_features(main PRIVATE cxx_std_17)
 target_link_libraries(main PRIVATE SFML::Graphics SFML::Audio SFML::Network)
-

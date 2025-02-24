@@ -2,7 +2,7 @@
 
 #include <iostream>
 
-void ChessAI::Renderer::DrawBoard(sf::RenderWindow& window, const Board& board) const
+void ChessAI::Renderer::DrawBoard(sf::RenderWindow& window, const ChessAI::Board& board) const
 {
 	// Calculate board size
 	sf::Vector2u resolution = window.getSize();
@@ -14,22 +14,40 @@ void ChessAI::Renderer::DrawBoard(sf::RenderWindow& window, const Board& board) 
 	float boardPositionY = resolution.y * m_BoardPadding01.y;
 
 	// Draw board
-	sf::RectangleShape blackSquare(sf::Vector2f(cellSize, cellSize));
-	sf::RectangleShape whiteSquare(sf::Vector2f(cellSize, cellSize));
-	blackSquare.setFillColor(m_ColorDarkSquare);
-	whiteSquare.setFillColor(m_ColorWhiteSquare);
-
-	for (int rank = 0; rank < 8; rank++)
 	{
-		for (int file = 0; file < 8; file++)
+		sf::RectangleShape blackSquare(sf::Vector2f(cellSize, cellSize));
+		sf::RectangleShape whiteSquare(sf::Vector2f(cellSize, cellSize));
+		blackSquare.setFillColor(m_ColorDarkSquare);
+		whiteSquare.setFillColor(m_ColorWhiteSquare);
+
+		for (int rank = 0; rank < 8; rank++)
 		{
-			auto& square = (file + rank) % 2 == 0 ? blackSquare : whiteSquare;
-			sf::Vector2f position = sf::Vector2f(boardPositionX + file * cellSize, boardPositionY + rank * cellSize);
-			square.setPosition(position);
-			window.draw(square);
+			for (int file = 0; file < 8; file++)
+			{
+				auto& square = (file + rank) % 2 == 0 ? blackSquare : whiteSquare;
+				sf::Vector2f position = sf::Vector2f(boardPositionX + file * cellSize, boardPositionY + rank * cellSize);
+				square.setPosition(position);
+				window.draw(square);
+			}
 		}
 	}
 
 	// Draw pieces
-	// TODO:
+	{
+		std::vector<Piece> pieces;
+		board.GetBoard(pieces);
+
+		const ChessAI::ResourceManager& rm = ChessAI::ResourceManager::GetInstance();
+		sf::RectangleShape pieceRect(sf::Vector2f(128, 128));
+		for (Piece piece : pieces)
+		{
+			const auto& texture = rm.GetPieceTexture(piece.Type);
+			int file = piece.Position % 8;
+			int rank = (63 - piece.Position) / 8;
+			sf::Vector2f position = sf::Vector2f(boardPositionX + file * cellSize, boardPositionY + rank * cellSize);
+			pieceRect.setTexture(&texture);
+			pieceRect.setPosition(position);
+			window.draw(pieceRect);
+		}
+	}
 }
