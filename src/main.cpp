@@ -3,5 +3,5 @@
 int main()
 {
     ChessAI::Application application;
-    application.run();
+    application.Run();
 }

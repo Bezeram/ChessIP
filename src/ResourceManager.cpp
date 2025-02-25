@@ -29,7 +29,7 @@ void ChessAI::ResourceManager::LoadAssets()
 	{
 		PieceType type = PieceType(i);
 		std::string name = m_PieceIDToResource[type];
-		std::string path = "assets/textures/" + name + ".png";
+		std::string path = "assets/textures/1024x1024/" + name + ".png";
 		AddTexture(path.c_str(), name.c_str());
 	}
 
@@ -56,11 +56,14 @@ const sf::Texture& ChessAI::ResourceManager::AddTexture(const char* filePath, co
 	}
 		
 	sf::Texture texture;
-	if (!texture.loadFromFile(filePath)) 
+	if (!texture.loadFromFile(filePath))
 	{
 		throw std::runtime_error("Failed to load texture at " + std::string(filePath));
 	}
 
+	texture.setSmooth(true);
+	texture.setRepeated(false);
+	texture.generateMipmap();
 	m_Textures[name] = std::move(texture);
 	return m_Textures[name];
 }

@@ -35,29 +35,29 @@ ChessAI::Board::Board()
 	m_BlackKing = 4 + 8 * (blackPawnRow + 1);
 
 	// Map positions to all pieces
-	auto mapPositions = [&](PiecePos* data, int size)
+	auto mapPositions = [&](PiecePos* data, int size, PieceType type)
 		{
 			for (int i = 0; i < size; i++)
 			{
 				PiecePos pos = data[i];
-				PieceLocation loc = PieceLocation(data, i);
+				PieceLocation loc = PieceLocation(data, i, type);
 				m_PositionToPiece.insert(std::pair(pos, loc));
 			}
 		};
 
-	mapPositions(m_WhitePawns.data(), m_WhitePawns.size());
-	mapPositions(m_WhiteKnights.data(), m_WhiteKnights.size());
-	mapPositions(m_WhiteBishops.data(), m_WhiteBishops.size());
-	mapPositions(m_WhiteRooks.data(), m_WhiteRooks.size());
-	mapPositions(&m_WhiteQueen, 0);
-	mapPositions(&m_WhiteKing, 0);
+	mapPositions(m_WhitePawns.data(), m_WhitePawns.size(), PieceType::White_Pawn);
+	mapPositions(m_WhiteKnights.data(), m_WhiteKnights.size(), PieceType::White_Knight);
+	mapPositions(m_WhiteBishops.data(), m_WhiteBishops.size(), PieceType::White_Bishop);
+	mapPositions(m_WhiteRooks.data(), m_WhiteRooks.size(), PieceType::White_Rook);
+	mapPositions(&m_WhiteQueen, 0, PieceType::White_Queen);
+	mapPositions(&m_WhiteKing, 0, PieceType::White_King);
 
-	mapPositions(m_BlackPawns.data(), m_BlackPawns.size());
-	mapPositions(m_BlackKnights.data(), m_BlackKnights.size());
-	mapPositions(m_BlackBishops.data(), m_BlackBishops.size());
-	mapPositions(m_BlackRooks.data(), m_BlackRooks.size());
-	mapPositions(&m_BlackQueen, 0);
-	mapPositions(&m_BlackKing, 0);
+	mapPositions(m_BlackPawns.data(), m_BlackPawns.size(), PieceType::Black_Pawn);
+	mapPositions(m_BlackKnights.data(), m_BlackKnights.size(), PieceType::Black_Knight);
+	mapPositions(m_BlackBishops.data(), m_BlackBishops.size(), PieceType::Black_Bishop);
+	mapPositions(m_BlackRooks.data(), m_BlackRooks.size(), PieceType::Black_Rook);
+	mapPositions(&m_BlackQueen, 0, PieceType::Black_Queen);
+	mapPositions(&m_BlackKing, 0, PieceType::Black_King);
 }
 
 ChessAI::Board::Board(const char* FEN)
@@ -118,6 +118,13 @@ void ChessAI::Board::MakeMove(const Move& move)
 	// Modify piece position in container
 	PieceLocation loc = m_PositionToPiece[startSquare];
 	loc.Container[loc.Index] = targetSquare;
+
+	// Check side turn
+	bool correctPiece = int(loc.Type) <= 5 && m_WhitesTurn || int(loc.Type) > 5 && !m_WhitesTurn;
+	if (!correctPiece)
+		return;
+
+	m_WhitesTurn = !m_WhitesTurn;
 
 	// Modify mapper
 	m_PositionToPiece.erase(startSquare);

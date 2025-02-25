@@ -31,4 +31,6 @@ namespace ChessAI
         int Position;
         PieceType Type;
     };
+
+    inline float g_AdjustableK = 0.1f;
 }

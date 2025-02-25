@@ -27,11 +27,14 @@ namespace ChessAI
         void MakeMove(int startSquare, int targetSquare);
         void MakeMove(const Move& move);
     private:
+        bool m_WhitesTurn = 1;
+
         struct PieceLocation
         {
             PieceLocation() = default;
-            PieceLocation(PiecePos* container, int index) : Container(container), Index(index) {}
+            PieceLocation(PiecePos* container, int index, PieceType type) : Container(container), Type(type), Index(index) {}
             PiecePos* Container = nullptr;
+            PieceType Type;
             int Index = -1;
         };
 

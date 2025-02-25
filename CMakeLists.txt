@@ -28,6 +28,8 @@ set(HEADER_FILES
     ${CMAKE_SOURCE_DIR}/src/ResourceManager.h
     ${CMAKE_SOURCE_DIR}/src/Application.h
     ${CMAKE_SOURCE_DIR}/src/Utils.h
+    ${CMAKE_SOURCE_DIR}/src/nanosvg/nanosvg.h
+    ${CMAKE_SOURCE_DIR}/src/nanosvg/nanosvgrast.h
 )
 
 # Grouping files into filters
@@ -37,3 +39,4 @@ source_group("src/Header Files" FILES ${HEADER_FILES})
 add_executable(main ${SRC_FILES} ${HEADER_FILES})
 target_compile_features(main PRIVATE cxx_std_17)
 target_link_libraries(main PRIVATE SFML::Graphics SFML::Audio SFML::Network)
+
