@@ -28,8 +28,6 @@ set(HEADER_FILES
     ${CMAKE_SOURCE_DIR}/src/ResourceManager.h
     ${CMAKE_SOURCE_DIR}/src/Application.h
     ${CMAKE_SOURCE_DIR}/src/Utils.h
-    ${CMAKE_SOURCE_DIR}/src/nanosvg/nanosvg.h
-    ${CMAKE_SOURCE_DIR}/src/nanosvg/nanosvgrast.h
 )
 
 # Grouping files into filters
