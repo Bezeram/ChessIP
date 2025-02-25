@@ -56,6 +56,8 @@ void ChessAI::Application::Run()
             {
                 if (mousePressed->button == sf::Mouse::Button::Left)
                 {
+                    // TODO:
+                    // cellIndex is probably very wrong
                     sf::Vector2f mousePosition = sf::Vector2f(mousePressed->position.x, mousePressed->position.y);
                     sf::Vector2i cellIndex = sf::Vector2i(
                         (mousePosition.x - m_Renderer.GetBoardPosition().x) / m_Renderer.GetBoardSize() * 8.f, 
@@ -79,6 +81,8 @@ void ChessAI::Application::Run()
             {
                 if (mouseReleased->button == sf::Mouse::Button::Left)
                 {
+                    // TODO:
+                    // cellIndex is probably very wrong
                     sf::Vector2f mousePosition = sf::Vector2f(mouseReleased->position.x, mouseReleased->position.y);
                     sf::Vector2i cellIndex = sf::Vector2i(
                         (mousePosition.x - m_Renderer.GetBoardPosition().x) / m_Renderer.GetBoardSize() * 8.f,
