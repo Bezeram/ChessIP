@@ -34,11 +34,11 @@ namespace ChessAI
             PieceLocation() = default;
             PieceLocation(PiecePos* container, int index, PieceType type) : Container(container), Type(type), Index(index) {}
             PiecePos* Container = nullptr;
-            PieceType Type;
+            PieceType Type = PieceType::White_Pawn;
             int Index = -1;
         };
 
-        std::unordered_map<PiecePos, const PieceLocation> m_PositionToPiece;
+        std::unordered_map<PiecePos, PieceLocation> m_PositionToPiece;
 
         std::array<PiecePos, 8> m_WhitePawns;
         std::array<PiecePos, 2> m_WhiteKnights;

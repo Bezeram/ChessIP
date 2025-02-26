@@ -2,37 +2,49 @@
 
 ChessAI::Board::Board()
 {
-	// First square starts from the bottom left, from white's perspective (a1)
-	// White pieces
-	for (int i = 0; i < m_WhitePawns.size(); i++)
-		m_WhitePawns[i] = 8 + i;
-	m_WhiteKnights[0] = 1;
-	m_WhiteKnights[1] = 6;
+	// First square starts from the top left, from white's perspective (a8)
+	// Pieces positions
+	int Knight[] = { 1, 6 };
+	int Bishop[] = { 2, 5 };
+	int Rook[] = { 0, 7 };
+	int Queen = 3;
+	int King = 4;
 
-	m_WhiteBishops[0] = 2;
-	m_WhiteBishops[1] = 5;
+	{
+		// Place pieces
+		int blackPawnsRow = 1; // 0-7
+		for (int i = 0; i < m_WhitePawns.size(); i++)
+			m_BlackPawns[i] = 8 * blackPawnsRow + i;
+		m_BlackKnights[0] = Knight[0] + 8 * (blackPawnsRow - 1);
+		m_BlackKnights[1] = Knight[1] + 8 * (blackPawnsRow - 1);
 
-	m_WhiteRooks[0] = 0;
-	m_WhiteRooks[1] = 7;
+		m_BlackBishops[0] = Bishop[0] + 8 * (blackPawnsRow - 1);
+		m_BlackBishops[1] = Bishop[1] + 8 * (blackPawnsRow - 1);
 
-	m_WhiteQueen = 3;
-	m_WhiteKing = 4;
+		m_BlackRooks[0] = Rook[0] + 8 * (blackPawnsRow - 1);
+		m_BlackRooks[1] = Rook[1] + 8 * (blackPawnsRow - 1);
 
-	// Black pieces
-	int blackPawnRow = 6; // 0-7
-	for (int i = 0; i < m_WhitePawns.size(); i++)
-		m_BlackPawns[i] = 8 * blackPawnRow + i;
-	m_BlackKnights[0] = 1 + 8 * (blackPawnRow + 1);
-	m_BlackKnights[1] = 6 + 8 * (blackPawnRow + 1);
+		m_BlackQueen = Queen + 8 * (blackPawnsRow - 1);
+		m_BlackKing = King + 8 * (blackPawnsRow - 1);
+	}
 
-	m_BlackBishops[0] = 2 + 8 * (blackPawnRow + 1);
-	m_BlackBishops[1] = 5 + 8 * (blackPawnRow + 1);
+	{
+		// White pieces
+		int whitePawnsRow = 6;
+		for (int i = 0; i < m_WhitePawns.size(); i++)
+			m_WhitePawns[i] = 8 * (whitePawnsRow) + i;
+		m_WhiteKnights[0] = Knight[0] + 8 * (whitePawnsRow + 1);
+		m_WhiteKnights[1] = Knight[1] + 8 * (whitePawnsRow + 1);
 
-	m_BlackRooks[0] = 0 + 8 * (blackPawnRow + 1);
-	m_BlackRooks[1] = 7 + 8 * (blackPawnRow + 1);
+		m_WhiteBishops[0] = Bishop[0] + 8 * (whitePawnsRow + 1);
+		m_WhiteBishops[1] = Bishop[1] + 8 * (whitePawnsRow + 1);
 
-	m_BlackQueen = 3 + 8 * (blackPawnRow + 1);
-	m_BlackKing = 4 + 8 * (blackPawnRow + 1);
+		m_WhiteRooks[0] = Rook[0] + 8 * (whitePawnsRow + 1);
+		m_WhiteRooks[1] = Rook[1] + 8 * (whitePawnsRow + 1);
+
+		m_WhiteQueen = Queen + 8 * (whitePawnsRow + 1);
+		m_WhiteKing = King + 8 * (whitePawnsRow + 1);
+	}
 
 	// Map positions to all pieces
 	auto mapPositions = [&](PiecePos* data, int size, PieceType type)
@@ -49,15 +61,15 @@ ChessAI::Board::Board()
 	mapPositions(m_WhiteKnights.data(), m_WhiteKnights.size(), PieceType::White_Knight);
 	mapPositions(m_WhiteBishops.data(), m_WhiteBishops.size(), PieceType::White_Bishop);
 	mapPositions(m_WhiteRooks.data(), m_WhiteRooks.size(), PieceType::White_Rook);
-	mapPositions(&m_WhiteQueen, 0, PieceType::White_Queen);
-	mapPositions(&m_WhiteKing, 0, PieceType::White_King);
+	mapPositions(&m_WhiteQueen, 1, PieceType::White_Queen);
+	mapPositions(&m_WhiteKing, 1, PieceType::White_King);
 
 	mapPositions(m_BlackPawns.data(), m_BlackPawns.size(), PieceType::Black_Pawn);
 	mapPositions(m_BlackKnights.data(), m_BlackKnights.size(), PieceType::Black_Knight);
 	mapPositions(m_BlackBishops.data(), m_BlackBishops.size(), PieceType::Black_Bishop);
 	mapPositions(m_BlackRooks.data(), m_BlackRooks.size(), PieceType::Black_Rook);
-	mapPositions(&m_BlackQueen, 0, PieceType::Black_Queen);
-	mapPositions(&m_BlackKing, 0, PieceType::Black_King);
+	mapPositions(&m_BlackQueen, 1, PieceType::Black_Queen);
+	mapPositions(&m_BlackKing, 1, PieceType::Black_King);
 }
 
 ChessAI::Board::Board(const char* FEN)
@@ -120,9 +132,9 @@ void ChessAI::Board::MakeMove(const Move& move)
 	loc.Container[loc.Index] = targetSquare;
 
 	// Check side turn
-	bool correctPiece = int(loc.Type) <= 5 && m_WhitesTurn || int(loc.Type) > 5 && !m_WhitesTurn;
-	if (!correctPiece)
-		return;
+	//bool correctPiece = int(loc.Type) <= 5 && m_WhitesTurn || int(loc.Type) > 5 && !m_WhitesTurn;
+	//if (!correctPiece)
+	//	return;
 
 	m_WhitesTurn = !m_WhitesTurn;
 

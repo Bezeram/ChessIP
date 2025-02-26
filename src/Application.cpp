@@ -56,20 +56,14 @@ void ChessAI::Application::Run()
             {
                 if (mousePressed->button == sf::Mouse::Button::Left)
                 {
-                    // TODO:
-                    // cellIndex is probably very wrong
                     sf::Vector2f mousePosition = sf::Vector2f(mousePressed->position.x, mousePressed->position.y);
-                    sf::Vector2i cellIndex = sf::Vector2i(
-                        (mousePosition.x - m_Renderer.GetBoardPosition().x) / m_Renderer.GetBoardSize() * 8.f, 
-                        (mousePosition.y - m_Renderer.GetBoardPosition().y) / m_Renderer.GetBoardSize() * 8.f);
 
-                    // Convert from mouse coordinates to board coordinates
-                    // Window +Y goes down, board +Y goes up
-                    cellIndex.y = 7 - cellIndex.y;
-                    int selectPosition = cellIndex.x * 8 + cellIndex.y;
-                    std::cout << "Mouse position" << cellIndex.x << ' ' << cellIndex.y << std::endl;
-                    if (selectPosition >= 0 && selectPosition <= 63)
+                    if (m_Renderer.IsMouseOnBoard(mousePosition))
                     {
+                        // Convert to int
+                        sf::Vector2i cellIndex = m_Renderer.MouseCellIndex(mousePosition);
+                        int selectPosition = cellIndex.y * 8 + cellIndex.x;
+                        std::cout << "Mouse cell select " << cellIndex.x << ' ' << cellIndex.y << std::endl;
                         m_SelectedSquare = selectPosition;
                     }
                     else
@@ -81,30 +75,21 @@ void ChessAI::Application::Run()
             {
                 if (mouseReleased->button == sf::Mouse::Button::Left)
                 {
-                    // TODO:
-                    // cellIndex is probably very wrong
                     sf::Vector2f mousePosition = sf::Vector2f(mouseReleased->position.x, mouseReleased->position.y);
-                    sf::Vector2i cellIndex = sf::Vector2i(
-                        (mousePosition.x - m_Renderer.GetBoardPosition().x) / m_Renderer.GetBoardSize() * 8.f,
-                        (mousePosition.y - m_Renderer.GetBoardPosition().y) / m_Renderer.GetBoardSize() * 8.f);
-
-                    // Convert from mouse coordinates to board coordinates
-                    // Window +Y goes down, board +Y goes up
-                    cellIndex.y = 7 - cellIndex.y;
-                    int targetPosition = cellIndex.x * 8 + cellIndex.y;
-                    std::cout << "Mouse position" << cellIndex.x << ' ' << cellIndex.y << std::endl;
-                    if (targetPosition >= 0 && targetPosition <= 63)
+                    if (m_Renderer.IsMouseOnBoard(mousePosition))
                     {
-                        // If we have selected a piece, prior to releasing the button
-                        // Make move
+                        sf::Vector2i cellIndex = m_Renderer.MouseCellIndex(mousePosition);
+                        int targetPosition = cellIndex.y * 8 + cellIndex.x;
+                        std::cout << "Mouse cell target " << cellIndex.x << ' ' << cellIndex.y << std::endl;
+                        // Make move if a square was previously selected
                         if (m_SelectedSquare != -1)
                         {
                             m_Board.MakeMove(Move(m_SelectedSquare, targetPosition));
-                            m_SelectedSquare = -1;
                         }
                     }
-                    else
-                        m_SelectedSquare = -1;
+                    
+                    // Reset selection
+                    m_SelectedSquare = -1;
                 }
             }
         }

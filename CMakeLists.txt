@@ -31,8 +31,8 @@ set(HEADER_FILES
 )
 
 # Grouping files into filters
-source_group("src/Source Files" FILES ${SRC_FILES})
-source_group("src/Header Files" FILES ${HEADER_FILES})
+source_group("src/Sources" FILES ${SRC_FILES})
+source_group("src/Headers" FILES ${HEADER_FILES})
 
 add_executable(main ${SRC_FILES} ${HEADER_FILES})
 target_compile_features(main PRIVATE cxx_std_17)

@@ -63,7 +63,8 @@ const sf::Texture& ChessAI::ResourceManager::AddTexture(const char* filePath, co
 
 	texture.setSmooth(true);
 	texture.setRepeated(false);
-	texture.generateMipmap();
+	if (!texture.generateMipmap())
+		std::cout << "Mipmaps unavailable for texture at " << filePath << std::endl;
 	m_Textures[name] = std::move(texture);
 	return m_Textures[name];
 }

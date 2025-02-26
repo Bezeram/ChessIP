@@ -37,8 +37,8 @@ void ChessAI::Renderer::DrawBoard(sf::RenderWindow& window, const ChessAI::Board
 
 	// Draw board (from the top to bottom, left to right)
 	{
-		sf::RectangleShape blackSquare(sf::Vector2f(m_CellSize, m_CellSize));
-		sf::RectangleShape whiteSquare(sf::Vector2f(m_CellSize, m_CellSize));
+		sf::RectangleShape blackSquare(sf::Vector2f(m_BoardCellSize, m_BoardCellSize));
+		sf::RectangleShape whiteSquare(sf::Vector2f(m_BoardCellSize, m_BoardCellSize));
 		blackSquare.setFillColor(m_ColorDarkSquare);
 		whiteSquare.setFillColor(m_ColorWhiteSquare);
 
@@ -47,13 +47,13 @@ void ChessAI::Renderer::DrawBoard(sf::RenderWindow& window, const ChessAI::Board
 			for (int file = 0; file < 8; file++)
 			{
 				auto& square = (file + rank) % 2 == 0 ? whiteSquare : blackSquare;
-				sf::Vector2f position = sf::Vector2f(m_BoardPosition.x + file * m_CellSize, m_BoardPosition.y + rank * m_CellSize);
+				sf::Vector2f position = sf::Vector2f(m_BoardPosition.x + file * m_BoardCellSize, m_BoardPosition.y + rank * m_BoardCellSize);
 
 				// Draw the selected square a different color
-				if (file * 8 + rank == selectedSquare)
+				if (rank * 8 + file == selectedSquare)
 				{
 					sf::RectangleShape selectedSquare = whiteSquare;
-					selectedSquare.setFillColor(sf::Color(1, 0.1, 0.1));
+					selectedSquare.setFillColor(sf::Color(255, 25.5, 25.5));
 					selectedSquare.setPosition(position);
 					window.draw(selectedSquare);
 				}
@@ -78,11 +78,11 @@ void ChessAI::Renderer::DrawBoard(sf::RenderWindow& window, const ChessAI::Board
 			const auto& texture = rm.GetPieceTexture(piece.Type);
 			m_Shader.setUniform(std::string("texture"), sf::Shader::CurrentTexture);
 
-			float scale = m_CellSize / texture.getSize().x;
+			float scale = m_BoardCellSize / texture.getSize().x;
 			// Calculate position
 			int file = piece.Position % 8;
-			int rank = (63 - piece.Position) / 8;
-			sf::Vector2f position = sf::Vector2f(m_BoardPosition.x + file * m_CellSize, m_BoardPosition.y + rank * m_CellSize);
+			int rank = piece.Position / 8;
+			sf::Vector2f position = sf::Vector2f(m_BoardPosition.x + file * m_BoardCellSize, m_BoardPosition.y + rank * m_BoardCellSize);
 
 			sf::Sprite piece(texture);
 			piece.setPosition(position);
@@ -97,7 +97,7 @@ void ChessAI::Renderer::CalculateBoard(const sf::Vector2u& screenSize)
 	sf::Vector2u resolution = screenSize;
 	sf::Vector2f boardPadding = { resolution.x * m_BoardPadding01.x, resolution.y * m_BoardPadding01.y };
 	m_BoardSize = resolution.y - boardPadding.y * 2.f;
-	m_CellSize = m_BoardSize / 8.f;
+	m_BoardCellSize = m_BoardSize / 8.f;
 	// Calculate board position (centralised according to screen, drawn from the bottom left)
 	float boardPositionX = (resolution.x - m_BoardSize) / 2.f;
 	float boardPositionY = resolution.y * m_BoardPadding01.y;
@@ -116,5 +116,18 @@ float ChessAI::Renderer::GetBoardSize() const
 
 float ChessAI::Renderer::GetBoardCellSize() const
 {
-	return m_CellSize;
+	return m_BoardCellSize;
+}
+
+bool ChessAI::Renderer::IsMouseOnBoard(const sf::Vector2f& mousePosition) const
+{
+	return (mousePosition.x >= m_BoardPosition.x && mousePosition.x <= m_BoardPosition.x + m_BoardSize &&
+		mousePosition.y >= m_BoardPosition.y && mousePosition.y <= m_BoardPosition.y + m_BoardSize);
+}
+
+sf::Vector2i ChessAI::Renderer::MouseCellIndex(const sf::Vector2f& mousePosition) const
+{
+	return sf::Vector2i(
+		int((mousePosition.x - m_BoardPosition.x) / m_BoardCellSize),
+		int((mousePosition.y - m_BoardPosition.y) / m_BoardCellSize));
 }
