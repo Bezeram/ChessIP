@@ -2,12 +2,11 @@
 
 #include <vector>
 #include <cmath>
-#include <array>
 #include <unordered_map>
 
 #include "Utils.h"
 
-namespace ChessAI
+namespace ChessIP
 {
     /**
     * Every piece type is stored in its own container
@@ -17,41 +16,36 @@ namespace ChessAI
     class Board
     {
     public:
-        typedef int PiecePos;
 
         Board();
         Board(const char* FEN);
 
         void GetBoard(std::vector<Piece>& outBoard) const;
+        
+        PieceLocation GetPieceAt(PiecePos position) const;
+        void DeletePieceAt(PiecePos position);
 
-        void MakeMove(int startSquare, int targetSquare);
+        bool IsCorrectTurn(const Move& move) const;
+        bool IsWhitesMove() const;
         void MakeMove(const Move& move);
+        
     private:
-        bool m_WhitesTurn = 1;
-
-        struct PieceLocation
-        {
-            PieceLocation() = default;
-            PieceLocation(PiecePos* container, int index, PieceType type) : Container(container), Type(type), Index(index) {}
-            PiecePos* Container = nullptr;
-            PieceType Type = PieceType::White_Pawn;
-            int Index = -1;
-        };
+        bool m_IsWhitesTurn = 1;
 
         std::unordered_map<PiecePos, PieceLocation> m_PositionToPiece;
 
-        std::array<PiecePos, 8> m_WhitePawns;
-        std::array<PiecePos, 2> m_WhiteKnights;
-        std::array<PiecePos, 2> m_WhiteBishops;
-        std::array<PiecePos, 2> m_WhiteRooks;
-        PiecePos m_WhiteQueen;
+        std::vector<PiecePos> m_WhitePawns;
+        std::vector<PiecePos> m_WhiteKnights;
+        std::vector<PiecePos> m_WhiteBishops;
+        std::vector<PiecePos> m_WhiteRooks;
+        std::vector<PiecePos> m_WhiteQueen;
         PiecePos m_WhiteKing;
 
-        std::array<PiecePos, 8> m_BlackPawns;
-        std::array<PiecePos, 2> m_BlackKnights;
-        std::array<PiecePos, 2> m_BlackBishops;
-        std::array<PiecePos, 2> m_BlackRooks;
-        PiecePos m_BlackQueen;
+        std::vector<PiecePos> m_BlackPawns;
+        std::vector<PiecePos> m_BlackKnights;
+        std::vector<PiecePos> m_BlackBishops;
+        std::vector<PiecePos> m_BlackRooks;
+        std::vector<PiecePos> m_BlackQueen;
         PiecePos m_BlackKing;
     };
 }

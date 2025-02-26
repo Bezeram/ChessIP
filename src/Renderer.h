@@ -6,7 +6,7 @@
 #include "Board.h"
 #include "ResourceManager.h"
 
-namespace ChessAI
+namespace ChessIP
 {
 	class Renderer
 	{

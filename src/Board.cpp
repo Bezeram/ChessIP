@@ -1,9 +1,11 @@
 #include "Board.h"
 
-ChessAI::Board::Board()
+using namespace ChessIP;
+
+Board::Board()
 {
 	// First square starts from the top left, from white's perspective (a8)
-	// Pieces positions
+	// Pieces default positions
 	int Knight[] = { 1, 6 };
 	int Bishop[] = { 2, 5 };
 	int Rook[] = { 0, 7 };
@@ -13,74 +15,87 @@ ChessAI::Board::Board()
 	{
 		// Place pieces
 		int blackPawnsRow = 1; // 0-7
-		for (int i = 0; i < m_WhitePawns.size(); i++)
-			m_BlackPawns[i] = 8 * blackPawnsRow + i;
-		m_BlackKnights[0] = Knight[0] + 8 * (blackPawnsRow - 1);
-		m_BlackKnights[1] = Knight[1] + 8 * (blackPawnsRow - 1);
+		for (int i = 0; i < 8; i++)
+			m_BlackPawns.emplace_back(8 * blackPawnsRow + i);
+		m_BlackKnights.emplace_back(Knight[0] + 8 * (blackPawnsRow - 1));
+		m_BlackKnights.emplace_back(Knight[1] + 8 * (blackPawnsRow - 1));
 
-		m_BlackBishops[0] = Bishop[0] + 8 * (blackPawnsRow - 1);
-		m_BlackBishops[1] = Bishop[1] + 8 * (blackPawnsRow - 1);
+		m_BlackBishops.emplace_back(Bishop[0] + 8 * (blackPawnsRow - 1));
+		m_BlackBishops.emplace_back(Bishop[1] + 8 * (blackPawnsRow - 1));
 
-		m_BlackRooks[0] = Rook[0] + 8 * (blackPawnsRow - 1);
-		m_BlackRooks[1] = Rook[1] + 8 * (blackPawnsRow - 1);
+		m_BlackRooks.emplace_back(Rook[0] + 8 * (blackPawnsRow - 1));
+		m_BlackRooks.emplace_back(Rook[1] + 8 * (blackPawnsRow - 1));
 
-		m_BlackQueen = Queen + 8 * (blackPawnsRow - 1);
+		m_BlackQueen.emplace_back(Queen + 8 * (blackPawnsRow - 1));
 		m_BlackKing = King + 8 * (blackPawnsRow - 1);
 	}
 
 	{
 		// White pieces
 		int whitePawnsRow = 6;
-		for (int i = 0; i < m_WhitePawns.size(); i++)
-			m_WhitePawns[i] = 8 * (whitePawnsRow) + i;
-		m_WhiteKnights[0] = Knight[0] + 8 * (whitePawnsRow + 1);
-		m_WhiteKnights[1] = Knight[1] + 8 * (whitePawnsRow + 1);
+		for (int i = 0; i < 8; i++)
+			m_WhitePawns.emplace_back(8 * (whitePawnsRow) + i);
+		m_WhiteKnights.emplace_back(Knight[0] + 8 * (whitePawnsRow + 1));
+		m_WhiteKnights.emplace_back(Knight[1] + 8 * (whitePawnsRow + 1));
 
-		m_WhiteBishops[0] = Bishop[0] + 8 * (whitePawnsRow + 1);
-		m_WhiteBishops[1] = Bishop[1] + 8 * (whitePawnsRow + 1);
+		m_WhiteBishops.emplace_back(Bishop[0] + 8 * (whitePawnsRow + 1));
+		m_WhiteBishops.emplace_back(Bishop[1] + 8 * (whitePawnsRow + 1));
 
-		m_WhiteRooks[0] = Rook[0] + 8 * (whitePawnsRow + 1);
-		m_WhiteRooks[1] = Rook[1] + 8 * (whitePawnsRow + 1);
+		m_WhiteRooks.emplace_back(Rook[0] + 8 * (whitePawnsRow + 1));
+		m_WhiteRooks.emplace_back(Rook[1] + 8 * (whitePawnsRow + 1));
 
-		m_WhiteQueen = Queen + 8 * (whitePawnsRow + 1);
+		m_WhiteQueen.emplace_back(Queen + 8 * (whitePawnsRow + 1));
 		m_WhiteKing = King + 8 * (whitePawnsRow + 1);
 	}
 
 	// Map positions to all pieces
-	auto mapPositions = [&](PiecePos* data, int size, PieceType type)
+	auto mapPositions = [&](std::vector<PiecePos>* data, int size, PieceType type)
 		{
 			for (int i = 0; i < size; i++)
 			{
-				PiecePos pos = data[i];
+				// Read as vector
+				PiecePos pos = (*data)[i];
 				PieceLocation loc = PieceLocation(data, i, type);
-				m_PositionToPiece.insert(std::pair(pos, loc));
+				m_PositionToPiece.emplace(pos, loc);
 			}
 		};
 
-	mapPositions(m_WhitePawns.data(), m_WhitePawns.size(), PieceType::White_Pawn);
-	mapPositions(m_WhiteKnights.data(), m_WhiteKnights.size(), PieceType::White_Knight);
-	mapPositions(m_WhiteBishops.data(), m_WhiteBishops.size(), PieceType::White_Bishop);
-	mapPositions(m_WhiteRooks.data(), m_WhiteRooks.size(), PieceType::White_Rook);
-	mapPositions(&m_WhiteQueen, 1, PieceType::White_Queen);
-	mapPositions(&m_WhiteKing, 1, PieceType::White_King);
+	// Kings are exceptions because there cannot be more than one of them
+	{
+		mapPositions(&m_WhitePawns, m_WhitePawns.size(), PieceType::White_Pawn);
+		mapPositions(&m_WhiteKnights, m_WhiteKnights.size(), PieceType::White_Knight);
+		mapPositions(&m_WhiteBishops, m_WhiteBishops.size(), PieceType::White_Bishop);
+		mapPositions(&m_WhiteRooks, m_WhiteRooks.size(), PieceType::White_Rook);
+		mapPositions(&m_WhiteQueen, m_WhiteQueen.size(), PieceType::White_Queen);
+		// White King
+		PiecePos pos = m_WhiteKing;
+		PieceLocation loc = PieceLocation::WhiteKing(&m_WhiteKing);
+		m_PositionToPiece.emplace(pos, loc);
+	}
 
-	mapPositions(m_BlackPawns.data(), m_BlackPawns.size(), PieceType::Black_Pawn);
-	mapPositions(m_BlackKnights.data(), m_BlackKnights.size(), PieceType::Black_Knight);
-	mapPositions(m_BlackBishops.data(), m_BlackBishops.size(), PieceType::Black_Bishop);
-	mapPositions(m_BlackRooks.data(), m_BlackRooks.size(), PieceType::Black_Rook);
-	mapPositions(&m_BlackQueen, 1, PieceType::Black_Queen);
-	mapPositions(&m_BlackKing, 1, PieceType::Black_King);
+	{
+		mapPositions(&m_BlackPawns, m_BlackPawns.size(), PieceType::Black_Pawn);
+		mapPositions(&m_BlackKnights, m_BlackKnights.size(), PieceType::Black_Knight);
+		mapPositions(&m_BlackBishops, m_BlackBishops.size(), PieceType::Black_Bishop);
+		mapPositions(&m_BlackRooks, m_BlackRooks.size(), PieceType::Black_Rook);
+		mapPositions(&m_BlackQueen, m_WhiteQueen.size(), PieceType::Black_Queen);
+		// Black King
+		PiecePos pos = m_BlackKing;
+		PieceLocation loc = PieceLocation::BlackKing(&m_BlackKing);
+		m_PositionToPiece.emplace(pos, loc);
+	}
 }
 
-ChessAI::Board::Board(const char* FEN)
+Board::Board(const char* FEN)
 {
 	// TODO:
+	// Load board position via FEN string
 }
 
-void ChessAI::Board::GetBoard(std::vector<Piece>& outBoard) const
+void Board::GetBoard(std::vector<Piece>& outBoard) const
 {
 	// Put all the pieces in the output vector
-	auto putPieces = [&outBoard](const PiecePos* const data, int size, PieceType pieceType)
+	auto putPieces = [&outBoard](const std::vector<PiecePos>& const data, int size, PieceType pieceType)
 		{
 			for (int i = 0; i < size; i++)
 			{
@@ -91,54 +106,88 @@ void ChessAI::Board::GetBoard(std::vector<Piece>& outBoard) const
 		};
 
 	outBoard.reserve(16);
-	putPieces(m_WhitePawns.data(), m_WhitePawns.size(), PieceType::White_Pawn);
-	putPieces(m_WhiteKnights.data(), m_WhiteKnights.size(), PieceType::White_Knight);
-	putPieces(m_WhiteBishops.data(), m_WhiteBishops.size(), PieceType::White_Bishop);
-	putPieces(m_WhiteRooks.data(), m_WhiteRooks.size(), PieceType::White_Rook);
-	putPieces(&m_WhiteQueen, 1, PieceType::White_Queen);
-	putPieces(&m_WhiteKing, 1, PieceType::White_King);
+	putPieces(m_WhitePawns, m_WhitePawns.size(), PieceType::White_Pawn);
+	putPieces(m_WhiteKnights, m_WhiteKnights.size(), PieceType::White_Knight);
+	putPieces(m_WhiteBishops, m_WhiteBishops.size(), PieceType::White_Bishop);
+	putPieces(m_WhiteRooks, m_WhiteRooks.size(), PieceType::White_Rook);
+	putPieces(m_WhiteQueen, m_WhiteQueen.size(), PieceType::White_Queen);
+	outBoard.emplace_back(m_WhiteKing, PieceType::White_King);
 
-	putPieces(m_BlackPawns.data(), m_BlackPawns.size(), PieceType::Black_Pawn);
-	putPieces(m_BlackKnights.data(), m_BlackKnights.size(), PieceType::Black_Knight);
-	putPieces(m_BlackBishops.data(), m_BlackBishops.size(), PieceType::Black_Bishop);
-	putPieces(m_BlackRooks.data(), m_BlackRooks.size(), PieceType::Black_Rook);
-	putPieces(&m_BlackQueen, 1, PieceType::Black_Queen);
-	putPieces(&m_BlackKing, 1, PieceType::Black_King);
+	putPieces(m_BlackPawns, m_BlackPawns.size(), PieceType::Black_Pawn);
+	putPieces(m_BlackKnights, m_BlackKnights.size(), PieceType::Black_Knight);
+	putPieces(m_BlackBishops, m_BlackBishops.size(), PieceType::Black_Bishop);
+	putPieces(m_BlackRooks, m_BlackRooks.size(), PieceType::Black_Rook);
+	putPieces(m_BlackQueen, m_BlackQueen.size(), PieceType::Black_Queen);
+	outBoard.emplace_back(m_BlackKing, PieceType::Black_King);
 }
 
-void ChessAI::Board::MakeMove(int startSquare, int targetSquare)
+PieceLocation Board::GetPieceAt(PiecePos position) const
 {
-	if (m_PositionToPiece.find(startSquare) == m_PositionToPiece.end())
-		return;
-
-	// Modify piece position in container
-	PieceLocation loc = m_PositionToPiece[startSquare];
-	loc.Container[loc.Index] = targetSquare;
-
-	// Modify mapper
-	m_PositionToPiece.erase(startSquare);
-	m_PositionToPiece.insert(std::pair(targetSquare, loc));
+	auto it = m_PositionToPiece.find(position);
+	if (it == m_PositionToPiece.end())
+		return PieceLocation::EmptySquare();
+	return it->second;
 }
 
-void ChessAI::Board::MakeMove(const Move& move)
+void Board::DeletePieceAt(PiecePos position)
+{
+	auto it = m_PositionToPiece.find(position);
+	if (it == m_PositionToPiece.end())
+		return;
+	PieceLocation pieceLoc = m_PositionToPiece.at(position);
+	// Erase the container it is pointing to
+	pieceLoc.Delete();
+	// Erase it from the location lookup
+	m_PositionToPiece.erase(position);
+}
+
+bool Board::IsCorrectTurn(const Move& move) const
+{
+	// Board bounds
+	if (move.StartSquare < 0 || move.StartSquare > 63 || move.TargetSquare < 0 || move.TargetSquare > 63)
+		return false;
+
+	// Check if the target piece is 
+	PieceLocation pieceLoc = GetPieceAt(move.StartSquare);
+	if (!pieceLoc.IsEmptySquare())
+		return IsWhitePiece(pieceLoc.GetType()) && m_IsWhitesTurn || IsBlackPiece(pieceLoc.GetType()) && !m_IsWhitesTurn;
+}
+
+bool Board::IsWhitesMove() const
+{
+	return m_IsWhitesTurn;
+}
+
+void Board::MakeMove(const Move& move)
 {
 	int startSquare = move.StartSquare;
 	int targetSquare = move.TargetSquare;
-	if (m_PositionToPiece.find(startSquare) == m_PositionToPiece.end())
+
+	// Check for empty square
+	if (GetPieceAt(startSquare).IsEmptySquare())
 		return;
 
-	// Modify piece position in container
-	PieceLocation loc = m_PositionToPiece[startSquare];
-	loc.Container[loc.Index] = targetSquare;
+	PieceLocation selected = m_PositionToPiece.at(startSquare);
 
 	// Check side turn
-	//bool correctPiece = int(loc.Type) <= 5 && m_WhitesTurn || int(loc.Type) > 5 && !m_WhitesTurn;
-	//if (!correctPiece)
-	//	return;
+	bool validMove = IsCorrectTurn(move);
+	if (!validMove)
+		return;
 
-	m_WhitesTurn = !m_WhitesTurn;
+	// Check for capture
+	PieceLocation target = GetPieceAt(targetSquare);
+	if (!target.IsEmptySquare() && GetPieceColor(selected.GetType()) != GetPieceColor(target.GetType()))
+	{
+		// Delete the captured piece
+		DeletePieceAt(targetSquare);
+	}
+	// Place piece at target position in container
+	selected.SetPosition(targetSquare);
 
-	// Modify mapper
+
+	// Update mapper (erase start position, add the new target position)
 	m_PositionToPiece.erase(startSquare);
-	m_PositionToPiece.insert(std::pair(targetSquare, loc));
+	m_PositionToPiece.emplace(targetSquare, selected);
+
+	m_IsWhitesTurn = !m_IsWhitesTurn;
 }

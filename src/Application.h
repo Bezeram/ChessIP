@@ -5,7 +5,7 @@
 #include "Renderer.h"
 #include "Board.h"
 
-namespace ChessAI
+namespace ChessIP
 {
 	class Application
 	{
@@ -25,7 +25,7 @@ namespace ChessAI
 
 		int m_SelectedSquare = -1;
 
-		ChessAI::Renderer m_Renderer;
-		ChessAI::Board m_Board;
+		Renderer m_Renderer;
+		Board m_Board;
 	};
 }

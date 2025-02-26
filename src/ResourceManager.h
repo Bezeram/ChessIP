@@ -9,7 +9,7 @@
 
 #include "Utils.h"
 
-namespace ChessAI
+namespace ChessIP
 {
 	class ResourceManager
 	{

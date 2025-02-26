@@ -1,10 +1,10 @@
 #include "Renderer.h"
 
-
-
 #include <iostream>
 
-ChessAI::Renderer::Renderer(const sf::Vector2u& screenSize)
+using namespace ChessIP;
+
+Renderer::Renderer(const sf::Vector2u& screenSize)
 {
 	// Load shader for pieces
 	constexpr std::string_view outlineFixFragShader = R"(
@@ -31,7 +31,7 @@ ChessAI::Renderer::Renderer(const sf::Vector2u& screenSize)
 	CalculateBoard(screenSize);
 }
 
-void ChessAI::Renderer::DrawBoard(sf::RenderWindow& window, const ChessAI::Board& board, int selectedSquare)
+void Renderer::DrawBoard(sf::RenderWindow& window, const Board& board, int selectedSquare)
 {
 	CalculateBoard(window.getSize());
 
@@ -72,7 +72,7 @@ void ChessAI::Renderer::DrawBoard(sf::RenderWindow& window, const ChessAI::Board
 		std::vector<Piece> pieces;
 		board.GetBoard(pieces);
 
-		const ChessAI::ResourceManager& rm = ChessAI::ResourceManager::GetInstance();
+		const ResourceManager& rm = ResourceManager::GetInstance();
 		for (Piece piece : pieces)
 		{
 			const auto& texture = rm.GetPieceTexture(piece.Type);
@@ -92,7 +92,7 @@ void ChessAI::Renderer::DrawBoard(sf::RenderWindow& window, const ChessAI::Board
 	}
 }
 
-void ChessAI::Renderer::CalculateBoard(const sf::Vector2u& screenSize)
+void Renderer::CalculateBoard(const sf::Vector2u& screenSize)
 {
 	sf::Vector2u resolution = screenSize;
 	sf::Vector2f boardPadding = { resolution.x * m_BoardPadding01.x, resolution.y * m_BoardPadding01.y };
@@ -104,28 +104,28 @@ void ChessAI::Renderer::CalculateBoard(const sf::Vector2u& screenSize)
 	m_BoardPosition = sf::Vector2f(boardPositionX, boardPositionY);
 }
 
-sf::Vector2f ChessAI::Renderer::GetBoardPosition() const
+sf::Vector2f Renderer::GetBoardPosition() const
 {
 	return m_BoardPosition;
 }
 
-float ChessAI::Renderer::GetBoardSize() const
+float Renderer::GetBoardSize() const
 {
 	return m_BoardSize;
 }
 
-float ChessAI::Renderer::GetBoardCellSize() const
+float Renderer::GetBoardCellSize() const
 {
 	return m_BoardCellSize;
 }
 
-bool ChessAI::Renderer::IsMouseOnBoard(const sf::Vector2f& mousePosition) const
+bool Renderer::IsMouseOnBoard(const sf::Vector2f& mousePosition) const
 {
 	return (mousePosition.x >= m_BoardPosition.x && mousePosition.x <= m_BoardPosition.x + m_BoardSize &&
 		mousePosition.y >= m_BoardPosition.y && mousePosition.y <= m_BoardPosition.y + m_BoardSize);
 }
 
-sf::Vector2i ChessAI::Renderer::MouseCellIndex(const sf::Vector2f& mousePosition) const
+sf::Vector2i Renderer::MouseCellIndex(const sf::Vector2f& mousePosition) const
 {
 	return sf::Vector2i(
 		int((mousePosition.x - m_BoardPosition.x) / m_BoardCellSize),

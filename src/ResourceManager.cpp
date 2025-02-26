@@ -1,20 +1,22 @@
 #include "ResourceManager.h"
 
-void ChessAI::ResourceManager::Initialise()
+using namespace ChessIP;
+
+void ResourceManager::Initialise()
 {
 	assert(s_ResourceManager == nullptr);
 
 	s_ResourceManager = new ResourceManager();
 }
 
-const ChessAI::ResourceManager& ChessAI::ResourceManager::GetInstance()
+const ResourceManager& ResourceManager::GetInstance()
 {
 	assert(s_ResourceManager != nullptr);
 
 	return *s_ResourceManager;
 }
 
-void ChessAI::ResourceManager::Shutdown()
+void ResourceManager::Shutdown()
 {
 	assert(s_ResourceManager != nullptr);
 
@@ -22,7 +24,7 @@ void ChessAI::ResourceManager::Shutdown()
 	s_ResourceManager = nullptr;
 }
 
-void ChessAI::ResourceManager::LoadAssets()
+void ResourceManager::LoadAssets()
 {
 	// Load textures
 	for (int i = 0; i < 12; i++)
@@ -41,13 +43,13 @@ void ChessAI::ResourceManager::LoadAssets()
 	}
 }
 
-const sf::Texture& ChessAI::ResourceManager::GetPieceTexture(PieceType type) const
+const sf::Texture& ResourceManager::GetPieceTexture(PieceType type) const
 {
 	const std::string& key = m_PieceIDToResource.at(type);
 	return m_Textures.at(key);
 }
 
-const sf::Texture& ChessAI::ResourceManager::AddTexture(const char* filePath, const char* name)
+const sf::Texture& ResourceManager::AddTexture(const char* filePath, const char* name)
 {
 	auto it = m_Textures.find(name);
 	if (it != m_Textures.end())
@@ -69,7 +71,7 @@ const sf::Texture& ChessAI::ResourceManager::AddTexture(const char* filePath, co
 	return m_Textures[name];
 }
 
-const sf::Font& ChessAI::ResourceManager::AddFont(const char* filePath, const char* name)
+const sf::Font& ResourceManager::AddFont(const char* filePath, const char* name)
 {
 	auto it = m_Fonts.find(name);
 	if (it != m_Fonts.end())
@@ -87,7 +89,7 @@ const sf::Font& ChessAI::ResourceManager::AddFont(const char* filePath, const ch
 	return m_Fonts[name];
 }
 
-const sf::SoundBuffer& ChessAI::ResourceManager::AddSound(const char* filePath, const char* name)
+const sf::SoundBuffer& ResourceManager::AddSound(const char* filePath, const char* name)
 {
 	auto it = m_Sounds.find(name);
 	if (it != m_Sounds.end())
@@ -105,7 +107,7 @@ const sf::SoundBuffer& ChessAI::ResourceManager::AddSound(const char* filePath, 
 	return m_Sounds[name];
 }
 
-const sf::Texture& ChessAI::ResourceManager::GetTexture(const char* key) const
+const sf::Texture& ResourceManager::GetTexture(const char* key) const
 {
 	auto it = m_Textures.find(key);
 	if (it == m_Textures.end()) 
@@ -115,7 +117,7 @@ const sf::Texture& ChessAI::ResourceManager::GetTexture(const char* key) const
 	return it->second;
 }
 
-const sf::Font& ChessAI::ResourceManager::GetFont(const char* key) const
+const sf::Font& ResourceManager::GetFont(const char* key) const
 {
 	auto it = m_Fonts.find(key);
 	if (it == m_Fonts.end()) 
@@ -125,7 +127,7 @@ const sf::Font& ChessAI::ResourceManager::GetFont(const char* key) const
 	return it->second;
 }
 
-const sf::SoundBuffer& ChessAI::ResourceManager::GetSound(const char* key) const
+const sf::SoundBuffer& ResourceManager::GetSound(const char* key) const
 {
 	auto it = m_Sounds.find(key);
 	if (it == m_Sounds.end()) 
@@ -135,14 +137,14 @@ const sf::SoundBuffer& ChessAI::ResourceManager::GetSound(const char* key) const
 	return it->second;
 }
 
-ChessAI::ResourceManager::ResourceManager()
+ResourceManager::ResourceManager()
 {
 	SetPieceIDToResource();
 
 	LoadAssets();
 }
 
-void ChessAI::ResourceManager::SetPieceIDToResource()
+void ResourceManager::SetPieceIDToResource()
 {
 	std::string pieceColor[] = { "white", "black" };
 	std::string pieceType[] = { "pawn", "knight", "bishop", "rook", "queen", "king" };

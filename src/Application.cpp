@@ -1,20 +1,22 @@
 #include "Application.h"
 
-ChessAI::Application::Application()
+using namespace ChessIP;
+
+Application::Application()
     : m_Window(sf::RenderWindow(sf::VideoMode({ 1920u, 1080u }), "ChessAI"))
     , m_Renderer(m_Window.getSize())
 {
-	ChessAI::ResourceManager::Initialise();
+	ResourceManager::Initialise();
     
     m_Window.setFramerateLimit(400);
 }
 
-ChessAI::Application::~Application()
+Application::~Application()
 {
-	ChessAI::ResourceManager::Shutdown();
+	ResourceManager::Shutdown();
 }
 
-void ChessAI::Application::Run()
+void Application::Run()
 {
     sf::View viewport(sf::FloatRect(sf::Vector2f(0, 0), sf::Vector2f(m_Window.getSize().x, m_Window.getSize().y)));
 

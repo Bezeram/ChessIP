@@ -2,6 +2,6 @@
 
 int main()
 {
-    ChessAI::Application application;
+    ChessIP::Application application;
     application.Run();
 }
