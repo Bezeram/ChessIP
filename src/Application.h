@@ -16,13 +16,13 @@ namespace ChessIP
 		void Run();
 
 	private:
+		void EventHandler();
+	private:
 		sf::RenderWindow m_Window;
-
-		enum class GameType
-		{
-			PLAYER_VS_PLAYER = 0,
-		} m_GameType = GameType::PLAYER_VS_PLAYER;
-
+		sf::View m_Viewport;
+		bool m_IsRunning = true;
+		
+		Move m_PreviousMove = { -1, -1 };
 		int m_SelectedSquare = -1;
 
 		Renderer m_Renderer;

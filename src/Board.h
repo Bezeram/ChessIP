@@ -3,6 +3,7 @@
 #include <vector>
 #include <cmath>
 #include <unordered_map>
+#include <cassert>
 
 #include "Utils.h"
 
@@ -25,9 +26,10 @@ namespace ChessIP
         PieceLocation GetPieceAt(PiecePos position) const;
         void DeletePieceAt(PiecePos position);
 
-        bool IsCorrectTurn(const Move& move) const;
+        bool IsTargetFriendly(const Move& move) const;
+        bool IsValidPieceByTurn(PiecePos position) const;
         bool IsWhitesMove() const;
-        void MakeMove(const Move& move);
+        bool MakeMove(const Move& move);
         
     private:
         bool m_IsWhitesTurn = 1;

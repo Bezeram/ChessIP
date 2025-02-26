@@ -31,7 +31,7 @@ Renderer::Renderer(const sf::Vector2u& screenSize)
 	CalculateBoard(screenSize);
 }
 
-void Renderer::DrawBoard(sf::RenderWindow& window, const Board& board, int selectedSquare)
+void Renderer::DrawBoard(sf::RenderWindow& window, const Board& board, int selectedSquare, const Move& previousMove)
 {
 	CalculateBoard(window.getSize());
 
@@ -47,20 +47,26 @@ void Renderer::DrawBoard(sf::RenderWindow& window, const Board& board, int selec
 			for (int file = 0; file < 8; file++)
 			{
 				auto& square = (file + rank) % 2 == 0 ? whiteSquare : blackSquare;
-				sf::Vector2f position = sf::Vector2f(m_BoardPosition.x + file * m_BoardCellSize, m_BoardPosition.y + rank * m_BoardCellSize);
+				int position = rank * 8 + file;
+				sf::Vector2f position2D = sf::Vector2f(m_BoardPosition.x + file * m_BoardCellSize, m_BoardPosition.y + rank * m_BoardCellSize);
+
+				square.setPosition(position2D);
+				window.draw(square);
 
 				// Draw the selected square a different color
-				if (rank * 8 + file == selectedSquare)
+				if (position == selectedSquare)
 				{
 					sf::RectangleShape selectedSquare = whiteSquare;
-					selectedSquare.setFillColor(sf::Color(255, 25.5, 25.5));
-					selectedSquare.setPosition(position);
+					selectedSquare.setFillColor(m_ColorSelectSquare);
+					selectedSquare.setPosition(position2D);
 					window.draw(selectedSquare);
 				}
-				else
+				else if (position == previousMove.StartSquare || position == previousMove.TargetSquare)
 				{
-					square.setPosition(position);
-					window.draw(square);
+					sf::RectangleShape highlightSquare = whiteSquare;
+					highlightSquare.setFillColor(m_ColorPreviousMoveHighlight);
+					highlightSquare.setPosition(position2D);
+					window.draw(highlightSquare);
 				}
 			}
 		}

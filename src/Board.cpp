@@ -135,22 +135,36 @@ void Board::DeletePieceAt(PiecePos position)
 	if (it == m_PositionToPiece.end())
 		return;
 	PieceLocation pieceLoc = m_PositionToPiece.at(position);
-	// Erase the container it is pointing to
-	pieceLoc.Delete();
+	// Erase the container it is pointing to and modify the others affected
+	// using the mapper
+	pieceLoc.Delete(m_PositionToPiece);
 	// Erase it from the location lookup
 	m_PositionToPiece.erase(position);
 }
 
-bool Board::IsCorrectTurn(const Move& move) const
+bool Board::IsTargetFriendly(const Move& move) const
 {
 	// Board bounds
-	if (move.StartSquare < 0 || move.StartSquare > 63 || move.TargetSquare < 0 || move.TargetSquare > 63)
-		return false;
+	assert(move.StartSquare >= 0 && move.StartSquare <= 63 && move.TargetSquare >= 0 && move.TargetSquare <= 63);
 
 	// Check if the target piece is 
-	PieceLocation pieceLoc = GetPieceAt(move.StartSquare);
-	if (!pieceLoc.IsEmptySquare())
-		return IsWhitePiece(pieceLoc.GetType()) && m_IsWhitesTurn || IsBlackPiece(pieceLoc.GetType()) && !m_IsWhitesTurn;
+	PieceLocation selected = GetPieceAt(move.StartSquare);
+	PieceLocation target = GetPieceAt(move.TargetSquare);
+	if (!target.IsEmptySquare())
+		return GetPieceColor(selected.GetType()) == GetPieceColor(target.GetType());
+	return false;
+}
+
+bool Board::IsValidPieceByTurn(PiecePos position) const
+{
+	// Board bounds
+	assert(position >= 0 && position <= 63);
+
+	PieceLocation pieceLoc = GetPieceAt(position);
+	if (pieceLoc.IsEmptySquare())
+		return false;
+
+	return IsWhitePiece(pieceLoc.GetType()) == IsWhitesMove();
 }
 
 bool Board::IsWhitesMove() const
@@ -158,25 +172,19 @@ bool Board::IsWhitesMove() const
 	return m_IsWhitesTurn;
 }
 
-void Board::MakeMove(const Move& move)
+bool Board::MakeMove(const Move& move)
 {
 	int startSquare = move.StartSquare;
 	int targetSquare = move.TargetSquare;
 
-	// Check for empty square
-	if (GetPieceAt(startSquare).IsEmptySquare())
-		return;
-
+	// Check for empty square and if target is friendly
 	PieceLocation selected = m_PositionToPiece.at(startSquare);
+	if (selected.IsEmptySquare() || IsTargetFriendly(move))
+		return false;
 
-	// Check side turn
-	bool validMove = IsCorrectTurn(move);
-	if (!validMove)
-		return;
-
-	// Check for capture
 	PieceLocation target = GetPieceAt(targetSquare);
-	if (!target.IsEmptySquare() && GetPieceColor(selected.GetType()) != GetPieceColor(target.GetType()))
+	// Check for capture
+	if (!target.IsEmptySquare())
 	{
 		// Delete the captured piece
 		DeletePieceAt(targetSquare);
@@ -184,10 +192,10 @@ void Board::MakeMove(const Move& move)
 	// Place piece at target position in container
 	selected.SetPosition(targetSquare);
 
-
 	// Update mapper (erase start position, add the new target position)
 	m_PositionToPiece.erase(startSquare);
 	m_PositionToPiece.emplace(targetSquare, selected);
 
 	m_IsWhitesTurn = !m_IsWhitesTurn;
+	return true;
 }

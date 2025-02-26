@@ -31,8 +31,9 @@ namespace ChessIP
     struct Move
     {
         Move(int startSquare, int targetSquare) : StartSquare(startSquare), TargetSquare(targetSquare) {};
-        const int StartSquare;
-        const int TargetSquare;
+        Move(const Move&) = default;
+        int StartSquare;
+        int TargetSquare;
     };
 
     struct Piece
@@ -81,7 +82,7 @@ namespace ChessIP
                     m_Container->at(m_Index) = position;
             }
         }
-        void Delete()
+        void Delete(std::unordered_map<PiecePos, PieceLocation>& positionToPieceLocation)
         { 
             if (!IsEmptySquare())
             {
@@ -92,6 +93,17 @@ namespace ChessIP
                 }
                 else
                 {
+                    // All of the items AFTER the current index in the container (vector) will correspond to entries
+                    // in the map which point to incorrect places back in the vector. 
+                    // Every index must be lowered by 1 to account for the current element being erased from the container
+                    for (int i = m_Index + 1; i < m_Container->size(); i++)
+                    {
+                        PiecePos position = m_Container->at(i);
+                        PieceLocation& pieceLoc = positionToPieceLocation.at(position);
+                        pieceLoc.m_Index--;
+                        i = i + 0;
+                    }
+
                     m_Container->erase(m_Container->begin() + m_Index);
                     m_Index = -1;
                 }

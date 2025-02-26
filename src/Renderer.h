@@ -16,7 +16,7 @@ namespace ChessIP
 		/*
 			Board is drawn from white's perspective, from the bottom left square, left to right;
 		*/
-		void DrawBoard(sf::RenderWindow& window, const Board& board, int selectedSquare);
+		void DrawBoard(sf::RenderWindow& window, const Board& board, int selectedSquare, const Move& previousMove);
 		void CalculateBoard(const sf::Vector2u& screenSize);
 
 		sf::Vector2f GetBoardPosition() const;
@@ -36,5 +36,7 @@ namespace ChessIP
 
 		sf::Color m_ColorDarkSquare = { 89, 56, 0 };
 		sf::Color m_ColorWhiteSquare = { 255, 223, 170 };
+		sf::Color m_ColorSelectSquare = { 255, 25, 25, 125 };
+		sf::Color m_ColorPreviousMoveHighlight = { 255, 209, 0, 125 };
 	};
 }
