@@ -2,50 +2,33 @@
 
 using namespace ChessIP;
 
-Board::Board()
+Board::Board(GameType gameType)
 {
+	int boardSize;
+	switch (gameType)
+	{
+	case GameType::OneVOne:
+		boardSize = 9;
+		break;
+	case GameType::TwoVTwo:
+		boardSize = 10;
+		break;
+	}
+
 	// First square starts from the top left, from white's perspective (a8)
 	// Pieces default positions
-	int Knight[] = { 1, 6 };
-	int Bishop[] = { 2, 5 };
-	int Rook[] = { 0, 7 };
-	int Queen = 3;
-	int King = 4;
+	int King = boardSize / 2;
 
 	{
 		// Place pieces
-		int blackPawnsRow = 1; // 0-7
-		for (int i = 0; i < 8; i++)
-			m_BlackPawns.emplace_back(8 * blackPawnsRow + i);
-		m_BlackKnights.emplace_back(Knight[0] + 8 * (blackPawnsRow - 1));
-		m_BlackKnights.emplace_back(Knight[1] + 8 * (blackPawnsRow - 1));
-
-		m_BlackBishops.emplace_back(Bishop[0] + 8 * (blackPawnsRow - 1));
-		m_BlackBishops.emplace_back(Bishop[1] + 8 * (blackPawnsRow - 1));
-
-		m_BlackRooks.emplace_back(Rook[0] + 8 * (blackPawnsRow - 1));
-		m_BlackRooks.emplace_back(Rook[1] + 8 * (blackPawnsRow - 1));
-
-		m_BlackQueen.emplace_back(Queen + 8 * (blackPawnsRow - 1));
-		m_BlackKing = King + 8 * (blackPawnsRow - 1);
+		int blackKingRow = 0;
+		m_BlackKing = King + 8 * (blackKingRow - 1);
 	}
 
 	{
 		// White pieces
-		int whitePawnsRow = 6;
-		for (int i = 0; i < 8; i++)
-			m_WhitePawns.emplace_back(8 * (whitePawnsRow) + i);
-		m_WhiteKnights.emplace_back(Knight[0] + 8 * (whitePawnsRow + 1));
-		m_WhiteKnights.emplace_back(Knight[1] + 8 * (whitePawnsRow + 1));
-
-		m_WhiteBishops.emplace_back(Bishop[0] + 8 * (whitePawnsRow + 1));
-		m_WhiteBishops.emplace_back(Bishop[1] + 8 * (whitePawnsRow + 1));
-
-		m_WhiteRooks.emplace_back(Rook[0] + 8 * (whitePawnsRow + 1));
-		m_WhiteRooks.emplace_back(Rook[1] + 8 * (whitePawnsRow + 1));
-
-		m_WhiteQueen.emplace_back(Queen + 8 * (whitePawnsRow + 1));
-		m_WhiteKing = King + 8 * (whitePawnsRow + 1);
+		int whiteKingRow = boardSize - 1;
+		m_WhiteKing = King + 8 * (whiteKingRow + 1);
 	}
 
 	// Map positions to all pieces
@@ -86,7 +69,7 @@ Board::Board()
 	}
 }
 
-Board::Board(const char* FEN)
+Board::Board(GameType gameType, const char* FEN)
 {
 	// TODO:
 	// Load board position via FEN string

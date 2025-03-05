@@ -28,6 +28,12 @@ namespace ChessIP
         Black_King,
     };
 
+    enum class GameType
+    {
+        OneVOne,
+        TwoVTwo,
+    };
+
     struct Move
     {
         Move(int startSquare, int targetSquare) : StartSquare(startSquare), TargetSquare(targetSquare) {};

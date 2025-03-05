@@ -18,8 +18,8 @@ namespace ChessIP
     {
     public:
 
-        Board();
-        Board(const char* FEN);
+        Board(GameType gameType);
+        Board(GameType gameType, const char* FEN);
 
         void GetBoard(std::vector<Piece>& outBoard) const;
         
