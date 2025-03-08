@@ -67,7 +67,7 @@ void Board::Init1v1Game()
 void Board::GetBoard(std::vector<Piece>& outBoard) const
 {
 	// Put all the pieces in the output vector
-	auto putPieces = [&outBoard](const std::vector<PiecePos>& const data, int size, PieceType pieceType)
+	auto putPieces = [&outBoard](const std::vector<PiecePos>& data, int size, PieceType pieceType)
 		{
 			for (int i = 0; i < size; i++)
 			{
