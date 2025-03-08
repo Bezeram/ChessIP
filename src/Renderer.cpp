@@ -86,10 +86,10 @@ void Renderer::DrawBoard(sf::RenderWindow& window, const Board& board, int selec
 			int rank = piece.Position / boardGridSize;
 			sf::Vector2f position = sf::Vector2f(m_BoardPosition.x + file * m_BoardCellSize, m_BoardPosition.y + rank * m_BoardCellSize);
 
-			sf::Sprite piece(texture);
-			piece.setPosition(position);
-			piece.setScale(sf::Vector2f(scale, scale));
-			window.draw(piece, &m_PieceShader);
+			sf::Sprite sprite(texture);
+			sprite.setPosition(position);
+			sprite.setScale(sf::Vector2f(scale, scale));
+			window.draw(sprite, &m_PieceShader);
 		}
 	}
 }
