@@ -13,16 +13,16 @@ namespace ChessIP
     * Every piece type is stored in its own container
     * To check if a piece is in a given position, a map is used to locate
     the piece type to a corresponding container and index
+    * First square starts from the top left, from white's perspective
     */
     class Board
     {
     public:
-
         Board(GameType gameType);
-        Board(GameType gameType, const char* FEN);
 
         void GetBoard(std::vector<Piece>& outBoard) const;
         
+        int GetSize() const;
         PieceLocation GetPieceAt(PiecePos position) const;
         void DeletePieceAt(PiecePos position);
 
@@ -30,8 +30,11 @@ namespace ChessIP
         bool IsValidPieceByTurn(PiecePos position) const;
         bool IsWhitesMove() const;
         bool MakeMove(const Move& move);
-        
     private:
+        void MapPositions(std::vector<PiecePos>* data, int size, PieceType type);
+        void Init1v1Game();
+    private:
+        int m_Size = 2;
         bool m_IsWhitesTurn = 1;
 
         std::unordered_map<PiecePos, PieceLocation> m_PositionToPiece;

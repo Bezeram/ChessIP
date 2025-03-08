@@ -25,7 +25,7 @@ namespace ChessIP
 		Move m_PreviousMove = { -1, -1 };
 		int m_SelectedSquare = -1;
 
-		Renderer m_Renderer;
 		Board m_Board;
+		Renderer m_Renderer;
 	};
 }

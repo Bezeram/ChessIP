@@ -3,9 +3,10 @@
 using namespace ChessIP;
 
 Application::Application()
-    : m_Window(sf::RenderWindow(sf::VideoMode({ 1920u, 1080u }), "ChessAI"))
+    : m_Window(sf::RenderWindow(sf::VideoMode({ 1920u, 1080u }), "Chess9"))
     , m_Viewport(sf::FloatRect(sf::Vector2f(0, 0), sf::Vector2f(m_Window.getSize().x, m_Window.getSize().y)))
-    , m_Renderer(m_Window.getSize())
+    , m_Board(GameType::OneVOne)
+    , m_Renderer(m_Window.getSize(), m_Board.GetSize())
 {
 	ResourceManager::Initialise();
     
@@ -73,7 +74,7 @@ void Application::EventHandler()
                 sf::Vector2f mousePosition = sf::Vector2f(mousePressed->position.x, mousePressed->position.y);
 
                 sf::Vector2i cellIndex = m_Renderer.MouseCellIndex(mousePosition);
-                int selectPosition = cellIndex.y * 8 + cellIndex.x;
+                int selectPosition = cellIndex.y * m_Board.GetSize() + cellIndex.x;
                 if (m_Renderer.IsMouseOnBoard(mousePosition) && m_Board.IsValidPieceByTurn(selectPosition))
                 {
                     m_SelectedSquare = selectPosition;
@@ -91,7 +92,7 @@ void Application::EventHandler()
                 if (m_Renderer.IsMouseOnBoard(mousePosition))
                 {
                     sf::Vector2i cellIndex = m_Renderer.MouseCellIndex(mousePosition);
-                    int targetPosition = cellIndex.y * 8 + cellIndex.x;
+                    int targetPosition = cellIndex.y * m_Board.GetSize() + cellIndex.x;
                     // Make move if a square was previously selected
                     if (m_SelectedSquare != -1)
                     {

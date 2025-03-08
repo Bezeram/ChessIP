@@ -2,6 +2,8 @@
 
 #include <iostream>
 
+#include <SFML/Graphics.hpp>
+
 namespace ChessIP
 {
     typedef int PiecePos;
@@ -27,6 +29,16 @@ namespace ChessIP
         Black_Queen,
         Black_King,
     };
+
+    inline bool IsWhitePiece(PieceType type)
+    {
+        return int(type) < 6;
+    }
+
+    inline bool IsBlackPiece(PieceType type)
+    {
+        return int(type) >= 6;
+    }
 
     enum class GameType
     {
@@ -125,21 +137,26 @@ namespace ChessIP
         int m_Index = -1;
     };
 
-    inline bool IsWhitePiece(PieceType type)
-    {
-        return int(type) < 6;
-    }
-
-    inline bool IsBlackPiece(PieceType type)
-    {
-        return int(type) >= 6;
-    }
-
     inline PieceColor GetPieceColor(PieceType type)
     {
         if (IsWhitePiece(type))
             return PieceColor::White;
         return PieceColor::Black;
+    }
+
+    template<typename T>
+    inline T Lerp(T start, T end, float t)
+    {
+        return start * (1 - t) + end * t;
+    }
+
+    template<>
+    inline sf::Color Lerp(sf::Color start, sf::Color end, float t)
+    {
+        uint8_t r = start.r * (1 - t) + end.r * t;
+        uint8_t g = start.g * (1 - t) + end.g * t;
+        uint8_t b = start.b * (1 - t) + end.b * t;
+        return sf::Color(r, g, b);
     }
 
     // Global vars

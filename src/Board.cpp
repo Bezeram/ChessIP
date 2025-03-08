@@ -4,75 +4,64 @@ using namespace ChessIP;
 
 Board::Board(GameType gameType)
 {
-	int boardSize;
+	// Default for OneVOne
+	m_Size = 9;
 	switch (gameType)
 	{
 	case GameType::OneVOne:
-		boardSize = 9;
+		// boardSize = 9
+		Init1v1Game();
 		break;
 	case GameType::TwoVTwo:
-		boardSize = 10;
+		m_Size = 10;
+		// TODO:
+		// 2v2 init
 		break;
 	}
+}
 
-	// First square starts from the top left, from white's perspective (a8)
+void Board::MapPositions(std::vector<PiecePos>* data, int size, PieceType type)
+{
+	for (int i = 0; i < size; i++)
+	{
+		// Read as vector
+		PiecePos pos = (*data)[i];
+		PieceLocation loc = PieceLocation(data, i, type);
+		m_PositionToPiece.emplace(pos, loc);
+	}
+}
+
+void Board::Init1v1Game()
+{
 	// Pieces default positions
-	int King = boardSize / 2;
+	int King = m_Size / 2;
 
+	// Place pieces
+	// Black
 	{
-		// Place pieces
 		int blackKingRow = 0;
-		m_BlackKing = King + 8 * (blackKingRow - 1);
+		m_BlackKing = King + m_Size * blackKingRow;
 	}
 
+	// White
 	{
-		// White pieces
-		int whiteKingRow = boardSize - 1;
-		m_WhiteKing = King + 8 * (whiteKingRow + 1);
+		int whiteKingRow = m_Size - 1;
+		m_WhiteKing = King + m_Size * whiteKingRow;
 	}
 
-	// Map positions to all pieces
-	auto mapPositions = [&](std::vector<PiecePos>* data, int size, PieceType type)
-		{
-			for (int i = 0; i < size; i++)
-			{
-				// Read as vector
-				PiecePos pos = (*data)[i];
-				PieceLocation loc = PieceLocation(data, i, type);
-				m_PositionToPiece.emplace(pos, loc);
-			}
-		};
-
-	// Kings are exceptions because there cannot be more than one of them
+	// White King
 	{
-		mapPositions(&m_WhitePawns, m_WhitePawns.size(), PieceType::White_Pawn);
-		mapPositions(&m_WhiteKnights, m_WhiteKnights.size(), PieceType::White_Knight);
-		mapPositions(&m_WhiteBishops, m_WhiteBishops.size(), PieceType::White_Bishop);
-		mapPositions(&m_WhiteRooks, m_WhiteRooks.size(), PieceType::White_Rook);
-		mapPositions(&m_WhiteQueen, m_WhiteQueen.size(), PieceType::White_Queen);
-		// White King
 		PiecePos pos = m_WhiteKing;
 		PieceLocation loc = PieceLocation::WhiteKing(&m_WhiteKing);
 		m_PositionToPiece.emplace(pos, loc);
 	}
 
+	// Black King
 	{
-		mapPositions(&m_BlackPawns, m_BlackPawns.size(), PieceType::Black_Pawn);
-		mapPositions(&m_BlackKnights, m_BlackKnights.size(), PieceType::Black_Knight);
-		mapPositions(&m_BlackBishops, m_BlackBishops.size(), PieceType::Black_Bishop);
-		mapPositions(&m_BlackRooks, m_BlackRooks.size(), PieceType::Black_Rook);
-		mapPositions(&m_BlackQueen, m_WhiteQueen.size(), PieceType::Black_Queen);
-		// Black King
 		PiecePos pos = m_BlackKing;
 		PieceLocation loc = PieceLocation::BlackKing(&m_BlackKing);
 		m_PositionToPiece.emplace(pos, loc);
 	}
-}
-
-Board::Board(GameType gameType, const char* FEN)
-{
-	// TODO:
-	// Load board position via FEN string
 }
 
 void Board::GetBoard(std::vector<Piece>& outBoard) const
@@ -104,6 +93,11 @@ void Board::GetBoard(std::vector<Piece>& outBoard) const
 	outBoard.emplace_back(m_BlackKing, PieceType::Black_King);
 }
 
+int Board::GetSize() const
+{
+	return m_Size;
+}
+
 PieceLocation Board::GetPieceAt(PiecePos position) const
 {
 	auto it = m_PositionToPiece.find(position);
@@ -128,7 +122,7 @@ void Board::DeletePieceAt(PiecePos position)
 bool Board::IsTargetFriendly(const Move& move) const
 {
 	// Board bounds
-	assert(move.StartSquare >= 0 && move.StartSquare <= 63 && move.TargetSquare >= 0 && move.TargetSquare <= 63);
+	assert(move.StartSquare >= 0 && move.StartSquare <= m_Size * m_Size - 1 && move.TargetSquare >= 0 && move.TargetSquare <= m_Size * m_Size - 1);
 
 	// Check if the target piece is 
 	PieceLocation selected = GetPieceAt(move.StartSquare);
@@ -141,7 +135,7 @@ bool Board::IsTargetFriendly(const Move& move) const
 bool Board::IsValidPieceByTurn(PiecePos position) const
 {
 	// Board bounds
-	assert(position >= 0 && position <= 63);
+	assert(position >= 0 && position <= m_Size * m_Size - 1);
 
 	PieceLocation pieceLoc = GetPieceAt(position);
 	if (pieceLoc.IsEmptySquare())
@@ -182,3 +176,5 @@ bool Board::MakeMove(const Move& move)
 	m_IsWhitesTurn = !m_IsWhitesTurn;
 	return true;
 }
+
+
