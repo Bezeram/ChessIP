@@ -55,7 +55,7 @@ void Renderer::DrawBoard(sf::RenderWindow& window, const Board& board, int selec
 			{
 				int position = rank * boardGridSize + file;
 				sf::Color gridColor = (rank + file) % 2 == 0 ? m_ColorWhiteSquare : m_ColorDarkSquare;
-				sf::Vector2f position2D = sf::Vector2f(m_BoardPosition.x + file * m_BoardCellSize, m_BoardPosition.y + rank * m_BoardCellSize);
+				sf::Vector2f position2D = m_BoardPosition + sf::Vector2f(file, rank) * m_BoardCellSize;
 				// Draw grid tile
 				tile.setFillColor(gridColor);
 				tile.setPosition(position2D);
@@ -101,7 +101,7 @@ void Renderer::CalculateBoard(const sf::Vector2u& screenSize, int boardGridSize)
 	m_BoardLength = resolution.y - boardPadding.y * 2.f;
 	m_BoardCellSize = m_BoardLength / (float)boardGridSize;
 	// Calculate board position (centralised according to screen, drawn from the bottom left)
-	float boardPositionX = (resolution.x - m_BoardLength) / 2.f;
+	float boardPositionX = (resolution.x - m_BoardLength) / 8.f;
 	float boardPositionY = resolution.y * m_BoardPadding01.y;
 	m_BoardPosition = sf::Vector2f(boardPositionX, boardPositionY);
 }
