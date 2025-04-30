@@ -94,6 +94,8 @@ void Renderer::DrawBoard(sf::RenderWindow& window, const Board& board, int selec
 	}
 
 	// Draw resources bars
+	// TODO (fix bug):
+	// Gold bar disappears at 8 gold
 	{
 		// White Flux bar
 		const sf::Texture& resourceBarTexture = ResourceManager::GetInstance().GetTexture("resources_bars");
