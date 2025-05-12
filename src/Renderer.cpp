@@ -55,7 +55,7 @@ void Renderer::DrawBoard(sf::RenderWindow& window, const Board& board, int selec
 			{
 				int position = rank * boardGridSize + file;
 				sf::Color gridColor = (rank + file) % 2 == 0 ? m_ColorWhiteSquare : m_ColorDarkSquare;
-				sf::Vector2f position2D = sf::Vector2f(m_BoardPosition.x + file * m_BoardCellSize, m_BoardPosition.y + rank * m_BoardCellSize);
+				sf::Vector2f position2D = m_BoardPosition + sf::Vector2f(file, rank) * m_BoardCellSize;
 				// Draw grid tile
 				tile.setFillColor(gridColor);
 				tile.setPosition(position2D);
@@ -92,6 +92,41 @@ void Renderer::DrawBoard(sf::RenderWindow& window, const Board& board, int selec
 			window.draw(sprite, &m_PieceShader);
 		}
 	}
+
+	// Draw resources bars
+	// TODO (fix bug):
+	// Gold bar disappears at 8 gold
+	{
+		// White Flux bar
+		const sf::Texture& resourceBarTexture = ResourceManager::GetInstance().GetTexture("resources_bars");
+		sf::Sprite fluxSprite(resourceBarTexture);
+		sf::Sprite goldSprite(resourceBarTexture);
+		int fluxCollumn = board.GetWhiteFlux() / 7;
+		int fluxRow = board.GetWhiteFlux() % 7;
+		int goldCollumn = board.GetWhiteGold() / 4 + 1;
+		int goldRow;
+		if (goldCollumn == 1)
+		{
+			goldRow = board.GetWhiteGold() % 4;
+			goldRow += 3;
+		}
+		else
+		{
+			goldRow = board.GetWhiteGold() - 4;
+			std::cout << goldRow << std::endl;
+		}
+
+		fluxSprite.setTextureRect(sf::IntRect(sf::Vector2i(fluxCollumn * 530, fluxRow * 130), sf::Vector2i(530, 130)));
+		goldSprite.setTextureRect(sf::IntRect(sf::Vector2i(goldCollumn * 530, goldRow * 130), sf::Vector2i(530, 130)));
+
+		// White Gold bar
+		fluxSprite.setPosition(sf::Vector2f(m_BoardPosition.x + m_BoardLength + 0.1 * (m_BoardPosition.x + m_BoardLength), 
+			window.getSize().y / 2));
+		goldSprite.setPosition(sf::Vector2f(m_BoardPosition.x + m_BoardLength + 0.1 * (m_BoardPosition.x + m_BoardLength), 
+			window.getSize().y / 2 + 120));
+		window.draw(fluxSprite);
+		window.draw(goldSprite);
+	}
 }
 
 void Renderer::CalculateBoard(const sf::Vector2u& screenSize, int boardGridSize)
@@ -101,7 +136,7 @@ void Renderer::CalculateBoard(const sf::Vector2u& screenSize, int boardGridSize)
 	m_BoardLength = resolution.y - boardPadding.y * 2.f;
 	m_BoardCellSize = m_BoardLength / (float)boardGridSize;
 	// Calculate board position (centralised according to screen, drawn from the bottom left)
-	float boardPositionX = (resolution.x - m_BoardLength) / 2.f;
+	float boardPositionX = (resolution.x - m_BoardLength) / 8.f;
 	float boardPositionY = resolution.y * m_BoardPadding01.y;
 	m_BoardPosition = sf::Vector2f(boardPositionX, boardPositionY);
 }
