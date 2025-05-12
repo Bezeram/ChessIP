@@ -11,6 +11,7 @@ Application::Application()
 	ResourceManager::Initialise();
     
     m_Window.setFramerateLimit(400);
+	m_Window.setVerticalSyncEnabled(true);
 }
 
 Application::~Application()

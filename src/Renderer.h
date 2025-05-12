@@ -14,7 +14,7 @@ namespace ChessIP
 		Renderer(const sf::Vector2u& screenSize, int boardGridSize);
 
 		/*
-			Board is drawn from white's perspective, from the bottom left square, left to right;
+			Board is drawn from white's perspective, from the top left square, left to right;
 		*/
 		void DrawBoard(sf::RenderWindow& window, const Board& board, int selectedSquare, const Move& previousMove);
 		void CalculateBoard(const sf::Vector2u& screenSize, int boardTileSize);
