@@ -3,7 +3,7 @@
 using namespace ChessIP;
 
 Application::Application()
-    : m_Window(sf::RenderWindow(sf::VideoMode({ 1920u, 1080u }), "Chess9"))
+    : m_Window(sf::RenderWindow(sf::VideoMode({ 1280, 720 }), "Chess9"))
     , m_Viewport(sf::FloatRect(sf::Vector2f(0, 0), sf::Vector2f(m_Window.getSize().x, m_Window.getSize().y)))
     , m_Board(GameType::OneVOne)
     , m_Renderer(m_Window.getSize(), m_Board.GetSize())
