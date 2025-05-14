@@ -36,12 +36,12 @@ void ResourceManager::LoadAssets()
 	}
 
 	// Board
-	std::string path = "../../../../src/assets/textures/board.jpg";
+	std::string path = "./assets/textures/board.jpg";
 	AddTexture(path.c_str(), "board");
 
 	// Resources bars
 	{
-		std::string path = "../../../../src/assets/textures/resources-bars.jpg";
+		std::string path = "./assets/textures/resources-bars.jpg";
 		sf::Image resourceBarImg(path.c_str());
 		// Mask background from the resources bar
 		resourceBarImg.createMaskFromColor(sf::Color::Black, 0);
