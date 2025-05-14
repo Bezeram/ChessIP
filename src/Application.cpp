@@ -2,8 +2,10 @@
 
 using namespace ChessIP;
 
+
 Application::Application()
-    : m_Window(sf::RenderWindow(sf::VideoMode({ 1920u, 1080u }), "Chess9"))
+    // Remove sf::Style::None for windowed mode
+    : m_Window(sf::RenderWindow(sf::VideoMode::getDesktopMode(), "Chess9", sf::Style::None))
     , m_Viewport(sf::FloatRect(sf::Vector2f(0, 0), sf::Vector2f(m_Window.getSize().x, m_Window.getSize().y)))
     , m_Board(GameType::OneVOne)
     , m_Renderer(m_Window.getSize(), m_Board.GetSize())
@@ -27,6 +29,7 @@ void Application::Run()
         m_Window.clear();
 
         m_Window.setView(m_Viewport);
+
         m_Renderer.DrawBoard(m_Window, m_Board, m_SelectedSquare, m_PreviousMove);
 
         m_Window.display();
