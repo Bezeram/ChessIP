@@ -1,3 +1,21 @@
+# Running the game
+
+After cloning the project locally, run CMake and specify the source code root directory in the "Where is the source code:" tab, for example: "C:/ChessIp".
+
+In the "Where to build the binaries:", add a directory to the root directory, by specifiying the path, in our case, "C:/ChessIP/bin".
+
+Click Configure and accept all the prompts without changing anything about the compiler or other things.
+After the configuration finished, click Generate and after that, Open Project. This should open Visual Studio.
+
+In the Visual Studio window, run the project by pressing F5.
+
+# Building the game
+
+After opening the project in Visual Studio, navigate to the Solution Explorer and right-click the ALL_BUILD rule from the CMake directory.
+
+After the ALL_BUILD finished, the runnable .exe game should be situated in ".\bin\bin\Debug".
+
+
 # CMake SFML Project Template
 
 This repository template should allow for a fast and hassle-free kick start of your next SFML project using CMake.
