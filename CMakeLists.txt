@@ -12,8 +12,70 @@ FetchContent_Declare(SFML
     SYSTEM)
 FetchContent_MakeAvailable(SFML)
 
+# Pieces header files
+set (PIECES_HEADER_FILES
+    ${CMAKE_SOURCE_DIR}/src/pieces/AllPiecesHeader.h
+    ${CMAKE_SOURCE_DIR}/src/pieces/BasePiece.h
+    ${CMAKE_SOURCE_DIR}/src/pieces/BlackWitch.h
+    ${CMAKE_SOURCE_DIR}/src/pieces/WhiteWitch.h
+    ${CMAKE_SOURCE_DIR}/src/pieces/BlackKing.h
+    ${CMAKE_SOURCE_DIR}/src/pieces/WhiteKing.h
+    ${CMAKE_SOURCE_DIR}/src/pieces/BlackKnight.h
+    ${CMAKE_SOURCE_DIR}/src/pieces/WhiteKnight.h
+    ${CMAKE_SOURCE_DIR}/src/pieces/BlackAlchemist.h
+    ${CMAKE_SOURCE_DIR}/src/pieces/WhiteAlchemist.h
+    ${CMAKE_SOURCE_DIR}/src/pieces/BlackArcher.h
+    ${CMAKE_SOURCE_DIR}/src/pieces/WhiteArcher.h
+    ${CMAKE_SOURCE_DIR}/src/pieces/BlackBuilder.h
+    ${CMAKE_SOURCE_DIR}/src/pieces/WhiteBuilder.h
+    ${CMAKE_SOURCE_DIR}/src/pieces/BlackGrimReaper.h
+    ${CMAKE_SOURCE_DIR}/src/pieces/WhiteGrimReaper.h
+    ${CMAKE_SOURCE_DIR}/src/pieces/BlackPlagueDoctor.h
+    ${CMAKE_SOURCE_DIR}/src/pieces/WhitePlagueDoctor.h
+    ${CMAKE_SOURCE_DIR}/src/pieces/BlackRogue.h
+    ${CMAKE_SOURCE_DIR}/src/pieces/WhiteRogue.h
+    ${CMAKE_SOURCE_DIR}/src/pieces/BlackTrebuchet.h
+    ${CMAKE_SOURCE_DIR}/src/pieces/WhiteTrebuchet.h
+    ${CMAKE_SOURCE_DIR}/src/pieces/BlackWarlord.h
+    ${CMAKE_SOURCE_DIR}/src/pieces/WhiteWarlord.h
+    ${CMAKE_SOURCE_DIR}/src/pieces/BlackSamurai.h
+    ${CMAKE_SOURCE_DIR}/src/pieces/WhiteSamurai.h
+    ${CMAKE_SOURCE_DIR}/src/pieces/BlackDragon.h
+    ${CMAKE_SOURCE_DIR}/src/pieces/WhiteDragon.h
+)
+
+# Pieces source files
+set (PIECES_SOURCE_FILES
+    ${CMAKE_SOURCE_DIR}/src/pieces/BlackWitch.cpp
+    ${CMAKE_SOURCE_DIR}/src/pieces/WhiteWitch.cpp
+    ${CMAKE_SOURCE_DIR}/src/pieces/BlackKing.cpp
+    ${CMAKE_SOURCE_DIR}/src/pieces/WhiteKing.cpp
+    ${CMAKE_SOURCE_DIR}/src/pieces/BlackKnight.cpp
+    ${CMAKE_SOURCE_DIR}/src/pieces/WhiteKnight.cpp
+    ${CMAKE_SOURCE_DIR}/src/pieces/BlackAlchemist.cpp
+    ${CMAKE_SOURCE_DIR}/src/pieces/WhiteAlchemist.cpp
+    ${CMAKE_SOURCE_DIR}/src/pieces/BlackArcher.cpp
+    ${CMAKE_SOURCE_DIR}/src/pieces/WhiteArcher.cpp
+    ${CMAKE_SOURCE_DIR}/src/pieces/BlackBuilder.cpp
+    ${CMAKE_SOURCE_DIR}/src/pieces/WhiteBuilder.cpp
+    ${CMAKE_SOURCE_DIR}/src/pieces/BlackGrimReaper.cpp
+    ${CMAKE_SOURCE_DIR}/src/pieces/WhiteGrimReaper.cpp
+    ${CMAKE_SOURCE_DIR}/src/pieces/BlackPlagueDoctor.cpp
+    ${CMAKE_SOURCE_DIR}/src/pieces/WhitePlagueDoctor.cpp
+    ${CMAKE_SOURCE_DIR}/src/pieces/BlackRogue.cpp
+    ${CMAKE_SOURCE_DIR}/src/pieces/WhiteRogue.cpp
+    ${CMAKE_SOURCE_DIR}/src/pieces/BlackTrebuchet.cpp
+    ${CMAKE_SOURCE_DIR}/src/pieces/WhiteTrebuchet.cpp
+    ${CMAKE_SOURCE_DIR}/src/pieces/BlackWarlord.cpp
+    ${CMAKE_SOURCE_DIR}/src/pieces/WhiteWarlord.cpp
+    ${CMAKE_SOURCE_DIR}/src/pieces/BlackSamurai.cpp
+    ${CMAKE_SOURCE_DIR}/src/pieces/WhiteSamurai.cpp
+    ${CMAKE_SOURCE_DIR}/src/pieces/BlackDragon.cpp
+    ${CMAKE_SOURCE_DIR}/src/pieces/WhiteDragon.cpp
+)
+
 # Source files
-set(SRC_FILES
+set(SOURCE_FILES
     ${CMAKE_SOURCE_DIR}/src/main.cpp
     ${CMAKE_SOURCE_DIR}/src/Board.cpp
     ${CMAKE_SOURCE_DIR}/src/Renderer.cpp
@@ -31,10 +93,11 @@ set(HEADER_FILES
 )
 
 # Grouping files into filters
-source_group("src/Sources" FILES ${SRC_FILES})
-source_group("src/Headers" FILES ${HEADER_FILES})
+source_group("src/Core/Sources" FILES ${SOURCE_FILES})
+source_group("src/Core/Headers" FILES ${HEADER_FILES})
+source_group("src/pieces/Sources" FILES ${PIECES_SOURCE_FILES})
+source_group("src/pieces/Headers" FILES ${PIECES_HEADER_FILES})
 
-add_executable(main ${SRC_FILES} ${HEADER_FILES})
+add_executable(main ${SOURCE_FILES} ${HEADER_FILES} ${PIECES_SOURCE_FILES} ${PIECES_HEADER_FILES})
 target_compile_features(main PRIVATE cxx_std_17)
 target_link_libraries(main PRIVATE SFML::Graphics SFML::Audio SFML::Network)
-

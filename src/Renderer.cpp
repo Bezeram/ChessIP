@@ -2,8 +2,6 @@
 
 #include <iostream>
 
-using namespace ChessIP;
-
 Renderer::Renderer(const sf::Vector2u& screenSize, int boardTileSize)
 {
 	// Load shader for pieces
@@ -31,101 +29,107 @@ Renderer::Renderer(const sf::Vector2u& screenSize, int boardTileSize)
 	CalculateBoard(screenSize, boardTileSize);
 }
 
-void Renderer::DrawBoard(sf::RenderWindow& window, const Board& board, int selectedSquare, const Move& previousMove)
+void Renderer::DrawBoard(sf::RenderWindow& window, const Board& board, PiecePosition selectedPiecePosition, const PieceMove& previousMove)
 {
 	CalculateBoard(window.getSize(), board.GetSize());
-	auto ifHighlightDraw = [&](int position, sf::RectangleShape tile)
+	// Function for drawing a square
+	auto drawSquare = [&](PiecePosition position, sf::Color color)
 		{
-			// Highlight color is additive over grid
-			if (position == selectedSquare)
-				tile.setFillColor(m_ColorSelectSquare);
-			else if (position == previousMove.StartSquare || position == previousMove.TargetSquare)
-				tile.setFillColor(m_ColorPreviousMove);
-			
+			sf::RectangleShape tile(sf::Vector2f(m_BoardCellSize, m_BoardCellSize));
+			sf::Vector2f drawPosition = m_BoardPosition + sf::Vector2f(position.y, position.x) * m_BoardCellSize;
+
+			tile.setFillColor(color);
+			tile.setPosition(drawPosition);
 			window.draw(tile);
 		};
 
+	// Check for valid moves to highlight over the board
+	std::vector<ActionMove> legalMoves;
+	if (selectedPiecePosition != GlobalConstants::NullPosition)
 	{
-		sf::RectangleShape tile(sf::Vector2f(m_BoardCellSize, m_BoardCellSize));
+		const auto& selectedPiece = board[selectedPiecePosition];
+		if (selectedPiece.get() != nullptr)
+			selectedPiece->GetLegalMoves(board.GetBoard(), selectedPiecePosition, legalMoves);
+	}
 
-		int boardGridSize = board.GetSize();
-		for (int rank = 0; rank < boardGridSize; rank++)
+	// Draw grid board
+	for (int rank = 0; rank < board.GetSize(); rank++)
+	{
+		for (int file = 0; file < board.GetSize(); file++)
 		{
-			for (int file = 0; file < boardGridSize; file++)
-			{
-				int position = rank * boardGridSize + file;
-				sf::Color gridColor = (rank + file) % 2 == 0 ? m_ColorWhiteSquare : m_ColorDarkSquare;
-				sf::Vector2f position2D = m_BoardPosition + sf::Vector2f(file, rank) * m_BoardCellSize;
-				// Draw grid tile
-				tile.setFillColor(gridColor);
-				tile.setPosition(position2D);
-				window.draw(tile);
+			PiecePosition gridPosition = PiecePosition(rank, file);
+			sf::Color gridColor = (rank + file) % 2 == 0 ? m_ColorWhiteSquare : m_ColorDarkSquare;
 
-				// If special tile, draw additive highlights
-				ifHighlightDraw(position, tile);
-			}
+			drawSquare(gridPosition, gridColor);
 		}
+	}
+
+	// Draw legal moves and previous move highlight
+	if (selectedPiecePosition != GlobalConstants::NullPosition)
+	{
+		// Legal moves
+		for (const auto& move : legalMoves)
+		{
+			drawSquare(move.TargetSquare, m_ColorLegalMove);
+		}
+
+		// Selected piece square
+		drawSquare(selectedPiecePosition, m_ColorSelectSquare);
+	}
+	if (previousMove.StartSquare != GlobalConstants::NullPosition && previousMove.TargetSquare != GlobalConstants::NullPosition)
+	{
+		drawSquare(previousMove.StartSquare, m_ColorPreviousMove);
+		drawSquare(previousMove.TargetSquare, m_ColorPreviousMove);
 	}
 	
 	// Draw pieces (from the top to bottom, left to right)
-	// The position of a piece however is counted from the bottom-left, going left to right and bottom-top
+	// The position of a piece is counted from the bottom-left, going left to right and bottom-top
 	{
-		std::vector<Piece> pieces;
-		board.GetBoard(pieces);
-
 		const ResourceManager& rm = ResourceManager::GetInstance();
-		for (Piece piece : pieces)
+		for (int rank = 0; rank < board.GetSize(); rank++)
 		{
-			const auto& texture = rm.GetPieceTexture(piece.Type);
-			m_PieceShader.setUniform(std::string("texture"), sf::Shader::CurrentTexture);
+			for (int file = 0; file < board.GetSize(); file++)
+			{
+				PiecePosition position = PiecePosition(rank, file);
+				const auto& piece = board[position];
+				if (piece.get() == nullptr)
+					continue;
 
-			float scale = m_BoardCellSize / texture.getSize().x;
-			// Calculate position
-			int boardGridSize = board.GetSize();
-			int file = piece.Position % boardGridSize;
-			int rank = piece.Position / boardGridSize;
-			sf::Vector2f position = sf::Vector2f(m_BoardPosition.x + file * m_BoardCellSize, m_BoardPosition.y + rank * m_BoardCellSize);
+				std::cout << "[Rank, File, PieceType]: " << rank << ", " << file << ", " 
+					<< Textures::PieceTypeToString.at(piece->GetPieceType()) << std::endl;
 
-			sf::Sprite sprite(texture);
-			sprite.setPosition(position);
-			sprite.setScale(sf::Vector2f(scale, scale));
-			window.draw(sprite, &m_PieceShader);
+				// Set texture and shader
+				const auto& texture = rm.GetPieceTexture(piece->GetPieceType());
+				m_PieceShader.setUniform(std::string("texture"), sf::Shader::CurrentTexture);
+
+				// Calculate position
+				sf::Sprite sprite(texture);
+				sf::Vector2f drawPosition;
+
+				// Setup position
+				if (position == selectedPiecePosition && sf::Mouse::isButtonPressed(sf::Mouse::Button::Left))
+				{
+					// Piece is dragged with mouse
+					sf::Vector2i mousePosition = sf::Mouse::getPosition();
+					drawPosition = sf::Vector2f(mousePosition.x, mousePosition.y);
+
+					sprite.setOrigin(sf::Vector2f(texture.getSize().x / 2.f, texture.getSize().y / 2.f));
+				}
+				else
+					drawPosition = sf::Vector2f(m_BoardPosition.x + file * m_BoardCellSize, m_BoardPosition.y + rank * m_BoardCellSize);
+				float scale = m_BoardCellSize / texture.getSize().x;
+
+				sprite.setPosition(drawPosition);
+				sprite.setScale(sf::Vector2f(scale, scale));
+				window.draw(sprite, &m_PieceShader);
+			}
 		}
 	}
 
 	// Draw resources bars
-	// TODO (fix bug):
-	// Gold bar disappears at 8 gold
+	// TODO: Draw resources bars
 	{
-		// White Flux bar
-		const sf::Texture& resourceBarTexture = ResourceManager::GetInstance().GetTexture("resources_bars");
-		sf::Sprite fluxSprite(resourceBarTexture);
-		sf::Sprite goldSprite(resourceBarTexture);
-		int fluxCollumn = board.GetWhiteFlux() / 7;
-		int fluxRow = board.GetWhiteFlux() % 7;
-		int goldCollumn = board.GetWhiteGold() / 4 + 1;
-		int goldRow;
-		if (goldCollumn == 1)
-		{
-			goldRow = board.GetWhiteGold() % 4;
-			goldRow += 3;
-		}
-		else
-		{
-			goldRow = board.GetWhiteGold() - 4;
-			std::cout << goldRow << std::endl;
-		}
-
-		fluxSprite.setTextureRect(sf::IntRect(sf::Vector2i(fluxCollumn * 530, fluxRow * 130), sf::Vector2i(530, 130)));
-		goldSprite.setTextureRect(sf::IntRect(sf::Vector2i(goldCollumn * 530, goldRow * 130), sf::Vector2i(530, 130)));
-
-		// White Gold bar
-		fluxSprite.setPosition(sf::Vector2f(m_BoardPosition.x + m_BoardLength + 0.1 * (m_BoardPosition.x + m_BoardLength), 
-			window.getSize().y / 2));
-		goldSprite.setPosition(sf::Vector2f(m_BoardPosition.x + m_BoardLength + 0.1 * (m_BoardPosition.x + m_BoardLength), 
-			window.getSize().y / 2 + 120));
-		window.draw(fluxSprite);
-		window.draw(goldSprite);
+		
 	}
 }
 

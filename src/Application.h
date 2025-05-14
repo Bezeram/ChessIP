@@ -5,27 +5,25 @@
 #include "Renderer.h"
 #include "Board.h"
 
-namespace ChessIP
+class Application
 {
-	class Application
-	{
-	public:
-		Application();
-		~Application();
+public:
+	Application();
+	~Application();
 
-		void Run();
+	void Run();
 
-	private:
-		void EventHandler();
-	private:
-		sf::RenderWindow m_Window;
-		sf::View m_Viewport;
-		bool m_IsRunning = true;
+private:
+	void EventHandler();
+private:
+
+	sf::RenderWindow m_Window;
+	sf::View m_Viewport;
+	bool m_IsRunning = true;
 		
-		Move m_PreviousMove = { -1, -1 };
-		int m_SelectedSquare = -1;
+	PieceMove m_PreviousMove = { GlobalConstants::NullPosition, GlobalConstants::NullPosition };
+	PiecePosition m_SelectedSquare = GlobalConstants::NullPosition;
 
-		Board m_Board;
-		Renderer m_Renderer;
-	};
-}
+	Board m_Board;
+	Renderer m_Renderer;
+};

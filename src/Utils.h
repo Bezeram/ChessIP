@@ -1,164 +1,216 @@
 #pragma once
 
 #include <iostream>
-
 #include <SFML/Graphics.hpp>
 
-namespace ChessIP
+typedef sf::Vector2i PiecePosition;
+typedef std::string TextureString;
+typedef std::string SoundString;
+typedef std::string FontString;
+typedef std::string PieceName;
+
+enum class PieceColor
 {
-    typedef int PiecePos;
+    White = 0,
+    Black,
+};
 
-    enum class PieceColor
-    {
-        White = 0,
-        Black,
-    };
+enum class Effect
+{
+    None = 0,
+	// TODO: Add buffs and debuffs
+};
 
-    enum class PieceType
-    {
-        White_Pawn = 0,
-        White_Knight,
-        White_Bishop,
-        White_Rook,
-        White_Queen,
-        White_King,
-        Black_Pawn,
-        Black_Knight,
-        Black_Bishop,
-        Black_Rook,
-        Black_Queen,
-        Black_King,
-    };
+// TODO: update according to the effects added
+static bool IsEffectBuff(Effect effect)
+{
+	assert(effect != Effect::None);
+    return false;
+}
 
-    inline bool IsWhitePiece(PieceType type)
+
+struct ActionMove
+{
+    ActionMove(PiecePosition targetSquare) : TargetSquare(targetSquare) {}
+
+    bool operator==(const ActionMove& other) const
     {
-        return int(type) < 6;
+        return TargetSquare == other.TargetSquare && Effect == other.Effect;
+    }
+    bool operator!=(const ActionMove& other) const
+    {
+        return !(*this == other);
     }
 
-    inline bool IsBlackPiece(PieceType type)
-    {
-        return int(type) >= 6;
-    }
+    PiecePosition TargetSquare;
+    Effect Effect = Effect::None;
+};
 
-    enum class GameType
+
+struct PieceMove
+{
+    PieceMove(PiecePosition startSquare, PiecePosition targetSquare) : StartSquare(startSquare), TargetSquare(targetSquare) {}
+    PieceMove(const PieceMove&) = default;
+    PiecePosition StartSquare;
+    PiecePosition TargetSquare;
+};
+
+enum class PieceType
+{
+    None = 0,
+    White_King,
+    White_Witch,
+    White_Knight,
+    White_Alchemist,
+    White_Archer,
+    White_Builder,
+    White_GrimReaper,
+    White_PlagueDoctor,
+    White_Rogue,
+    White_Trebuchet,
+    White_Warlord,
+    White_Samurai,
+    White_Dragon,
+    Black_King,
+    Black_Witch,
+    Black_Knight,
+    Black_Alchemist,
+    Black_Archer,
+    Black_Builder,
+    Black_GrimReaper,
+    Black_PlagueDoctor,
+    Black_Rogue,
+    Black_Trebuchet,
+    Black_Warlord,
+    Black_Samurai,
+    Black_Dragon,
+};
+
+// Global vars
+namespace GlobalConstants
+{
+    const inline static PiecePosition NullPosition = { -1, -1 };
+    const inline static ActionMove NullActionMove = ActionMove(PiecePosition(-1, -1));
+}
+
+namespace Textures
+{
+    const inline static std::unordered_map<PieceType, PieceName> PieceTypeToString =
     {
-        OneVOne,
-        TwoVTwo,
+        { PieceType::None, "None" },
+	    { PieceType::White_King,        "White_King" },         { PieceType::Black_King,        "Black_King" },
+	    { PieceType::White_Witch,       "White_Witch" },        { PieceType::Black_Witch,       "Black_Witch" },
+	    { PieceType::White_Knight,      "White_Knight" },       { PieceType::Black_Knight,      "Black_Knight" },
+	    { PieceType::White_Alchemist,   "White_Alchemist" },    { PieceType::Black_Alchemist,   "Black_Alchemist" },
+	    { PieceType::White_Archer,      "White_Archer" },       { PieceType::Black_Archer,      "Black_Archer" },
+	    { PieceType::White_Builder,     "White_Builder" },      { PieceType::Black_Builder,     "Black_Builder" },
+	    { PieceType::White_GrimReaper,  "White_GrimReaper" },   { PieceType::Black_GrimReaper,  "Black_GrimReaper" },
+	    { PieceType::White_PlagueDoctor,"White_PlagueDoctor" }, { PieceType::Black_PlagueDoctor,"Black_PlagueDoctor" },
+	    { PieceType::White_Rogue,       "White_Rogue" },        { PieceType::Black_Rogue,       "Black_Rogue" },
+	    { PieceType::White_Trebuchet,   "White_Trebuchet" },    { PieceType::Black_Trebuchet,   "Black_Trebuchet" },
+	    { PieceType::White_Warlord,     "White_Warlord" },      { PieceType::Black_Warlord,     "Black_Warlord" },
+	    { PieceType::White_Samurai,     "White_Samurai" },      { PieceType::Black_Samurai,     "Black_Samurai" },
+	    { PieceType::White_Dragon,      "White_Dragon" },       { PieceType::Black_Dragon,      "Black_Dragon" }
     };
+    const inline static std::string Null = "Null.png";
+    const inline static std::string Board = "Board.jpg";
 
-    struct Move
-    {
-        Move(int startSquare, int targetSquare) : StartSquare(startSquare), TargetSquare(targetSquare) {};
-        Move(const Move&) = default;
-        int StartSquare;
-        int TargetSquare;
-    };
+    const inline static std::string Gold_Bar_0 = "Gold_Bar_0.jpg";
+    const inline static std::string Gold_Bar_1 = "Gold_Bar_1.jpg";
+    const inline static std::string Gold_Bar_2 = "Gold_Bar_2.jpg";
+    const inline static std::string Gold_Bar_3 = "Gold_Bar_3.jpg";
+    const inline static std::string Gold_Bar_4 = "Gold_Bar_4.jpg";
+    const inline static std::string Gold_Bar_5 = "Gold_Bar_5.jpg";
+    const inline static std::string Gold_Bar_6 = "Gold_Bar_6.jpg";
+    const inline static std::string Gold_Bar_7 = "Gold_Bar_7.jpg";
+    const inline static std::string Gold_Bar_8 = "Gold_Bar_8.jpg";
+    const inline static std::string Gold_Bar_9 = "Gold_Bar_9.jpg";
 
-    struct Piece
-    {
-        Piece(int position, PieceType type) : Position(position), Type(type) {}
-        int Position;
-        PieceType Type;
-    };
+    const inline static std::string Flux_Bar_0 = "Gold_Bar_0.jpg";
+    const inline static std::string Flux_Bar_1 = "Gold_Bar_1.jpg";
+    const inline static std::string Flux_Bar_2 = "Gold_Bar_2.jpg";
+    const inline static std::string Flux_Bar_3 = "Gold_Bar_3.jpg";
+    const inline static std::string Flux_Bar_4 = "Gold_Bar_4.jpg";
+    const inline static std::string Flux_Bar_5 = "Gold_Bar_5.jpg";
+    const inline static std::string Flux_Bar_6 = "Gold_Bar_6.jpg";
+    const inline static std::string Flux_Bar_7 = "Gold_Bar_7.jpg";
+    const inline static std::string Flux_Bar_8 = "Gold_Bar_8.jpg";
+    const inline static std::string Flux_Bar_9 = "Gold_Bar_9.jpg";
+}
 
-    class PieceLocation
-    {
-    public:
-        PieceLocation(std::vector<PiecePos>* container, int index, PieceType type) : m_Container(container), m_Type(type), m_Index(index) {}
-        static PieceLocation EmptySquare() { return PieceLocation(nullptr, -1, PieceType::White_Pawn); }
-        static PieceLocation WhiteKing(PiecePos* king) { return PieceLocation(king, PieceType::White_King); }
-        static PieceLocation BlackKing(PiecePos* king) { return PieceLocation(king, PieceType::Black_King); }
+namespace Paths
+{
+    const inline static std::string Assets = "../../../../src/assets/";
+    const inline static std::string Textures = Assets + "textures/";
+    const inline static std::string Pieces = Textures + "pieces/";
+}
 
-        PieceType GetType() const { return m_Type; }
-        bool IsEmptySquare() const 
-        { 
-            // TODO:
-            // Empty squares should be based on an additional NULL piece type, not based on index to some container
-            return m_Index == -1; 
-        };
-        bool IsKing() const
-        {
-            return m_King != nullptr;
-        }
-        PiecePos GetPosition() const
-        {
-            if (!IsEmptySquare())
-            {
-                if (IsKing())
-                    return *m_King;
-                return m_Container->at(m_Index);
-            }
-            return -1;
-        }
-        void SetPosition(PiecePos position) 
-        {
-            if (!IsEmptySquare())
-            {
-                if (IsKing())
-                    *m_King = position;
-                else
-                    m_Container->at(m_Index) = position;
-            }
-        }
-        void Delete(std::unordered_map<PiecePos, PieceLocation>& positionToPieceLocation)
-        { 
-            if (!IsEmptySquare())
-            {
-                if (IsKing())
-                {
-                    *m_King = -1;
-                    m_King = nullptr;
-                }
-                else
-                {
-                    // All of the items AFTER the current index in the container (vector) will correspond to entries
-                    // in the map which point to incorrect places back in the vector. 
-                    // Every index must be lowered by 1 to account for the current element being erased from the container
-                    for (int i = m_Index + 1; i < m_Container->size(); i++)
-                    {
-                        PiecePos position = m_Container->at(i);
-                        PieceLocation& pieceLoc = positionToPieceLocation.at(position);
-                        pieceLoc.m_Index--;
-                        i = i + 0;
-                    }
+inline bool IsWhitePiece(PieceType type)
+{
+    return int(type) <= int(PieceType::White_Dragon);
+}
 
-                    m_Container->erase(m_Container->begin() + m_Index);
-                    m_Index = -1;
-                }
-            }
-        }
+inline bool IsBlackPiece(PieceType type)
+{
+    return int(type) > int(PieceType::White_Dragon);
+}
 
-    private:
-        PieceLocation(PiecePos* king, PieceType type) : m_King(king), m_Type(type), m_Index(0) {}
+enum class GameType
+{
+    OneVOne,
+    TwoVTwo,
+};
 
-        std::vector<PiecePos>* m_Container = nullptr;
-        PiecePos* m_King = nullptr;
-        PieceType m_Type = PieceType::White_Pawn;
-        int m_Index = -1;
-    };
 
-    inline PieceColor GetPieceColor(PieceType type)
-    {
-        if (IsWhitePiece(type))
-            return PieceColor::White;
-        return PieceColor::Black;
-    }
+inline PieceColor GetPieceColor(PieceType type)
+{
+    if (IsWhitePiece(type))
+        return PieceColor::White;
+    return PieceColor::Black;
+}
 
-    template<typename T>
-    inline T Lerp(T start, T end, float t)
-    {
-        return start * (1 - t) + end * t;
-    }
+template<typename T>
+inline T Lerp(T start, T end, float t)
+{
+    return start * (1 - t) + end * t;
+}
 
-    template<>
-    inline sf::Color Lerp(sf::Color start, sf::Color end, float t)
-    {
-        uint8_t r = start.r * (1 - t) + end.r * t;
-        uint8_t g = start.g * (1 - t) + end.g * t;
-        uint8_t b = start.b * (1 - t) + end.b * t;
-        return sf::Color(r, g, b);
-    }
+template<>
+inline sf::Color Lerp(sf::Color start, sf::Color end, float t)
+{
+    uint8_t r = start.r * (1 - t) + end.r * t;
+    uint8_t g = start.g * (1 - t) + end.g * t;
+    uint8_t b = start.b * (1 - t) + end.b * t;
+    return sf::Color(r, g, b);
+}
 
-    // Global vars
-    inline float g_AdjustableK = 0.1f;
+template<typename T>
+inline T Clamp(T value, T min, T max)
+{
+	if (value < min)
+		return min;
+	if (value > max)
+		return max;
+	return value;
+}
+
+template<typename T>
+inline T ClampMax(T value, T max)
+{
+    if (value > max)
+        return max;
+    return value;
+}
+
+template<typename T>
+inline T ClampMin(T value, T min)
+{
+    if (value < min)
+        return min;
+    return value;
+}
+
+namespace Global
+{
+    inline float AdjustableK = 0.1f;
 }

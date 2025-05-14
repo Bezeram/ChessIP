@@ -2,6 +2,6 @@
 
 int main()
 {
-    ChessIP::Application application;
+    Application application = Application();
     application.Run();
 }

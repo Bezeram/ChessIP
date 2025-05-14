@@ -4,63 +4,53 @@
 #include <cmath>
 #include <unordered_map>
 #include <cassert>
+#include <memory>
 
 #include "Utils.h"
+#include "pieces/AllPiecesHeader.h"
 
-namespace ChessIP
+/**
+* First square starts from the bottom left, going to right and up
+*/
+class Board
 {
-    /**
-    * Every piece type is stored in its own container
-    * To check if a piece is in a given position, a map is used to locate
-    the piece type to a corresponding container and index
-    * First square starts from the top left, from white's perspective
-    */
-    class Board
-    {
-    public:
-        Board(GameType gameType);
+public:
+    Board(GameType gameType);
 
-        void GetBoard(std::vector<Piece>& outBoard) const;
+    const BoardMatrix& GetBoard() const;
         
-        int GetSize() const;
-        PieceLocation GetPieceAt(PiecePos position) const;
-        void DeletePieceAt(PiecePos position);
+    int GetSize() const;
+    void DeletePieceAt(PiecePosition position);
 
-		int GetWhiteFlux() const { return m_WhiteFlux; }
-		int GetWhiteGold() const { return m_WhiteGold; }
+    // Get the square at a coordinate
+    //std::unique_ptr<BasePiece>& operator[](PiecePosition position);
+    const std::unique_ptr<BasePiece>& operator[](PiecePosition position) const;
 
-        bool IsTargetFriendly(const Move& move) const;
-        bool IsValidPieceByTurn(PiecePos position) const;
-        bool IsWhitesMove() const;
-        bool MakeMove(const Move& move);
-    private:
-        void MapPositions(std::vector<PiecePos>* data, int size, PieceType type);
-        void Init1v1Game();
-    private:
-        int m_Size = 2;
-        bool m_IsWhitesTurn = 1;
+	int GetWhiteFlux() const { return m_WhiteFlux; }
+	int GetWhiteGold() const { return m_WhiteGold; }
 
-        int m_WhiteFlux = 0;
-        int m_WhiteGold = 0;
+    bool IsTargetFriendly(const PieceMove& move) const;
+    bool IsValidPieceByTurn(PiecePosition position) const;
+    bool IsWhitesMove() const;
+    bool MakeMove(PiecePosition piecePosition, PieceMove move);
 
-		int m_BlackFlux = 0;
-		int m_BlackGold = 0;
+	PiecePosition GetWhiteKingPosition() const;
+	PiecePosition GetBlackKingPosition() const;
 
-        std::unordered_map<PiecePos, PieceLocation> m_PositionToPiece;
+private:
+    void Init1v1Game();
+    void UpdateResources();
+private:
+    bool m_IsWhitesTurn = 1;
 
-        std::vector<PiecePos> m_WhitePawns;
-        std::vector<PiecePos> m_WhiteKnights;
-        std::vector<PiecePos> m_WhiteBishops;
-        std::vector<PiecePos> m_WhiteRooks;
-        std::vector<PiecePos> m_WhiteQueen;
-        PiecePos m_WhiteKing;
+    int m_WhiteFlux = 0;
+    int m_WhiteGold = 0;
 
-        std::vector<PiecePos> m_BlackPawns;
-        std::vector<PiecePos> m_BlackKnights;
-        std::vector<PiecePos> m_BlackBishops;
-        std::vector<PiecePos> m_BlackRooks;
-        std::vector<PiecePos> m_BlackQueen;
-        PiecePos m_BlackKing;
-    };
-}
+	int m_BlackFlux = 0;
+	int m_BlackGold = 0;
+
+    int m_Size = 0;
+    int m_BoardSize = 0;
+    std::vector<std::vector<std::unique_ptr<BasePiece>>> m_Board;
+};
 
