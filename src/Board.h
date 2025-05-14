@@ -26,6 +26,9 @@ namespace ChessIP
         PieceLocation GetPieceAt(PiecePos position) const;
         void DeletePieceAt(PiecePos position);
 
+		int GetWhiteFlux() const { return m_WhiteFlux; }
+		int GetWhiteGold() const { return m_WhiteGold; }
+
         bool IsTargetFriendly(const Move& move) const;
         bool IsValidPieceByTurn(PiecePos position) const;
         bool IsWhitesMove() const;
@@ -36,6 +39,12 @@ namespace ChessIP
     private:
         int m_Size = 2;
         bool m_IsWhitesTurn = 1;
+
+        int m_WhiteFlux = 0;
+        int m_WhiteGold = 0;
+
+		int m_BlackFlux = 0;
+		int m_BlackGold = 0;
 
         std::unordered_map<PiecePos, PieceLocation> m_PositionToPiece;
 

@@ -173,7 +173,25 @@ bool Board::MakeMove(const Move& move)
 	m_PositionToPiece.erase(startSquare);
 	m_PositionToPiece.emplace(targetSquare, selected);
 
+	// Update flux and gold
+	if (m_IsWhitesTurn)
+	{
+		m_WhiteFlux++;
+		if (m_WhiteFlux > 9)
+			m_WhiteFlux = 9;
+		m_WhiteGold += m_Size - m_WhiteKing / m_Size;
+		if (m_WhiteGold > 9)
+			m_WhiteGold = 9;
+		std::cout << m_WhiteKing / m_Size << std::endl;
+	}
+	else
+	{
+		m_BlackFlux++;
+		m_BlackGold += m_BlackKing / m_Size;
+	}
+
 	m_IsWhitesTurn = !m_IsWhitesTurn;
+
 	return true;
 }
 

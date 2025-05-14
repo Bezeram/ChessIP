@@ -26,13 +26,35 @@ void ResourceManager::Shutdown()
 
 void ResourceManager::LoadAssets()
 {
-	// Load textures
+	// Load pieces
 	for (int i = 0; i < 12; i++)
 	{
 		PieceType type = PieceType(i);
 		std::string name = m_PieceIDToResource[type];
 		std::string path = "./assets/textures/1024x1024/" + name + ".png";
 		AddTexture(path.c_str(), name.c_str());
+	}
+
+	// Board
+	std::string path = "../../../../src/assets/textures/board.jpg";
+	AddTexture(path.c_str(), "board");
+
+	// Resources bars
+	{
+		std::string path = "../../../../src/assets/textures/resources-bars.jpg";
+		sf::Image resourceBarImg(path.c_str());
+		// Mask background from the resources bar
+		resourceBarImg.createMaskFromColor(sf::Color::Black, 0);
+		sf::Texture texture;
+		if (!texture.loadFromImage(resourceBarImg))
+		{
+			std::cout << "Could not load resources bar texture.\n";
+		}
+		else
+		{
+			m_Textures["resources_bars"] = std::move(texture);
+			// rect size (545, 144)
+		}
 	}
 
 	// Load font
