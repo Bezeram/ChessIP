@@ -5,7 +5,12 @@
 #include <unordered_map>
 #include <cassert>
 
+#include <SFML/Audio.hpp>
+#include <SFML/Audio/Sound.hpp>
+
+#include "ResourceManager.h"
 #include "Utils.h"
+#include "SoundPlayer.h"
 
 namespace ChessIP
 {
@@ -61,6 +66,7 @@ namespace ChessIP
         std::vector<PiecePos> m_BlackRooks;
         std::vector<PiecePos> m_BlackQueen;
         PiecePos m_BlackKing;
+
     };
 }
 

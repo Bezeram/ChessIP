@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 3.28)
 project(ChessIP LANGUAGES CXX)
 
+include_directories(${CMAKE_CURRENT_SOURCE_DIR})
+
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
 
@@ -26,6 +28,7 @@ set(SRC_FILES
     ${CMAKE_SOURCE_DIR}/src/Renderer.cpp
     ${CMAKE_SOURCE_DIR}/src/ResourceManager.cpp
     ${CMAKE_SOURCE_DIR}/src/Application.cpp
+    ${CMAKE_SOURCE_DIR}/src/SoundPlayer.cpp
 )
 
 # Header files
@@ -35,6 +38,7 @@ set(HEADER_FILES
     ${CMAKE_SOURCE_DIR}/src/ResourceManager.h
     ${CMAKE_SOURCE_DIR}/src/Application.h
     ${CMAKE_SOURCE_DIR}/src/Utils.h
+    ${CMAKE_SOURCE_DIR}/src/SoundPlayer.h
 )
 
 add_executable(main ${SRC_FILES} ${HEADER_FILES})

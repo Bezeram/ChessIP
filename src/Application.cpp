@@ -11,6 +11,7 @@ Application::Application()
     , m_Renderer(m_Window.getSize(), m_Board.GetSize())
 {
 	ResourceManager::Initialise();
+	SoundPlayer::Initialize();
     
     m_Window.setFramerateLimit(400);
 }
@@ -33,6 +34,8 @@ void Application::Run()
         m_Renderer.DrawBoard(m_Window, m_Board, m_SelectedSquare, m_PreviousMove);
 
         m_Window.display();
+
+        SoundPlayer::GetInstance().Update();
     }
 }
 

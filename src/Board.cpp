@@ -166,7 +166,12 @@ bool Board::MakeMove(const Move& move)
 	{
 		// Delete the captured piece
 		DeletePieceAt(targetSquare);
-		
+
+		SoundPlayer::GetInstance().PlaySound("capture1");
+	}
+	else
+	{
+		SoundPlayer::GetInstance().PlaySound("move1");
 	}
 	// Place piece at target position in container
 	selected.SetPosition(targetSquare);
