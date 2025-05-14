@@ -154,6 +154,7 @@ bool Board::MakeMove(const Move& move)
 	int startSquare = move.StartSquare;
 	int targetSquare = move.TargetSquare;
 
+
 	// Check for empty square and if target is friendly
 	PieceLocation selected = m_PositionToPiece.at(startSquare);
 	if (selected.IsEmptySquare() || IsTargetFriendly(move))
@@ -165,6 +166,7 @@ bool Board::MakeMove(const Move& move)
 	{
 		// Delete the captured piece
 		DeletePieceAt(targetSquare);
+		
 	}
 	// Place piece at target position in container
 	selected.SetPosition(targetSquare);
