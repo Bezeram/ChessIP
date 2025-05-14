@@ -63,6 +63,25 @@ void ResourceManager::LoadAssets()
 		std::string path = "./assets/fonts/" + name + ".ttf";
 		AddFont(path.c_str(), name.c_str());
 	}
+	
+	// Load sounds
+	{
+		// load all sounds from path
+
+		std::string path = "./assets/sounds/";
+
+		for (const auto & entry : std::filesystem::directory_iterator(path))
+		{
+			std::string name = entry.path().filename().string();
+			std::string ext = entry.path().extension().string();
+			if (ext != ".ogg" && ext != ".wav")
+				continue;
+			name = name.substr(0, name.size() - ext.size());
+            std::string soundPath = entry.path().string();
+			AddSound(soundPath.c_str(), name.c_str());
+		}
+		
+	}
 }
 
 const sf::Texture& ResourceManager::GetPieceTexture(PieceType type) const
