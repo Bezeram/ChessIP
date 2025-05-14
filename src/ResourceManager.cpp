@@ -31,14 +31,14 @@ void ResourceManager::LoadAssets()
 	{
 		PieceType type = PieceType(i);
 		std::string name = m_PieceIDToResource[type];
-		std::string path = "../../../../src/assets/textures/1024x1024/" + name + ".png";
+		std::string path = "./assets/textures/1024x1024/" + name + ".png";
 		AddTexture(path.c_str(), name.c_str());
 	}
 
 	// Load font
 	{
 		std::string name = "JetBrainsMono-Bold";
-		std::string path = "../../../../src/assets/fonts/" + name + ".ttf";
+		std::string path = "./assets/fonts/" + name + ".ttf";
 		AddFont(path.c_str(), name.c_str());
 	}
 }
