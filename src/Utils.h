@@ -1,6 +1,8 @@
 #pragma once
 
 #include <iostream>
+#include <fstream>
+#include <sstream>
 #include <SFML/Graphics.hpp>
 
 typedef sf::Vector2i PiecePosition;
@@ -154,6 +156,8 @@ namespace Paths
     const inline static std::string Pieces = Textures + "pieces/";
     const inline static std::string Sounds = Assets + "sounds/";
     const inline static std::string Fonts = Assets + "fonts/";
+	const inline static std::string Config = Root + "config/";
+    const inline static std::string WindowConfig = Config + "window.txt";
 }
 
 inline bool IsWhitePiece(PieceType type)
@@ -233,6 +237,48 @@ inline bool IsCellInBounds(PiecePosition cellIndex, int boardSize)
 namespace Global
 {
     inline float AdjustableK = 0.1f;
+}
+
+struct WindowSettings
+{
+	WindowSettings() = default;
+    sf::State State = sf::State::Fullscreen;
+    sf::Vector2u Resolution = { 1920, 1080 };
+};
+
+inline WindowSettings ParseWindowConfig(const std::string& filePath)
+{
+    WindowSettings settings{};
+    std::ifstream file(filePath);
+    if (!file.is_open())
+    {
+        // If file is not present, assume default options
+        return settings;
+    }
+
+    std::string line;
+    while (std::getline(file, line))
+    {
+        if (line.rfind("fullscreen=", 0) == 0)
+        {
+            std::string value = line.substr(11);
+            settings.State = (value == "1") ? sf::State::Fullscreen : sf::State::Windowed;
+        }
+        else if (line.rfind("resolution=", 0) == 0)
+        {
+            std::string value = line.substr(11);
+            auto commaPos = value.find('x');
+            if (commaPos != std::string::npos)
+            {
+                unsigned int width = std::stoul(value.substr(0, commaPos));
+                unsigned int height = std::stoul(value.substr(commaPos + 1));
+                settings.Resolution = sf::Vector2u(width, height);
+            }
+        }
+        // Ignore unrecognized lines or comments
+    }
+
+    return settings;
 }
 
 
