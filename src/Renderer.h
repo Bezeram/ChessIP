@@ -21,8 +21,7 @@ public:
 	float GetBoardSize() const;
 	float GetBoardCellSize() const;
 
-	bool IsMouseOnBoard(const sf::Vector2f& mousePosition) const;
-	sf::Vector2i MouseCellIndex(const sf::Vector2f& mousePosition) const;
+	sf::Vector2i MouseCellIndex(int windowHeight, const sf::Vector2f& mousePosition) const;
 private:
 	sf::Shader m_PieceShader;
 

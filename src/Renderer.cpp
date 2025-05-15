@@ -36,7 +36,8 @@ void Renderer::DrawBoard(sf::RenderWindow& window, const Board& board, PiecePosi
 	auto drawSquare = [&](PiecePosition position, sf::Color color)
 		{
 			sf::RectangleShape tile(sf::Vector2f(m_BoardCellSize, m_BoardCellSize));
-			sf::Vector2f drawPosition = m_BoardPosition + sf::Vector2f(position.y, position.x) * m_BoardCellSize;
+			sf::Vector2f drawPosition = sf::Vector2f(m_BoardPosition.x + position.x * m_BoardCellSize,
+				window.getSize().y - m_BoardPosition.y - (position.y + 1) * m_BoardCellSize);
 
 			tile.setFillColor(color);
 			tile.setPosition(drawPosition);
@@ -57,14 +58,14 @@ void Renderer::DrawBoard(sf::RenderWindow& window, const Board& board, PiecePosi
 	{
 		for (int file = 0; file < board.GetSize(); file++)
 		{
-			PiecePosition gridPosition = PiecePosition(rank, file);
+			PiecePosition gridPosition = PiecePosition(file, rank);
 			sf::Color gridColor = (rank + file) % 2 == 0 ? m_ColorWhiteSquare : m_ColorDarkSquare;
 
 			drawSquare(gridPosition, gridColor);
 		}
 	}
 
-	// Draw legal moves and previous move highlight
+	// Highlight legal moves and selected square
 	if (selectedPiecePosition != GlobalConstants::NullPosition)
 	{
 		// Legal moves
@@ -76,6 +77,7 @@ void Renderer::DrawBoard(sf::RenderWindow& window, const Board& board, PiecePosi
 		// Selected piece square
 		drawSquare(selectedPiecePosition, m_ColorSelectSquare);
 	}
+	// Highlight previous move
 	if (previousMove.StartSquare != GlobalConstants::NullPosition && previousMove.TargetSquare != GlobalConstants::NullPosition)
 	{
 		drawSquare(previousMove.StartSquare, m_ColorPreviousMove);
@@ -90,13 +92,10 @@ void Renderer::DrawBoard(sf::RenderWindow& window, const Board& board, PiecePosi
 		{
 			for (int file = 0; file < board.GetSize(); file++)
 			{
-				PiecePosition position = PiecePosition(rank, file);
+				PiecePosition position = PiecePosition(file, rank);
 				const auto& piece = board[position];
 				if (piece.get() == nullptr)
 					continue;
-
-				std::cout << "[Rank, File, PieceType]: " << rank << ", " << file << ", " 
-					<< Textures::PieceTypeToString.at(piece->GetPieceType()) << std::endl;
 
 				// Set texture and shader
 				const auto& texture = rm.GetPieceTexture(piece->GetPieceType());
@@ -110,13 +109,14 @@ void Renderer::DrawBoard(sf::RenderWindow& window, const Board& board, PiecePosi
 				if (position == selectedPiecePosition && sf::Mouse::isButtonPressed(sf::Mouse::Button::Left))
 				{
 					// Piece is dragged with mouse
-					sf::Vector2i mousePosition = sf::Mouse::getPosition();
+					sf::Vector2i mousePosition = sf::Mouse::getPosition(window);
 					drawPosition = sf::Vector2f(mousePosition.x, mousePosition.y);
 
 					sprite.setOrigin(sf::Vector2f(texture.getSize().x / 2.f, texture.getSize().y / 2.f));
 				}
 				else
-					drawPosition = sf::Vector2f(m_BoardPosition.x + file * m_BoardCellSize, m_BoardPosition.y + rank * m_BoardCellSize);
+					drawPosition = sf::Vector2f(m_BoardPosition.x + file * m_BoardCellSize, 
+						window.getSize().y - m_BoardPosition.y - (rank + 1) * m_BoardCellSize);
 				float scale = m_BoardCellSize / texture.getSize().x;
 
 				sprite.setPosition(drawPosition);
@@ -160,15 +160,9 @@ float Renderer::GetBoardCellSize() const
 	return m_BoardCellSize;
 }
 
-bool Renderer::IsMouseOnBoard(const sf::Vector2f& mousePosition) const
-{
-	return (mousePosition.x >= m_BoardPosition.x && mousePosition.x <= m_BoardPosition.x + m_BoardLength &&
-		mousePosition.y >= m_BoardPosition.y && mousePosition.y <= m_BoardPosition.y + m_BoardLength);
-}
-
-sf::Vector2i Renderer::MouseCellIndex(const sf::Vector2f& mousePosition) const
+sf::Vector2i Renderer::MouseCellIndex(int windowHeight, const sf::Vector2f& mousePosition) const
 {
 	return sf::Vector2i(
-		int((mousePosition.x - m_BoardPosition.x) / m_BoardCellSize),
-		int((mousePosition.y - m_BoardPosition.y) / m_BoardCellSize));
+		int((std::floor((mousePosition.x - m_BoardPosition.x) / m_BoardCellSize))),
+		int((windowHeight - (mousePosition.y - m_BoardPosition.y)) / m_BoardCellSize) - 1);
 }

@@ -105,6 +105,12 @@ bool Board::IsValidPieceByTurn(PiecePosition position) const
 	return IsWhitePiece(piece->GetPieceType()) == IsWhitesMove();
 }
 
+bool Board::IsCellOnBoard(const sf::Vector2i& cellIndex) const
+{
+	return (cellIndex.x >= 0 && cellIndex.x < m_Size &&
+		cellIndex.y >= 0 && cellIndex.y < m_Size);
+}
+
 bool Board::IsWhitesMove() const
 {
 	return m_IsWhitesTurn;
@@ -138,7 +144,7 @@ PiecePosition Board::GetWhiteKingPosition() const
 		{
 			if (m_Board[rank][file].get() != nullptr && m_Board[rank][file]->GetPieceType() == PieceType::White_King)
 			{
-				return PiecePosition(rank, file);
+				return PiecePosition(file, rank);
 			}
 		}
 	}

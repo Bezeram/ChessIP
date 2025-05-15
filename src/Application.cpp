@@ -72,12 +72,24 @@ void Application::EventHandler()
             {
                 sf::Vector2f mousePosition = sf::Vector2f(mousePressed->position.x, mousePressed->position.y);
 
-                sf::Vector2i cellIndex = m_Renderer.MouseCellIndex(mousePosition);
-                if (m_Renderer.IsMouseOnBoard(mousePosition) && m_Board.IsValidPieceByTurn(cellIndex))
+                sf::Vector2i cellIndex = m_Renderer.MouseCellIndex(m_Window.getSize().y, mousePosition);
+				std::cout << "[MouseRank, MouseFile]: " << cellIndex.y << ", " << cellIndex.x << std::endl;
+                if (m_Board.IsCellOnBoard(cellIndex) && m_Board.IsValidPieceByTurn(cellIndex))
                     m_SelectedSquare = cellIndex;
                 else
                     m_SelectedSquare = GlobalConstants::NullPosition;
             }
+
+			if (mousePressed->button == sf::Mouse::Button::Right)
+			{
+				PiecePosition whiteKingPosition = m_Board.GetWhiteKingPosition();
+				PiecePosition blackKingPosition = m_Board.GetBlackKingPosition();
+
+                std::cout << "[Rank, File, PieceType]: " << whiteKingPosition.y << ", " << whiteKingPosition.x << ", "
+                    << Textures::PieceTypeToString.at(PieceType::White_King) << std::endl; 
+                std::cout << "[Rank, File, PieceType]: " << blackKingPosition.y << ", " << blackKingPosition.x << ", "
+                    << Textures::PieceTypeToString.at(PieceType::Black_King) << std::endl;
+			}
 
         }
         else if (const auto* mouseReleased = event->getIf<sf::Event::MouseButtonReleased>())
@@ -85,23 +97,27 @@ void Application::EventHandler()
             if (mouseReleased->button == sf::Mouse::Button::Left)
             {
                 sf::Vector2f mousePosition = sf::Vector2f(mouseReleased->position.x, mouseReleased->position.y);
-                if (m_Renderer.IsMouseOnBoard(mousePosition))
+                sf::Vector2i cellIndex = m_Renderer.MouseCellIndex(m_Window.getSize().y, mousePosition);
+                if (m_Board.IsCellOnBoard(cellIndex))
                 {
-                    sf::Vector2i mouseCellIndex = m_Renderer.MouseCellIndex(mousePosition);
                     // Make move if a square was previously selected
                     if (m_SelectedSquare != GlobalConstants::NullPosition)
                     {
-                        PieceMove move = PieceMove(m_SelectedSquare, mouseCellIndex);
+                        PieceMove move = PieceMove(m_SelectedSquare, cellIndex);
                         bool validMove = m_Board.MakeMove(move.StartSquare, move);
                         if (validMove)
                         {
                             m_PreviousMove = move;
+                            // Reset selection
+                            m_SelectedSquare = GlobalConstants::NullPosition;
                         }
                     }
                 }
-
-                // Reset selection
-                m_SelectedSquare = GlobalConstants::NullPosition;
+                else
+                {
+                    // Reset selection
+                    m_SelectedSquare = GlobalConstants::NullPosition;
+                }
             }
         }
     }

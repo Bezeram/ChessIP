@@ -37,6 +37,8 @@ public:
 	PiecePosition GetWhiteKingPosition() const;
 	PiecePosition GetBlackKingPosition() const;
 
+    bool IsCellOnBoard(const sf::Vector2i& cellIndex) const;
+
 private:
     void Init1v1Game();
     void UpdateResources();
