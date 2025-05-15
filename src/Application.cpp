@@ -77,6 +77,8 @@ void Application::EventHandler()
         }
         else if (const auto* mousePressed = event->getIf<sf::Event::MouseButtonPressed>())
         {
+            Global::MouseLeftPressed = true;
+
             // Initial piece is selected
             if (mousePressed->button == sf::Mouse::Button::Left)
             {
@@ -91,7 +93,7 @@ void Application::EventHandler()
                         if (IsCellInBounds(targetSquare, m_Board->GetSize()))
                         {
                             // Make move if a square was previously selected
-                            if (m_SelectedSquare != GlobalConstants::NullPosition && m_SelectedSquare != targetSquare)
+                            if (m_SelectedSquare != GlobalConstants::NullPosition)
                             {
                                 PieceMove move = PieceMove(m_SelectedSquare, targetSquare);
                                 const auto& selectedPiece = (*m_Board)[move.StartSquare];
@@ -106,18 +108,14 @@ void Application::EventHandler()
                                         if (validMove)
                                         {
                                             m_PreviousMove = move;
-                                            // Reset selection
-                                            m_SelectedSquare = GlobalConstants::NullPosition;
                                         }
                                     }
                                 }
                             }
                         }
-                        else
-                        {
-                            // Reset selection
-                            m_SelectedSquare = GlobalConstants::NullPosition;
-                        }
+
+                        // Reset selection
+                        m_SelectedSquare = GlobalConstants::NullPosition;
 					}
 				}
                 else
@@ -128,18 +126,12 @@ void Application::EventHandler()
                     else
                         m_SelectedSquare = GlobalConstants::NullPosition;
                 }
-
             }
-
-			if (mousePressed->button == sf::Mouse::Button::Right)
-			{
-				PiecePosition whiteKingPosition = m_Board->GetWhiteKingPosition();
-				PiecePosition blackKingPosition = m_Board->GetBlackKingPosition();
-			}
-
         }
         else if (const auto* mouseReleased = event->getIf<sf::Event::MouseButtonReleased>())
         {
+            Global::MouseLeftPressed = false;
+
             if (mouseReleased->button == sf::Mouse::Button::Left)
             {
                 sf::Vector2f mousePosition = sf::Vector2f(mouseReleased->position.x, mouseReleased->position.y);
