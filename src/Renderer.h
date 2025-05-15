@@ -15,6 +15,7 @@ public:
 	*/
 	void DrawBoard(sf::RenderWindow& window, const Board& board, PiecePosition selectedSquare, const PieceMove& previousMove);
 	void CalculateBoard(const sf::Vector2u& screenSize, int boardTileSize);
+	void DrawHUD(const sf::Vector2u& screenSize, int boardTileSize);
 
 	sf::Vector2f GetBoardPosition() const;
 	float GetBoardSize() const;

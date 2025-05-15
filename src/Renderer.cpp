@@ -92,8 +92,8 @@ void Renderer::DrawBoard(sf::RenderWindow& window, const Board& board, PiecePosi
 		{
 			for (int file = 0; file < board.GetSize(); file++)
 			{
-				PiecePosition position = PiecePosition(file, rank);
-				const auto& piece = board[position];
+				PiecePosition piecePosition = PiecePosition(file, rank);
+				const auto& piece = board[piecePosition];
 				if (piece.get() == nullptr)
 					continue;
 
@@ -101,35 +101,24 @@ void Renderer::DrawBoard(sf::RenderWindow& window, const Board& board, PiecePosi
 				const auto& texture = rm.GetPieceTexture(piece->GetPieceType());
 				m_PieceShader.setUniform(std::string("texture"), sf::Shader::CurrentTexture);
 
-				// Calculate position
 				sf::Sprite sprite(texture);
-				sf::Vector2f drawPosition;
-
-				// Setup position
-				if (position == selectedPiecePosition && sf::Mouse::isButtonPressed(sf::Mouse::Button::Left))
+				// Calculate position and scale
 				{
-					// Piece is dragged with mouse
-					sf::Vector2i mousePosition = sf::Mouse::getPosition(window);
-					drawPosition = sf::Vector2f(mousePosition.x, mousePosition.y);
+					sf::Vector2f drawPosition;
+					// Setup position
+					drawPosition = sf::Vector2f(m_BoardPosition.x + file * m_BoardCellSize,
+							window.getSize().y - m_BoardPosition.y - (rank + 1) * m_BoardCellSize);
+					float scale = m_BoardCellSize / texture.getSize().x;
 
-					sprite.setOrigin(sf::Vector2f(texture.getSize().x / 2.f, texture.getSize().y / 2.f));
+					sprite.setPosition(drawPosition);
+					sprite.setScale(sf::Vector2f(scale, scale));
 				}
-				else
-					drawPosition = sf::Vector2f(m_BoardPosition.x + file * m_BoardCellSize, 
-						window.getSize().y - m_BoardPosition.y - (rank + 1) * m_BoardCellSize);
-				float scale = m_BoardCellSize / texture.getSize().x;
 
-				sprite.setPosition(drawPosition);
-				sprite.setScale(sf::Vector2f(scale, scale));
-				window.draw(sprite, &m_PieceShader);
+				// Sprite is finally rendered using its own function
+				bool isSelectedPiece = piecePosition == selectedPiecePosition;
+				piece->Render(sprite, window, m_PieceShader, isSelectedPiece);
 			}
 		}
-	}
-
-	// Draw resources bars
-	// TODO: Draw resources bars
-	{
-		
 	}
 }
 
@@ -143,6 +132,11 @@ void Renderer::CalculateBoard(const sf::Vector2u& screenSize, int boardGridSize)
 	float boardPositionX = (resolution.x - m_BoardLength) / 8.f;
 	float boardPositionY = resolution.y * m_BoardPadding01.y;
 	m_BoardPosition = sf::Vector2f(boardPositionX, boardPositionY);
+}
+
+void Renderer::DrawHUD(const sf::Vector2u& screenSize, int boardTileSize)
+{
+	// TODO: (Lungu)
 }
 
 sf::Vector2f Renderer::GetBoardPosition() const

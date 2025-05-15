@@ -32,6 +32,22 @@ public:
 		// Clear old position
 		board[piecePosition.y][piecePosition.x] = nullptr;
 	}
+	// Add extra effects to sprite, like changing color, adding another sprite overlayed etc.
+	// Board position and scale are automatically calculated into the sprite beforehand
+	virtual void Render(sf::Sprite& sprite, sf::RenderWindow& window, const sf::Shader& pieceShader, bool isSelectedPiece)
+	{
+		if (isSelectedPiece && sf::Mouse::isButtonPressed(sf::Mouse::Button::Left))
+		{
+			// Piece is dragged with mouse
+			sf::Vector2i mousePosition = sf::Mouse::getPosition(window);
+			sprite.setPosition(sf::Vector2f(mousePosition.x, mousePosition.y));
+
+			const auto& texture = sprite.getTexture();
+			sprite.setOrigin(sf::Vector2f(texture.getSize().x / 2.f, texture.getSize().y / 2.f));
+		}
+
+		window.draw(sprite, &pieceShader);
+	}
 
 	// For a given attack move, checks if move is among valid ones
 	ActionMove BasePiece::IsLegalMove(PieceMove move)
@@ -57,6 +73,7 @@ public:
 protected:
 	std::vector<Effect> m_Effects;
 	std::shared_ptr<Board> m_Board;
+	uint32_t m_UpgradeLevel = 1;
 	PieceColor m_Color;
 };
 
