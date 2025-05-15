@@ -11,7 +11,7 @@ void King::GetLegalMoves(sf::Vector2i piecePosition, std::vector<ActionMove>& le
 
 	for (int dy = -1; dy <= 1; dy++)
 		for (int dx = -1; dx <= 1; dx++)
-			if (dy + dx != 0)
+			if (dy != 0 || dx != 0)
 			{
 				PiecePosition targetSquare = piecePosition + sf::Vector2i(dx, dy);
 				if (IsCellInBounds(targetSquare, m_Board->GetSize()))

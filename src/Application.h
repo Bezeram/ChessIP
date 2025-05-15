@@ -13,8 +13,7 @@ public:
 
 	void Run();
 
-
-	
+	std::shared_ptr<Board>& GetBoard() { return m_Board; }
 
 private:
 	void EventHandler();
@@ -27,6 +26,6 @@ private:
 	PieceMove m_PreviousMove = { GlobalConstants::NullPosition, GlobalConstants::NullPosition };
 	PiecePosition m_SelectedSquare = GlobalConstants::NullPosition;
 
-	Board m_Board;
+	std::shared_ptr<Board> m_Board;
 	Renderer m_Renderer;
 };

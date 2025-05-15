@@ -1,7 +1,6 @@
 #include "Board.h"
 
 Board::Board(GameType gameType)
-	: m_SelfPtr(this)
 {
 	m_Board.resize(10);
 
@@ -19,7 +18,6 @@ Board::Board(GameType gameType)
 	case GameType::OneVOne:
 		// boardSize = 9
 		m_Size = 9;
-		Init1v1Game();
 		break;
 	case GameType::TwoVTwo:
 		m_Size = 10;
@@ -29,7 +27,11 @@ Board::Board(GameType gameType)
 	}
 }
 
-void Board::Init1v1Game()
+Board::~Board()
+{
+}
+
+void Board::Init1v1Game(std::shared_ptr<Board>& boardRef)
 {
 	int kingFile = m_Size / 2;
 	int whiteRank = 0;
@@ -39,12 +41,12 @@ void Board::Init1v1Game()
 	// Place pieces
 	// White
 	{
-		m_Board[whiteRank][kingFile] = std::make_unique<King>(m_SelfPtr, PieceColor::White);
+		m_Board[whiteRank][kingFile] = std::make_unique<King>(boardRef, PieceColor::White);
 	}
 
 	// Black
 	{
-		m_Board[blackRank][kingFile] = std::make_unique<King>(m_SelfPtr, PieceColor::Black);
+		m_Board[blackRank][kingFile] = std::make_unique<King>(boardRef, PieceColor::Black);
 	}
 }
 

@@ -3,13 +3,15 @@
 Application::Application()
     : m_Window(sf::RenderWindow(sf::VideoMode({ 1280, 720 }), "Chess9"))
     , m_Viewport(sf::FloatRect(sf::Vector2f(0, 0), sf::Vector2f(m_Window.getSize().x, m_Window.getSize().y)))
-    , m_Board(GameType::OneVOne)
-    , m_Renderer(m_Window.getSize(), m_Board.GetSize())
+    , m_Board(std::make_shared<Board>(GameType::OneVOne))
+    , m_Renderer(m_Window.getSize(), m_Board->GetSize())
 {
 	ResourceManager::Initialise();
     
     m_Window.setFramerateLimit(400);
 	m_Window.setVerticalSyncEnabled(true);
+
+	m_Board->Init1v1Game(m_Board);
 }
 
 Application::~Application()
@@ -26,7 +28,7 @@ void Application::Run()
         m_Window.clear();
 
         m_Window.setView(m_Viewport);
-        m_Renderer.DrawBoard(m_Window, m_Board, m_SelectedSquare, m_PreviousMove);
+        m_Renderer.DrawBoard(m_Window, *m_Board, m_SelectedSquare, m_PreviousMove);
 
         m_Window.display();
     }
@@ -71,10 +73,9 @@ void Application::EventHandler()
             if (mousePressed->button == sf::Mouse::Button::Left)
             {
                 sf::Vector2f mousePosition = sf::Vector2f(mousePressed->position.x, mousePressed->position.y);
-
                 sf::Vector2i cellIndex = m_Renderer.MouseCellIndex(m_Window.getSize().y, mousePosition);
-				std::cout << "[MouseRank, MouseFile]: " << cellIndex.y << ", " << cellIndex.x << std::endl;
-                if (IsCellInBounds(cellIndex, m_Board.GetSize()) && m_Board.IsValidPieceByTurn(cellIndex))
+
+                if (IsCellInBounds(cellIndex, m_Board->GetSize()) && m_Board->IsValidPieceByTurn(cellIndex))
                     m_SelectedSquare = cellIndex;
                 else
                     m_SelectedSquare = GlobalConstants::NullPosition;
@@ -82,13 +83,8 @@ void Application::EventHandler()
 
 			if (mousePressed->button == sf::Mouse::Button::Right)
 			{
-				PiecePosition whiteKingPosition = m_Board.GetWhiteKingPosition();
-				PiecePosition blackKingPosition = m_Board.GetBlackKingPosition();
-
-                std::cout << "[Rank, File, PieceType]: " << whiteKingPosition.y << ", " << whiteKingPosition.x << ", "
-                    << Textures::PieceTypeToString.at(PieceType::White_King) << std::endl; 
-                std::cout << "[Rank, File, PieceType]: " << blackKingPosition.y << ", " << blackKingPosition.x << ", "
-                    << Textures::PieceTypeToString.at(PieceType::Black_King) << std::endl;
+				PiecePosition whiteKingPosition = m_Board->GetWhiteKingPosition();
+				PiecePosition blackKingPosition = m_Board->GetBlackKingPosition();
 			}
 
         }
@@ -98,13 +94,13 @@ void Application::EventHandler()
             {
                 sf::Vector2f mousePosition = sf::Vector2f(mouseReleased->position.x, mouseReleased->position.y);
                 sf::Vector2i cellIndex = m_Renderer.MouseCellIndex(m_Window.getSize().y, mousePosition);
-                if (IsCellInBounds(cellIndex, m_Board.GetSize()))
+                if (IsCellInBounds(cellIndex, m_Board->GetSize()))
                 {
                     // Make move if a square was previously selected
                     if (m_SelectedSquare != GlobalConstants::NullPosition)
                     {
                         PieceMove move = PieceMove(m_SelectedSquare, cellIndex);
-                        bool validMove = m_Board.MakeMove(move.StartSquare, move);
+                        bool validMove = m_Board->MakeMove(move.StartSquare, move);
                         if (validMove)
                         {
                             m_PreviousMove = move;

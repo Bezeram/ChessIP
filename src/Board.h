@@ -16,6 +16,7 @@ class Board
 {
 public:
     Board(GameType gameType);
+	~Board();
 
     const BoardMatrix& GetBoard() const;
         
@@ -37,8 +38,8 @@ public:
 	PiecePosition GetWhiteKingPosition() const;
 	PiecePosition GetBlackKingPosition() const;
 
+    void Init1v1Game(std::shared_ptr<Board>& boardRef);
 private:
-    void Init1v1Game();
     void UpdateResources();
 private:
     bool m_IsWhitesTurn = 1;
@@ -52,6 +53,5 @@ private:
     int m_Size = 0;
     int m_BoardSize = 0;
     std::vector<std::vector<std::unique_ptr<BasePiece>>> m_Board;
-	std::shared_ptr<Board> m_SelfPtr;
 };
 
