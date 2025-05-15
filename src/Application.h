@@ -4,6 +4,7 @@
 
 #include "Renderer.h"
 #include "Board.h"
+#include "SoundPlayer.h"
 
 class Application
 {
