@@ -229,6 +229,7 @@ inline bool IsCellInBounds(PiecePosition cellIndex, int boardSize)
 namespace Global
 {
     inline float AdjustableK = 0.1f;
+    inline bool MouseLeftPressed = false;
 }
 
 struct WindowSettings
