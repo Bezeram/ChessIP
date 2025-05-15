@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.28)
 project(ChessIP LANGUAGES CXX)
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+set(ASSETS_DIR "${CMAKE_SOURCE_DIR}/assets")
 
 include(FetchContent)
 FetchContent_Declare(SFML
@@ -11,6 +12,8 @@ FetchContent_Declare(SFML
     EXCLUDE_FROM_ALL
     SYSTEM)
 FetchContent_MakeAvailable(SFML)
+
+file(COPY ${ASSETS_DIR} DESTINATION ${CMAKE_BINARY_DIR})
 
 # Pieces header files
 set (PIECES_HEADER_FILES

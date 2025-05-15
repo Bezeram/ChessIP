@@ -49,6 +49,7 @@ void ResourceManager::LoadAssets()
 	{
 		std::string name = "JetBrainsMono_Bold";
 		std::string path = Paths::Fonts + name + ".ttf";
+
 		AddFont(path.c_str(), name.c_str());
 	}
 	
