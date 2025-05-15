@@ -2,7 +2,7 @@
 
 Application::Application()
     // Remove sf::Style::None for windowed mode
-    : m_Window(sf::RenderWindow(sf::VideoMode::getDesktopMode(), "Chess9", sf::Style::None))
+    : m_Window(sf::RenderWindow(sf::VideoMode(sf::Vector2u(1920, 1080)), "Chess9", sf::Style::Close | sf::Style::Titlebar, sf::State::Fullscreen))
     , m_Viewport(sf::FloatRect(sf::Vector2f(0, 0), sf::Vector2f(m_Window.getSize().x, m_Window.getSize().y)))
     , m_Board(std::make_shared<Board>(GameType::OneVOne))
     , m_Renderer(m_Window.getSize(), m_Board->GetSize())
