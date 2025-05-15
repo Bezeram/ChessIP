@@ -48,7 +48,7 @@ void ResourceManager::LoadAssets()
 	// Load font
 	{
 		std::string name = "JetBrainsMono_Bold";
-		std::string path = "../../../../src/assets/fonts/" + name + ".ttf";
+		std::string path = Paths::Fonts + name + ".ttf";
 		AddFont(path.c_str(), name.c_str());
 	}
 	
@@ -56,7 +56,7 @@ void ResourceManager::LoadAssets()
 	{
 		// load all sounds from path
 
-		std::string path = "./assets/sounds/";
+		std::string path = Paths::Sounds;
 
 		for (const auto & entry : std::filesystem::directory_iterator(path))
 		{
