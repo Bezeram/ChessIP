@@ -235,7 +235,7 @@ struct WindowSettings
 {
 	WindowSettings() = default;
     sf::State State = sf::State::Fullscreen;
-    sf::Vector2u Resolution = { 1920, 1080 };
+    sf::Vector2u Resolution = { 0, 0 };
 };
 
 inline WindowSettings ParseWindowConfig(const std::string& filePath)
