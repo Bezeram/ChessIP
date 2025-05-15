@@ -3,7 +3,7 @@
 #include "BasePiece.h"
 
 #include "King.h"
-#include "WhiteWitch.h"
+#include "Witch.h"
 #include "Alchemist.h"
 #include "WhiteArcher.h"
 #include "WhiteBuilder.h"

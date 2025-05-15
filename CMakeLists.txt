@@ -20,12 +20,12 @@ set (PIECES_HEADER_FILES
     ${CMAKE_SOURCE_DIR}/src/pieces/AllPiecesHeader.h
     ${CMAKE_SOURCE_DIR}/src/pieces/BasePiece.h
     
-    ${CMAKE_SOURCE_DIR}/src/pieces/WhiteWitch.h
+    ${CMAKE_SOURCE_DIR}/src/pieces/Witch.h
     ${CMAKE_SOURCE_DIR}/src/pieces/King.h
     
     ${CMAKE_SOURCE_DIR}/src/pieces/WhiteKnight.h
     
-    ${CMAKE_SOURCE_DIR}/src/pieces/WhiteAlchemist.h
+    ${CMAKE_SOURCE_DIR}/src/pieces/Alchemist.h
     
     ${CMAKE_SOURCE_DIR}/src/pieces/WhiteArcher.h
     
@@ -49,12 +49,12 @@ set (PIECES_HEADER_FILES
 # Pieces source files
 set (PIECES_SOURCE_FILES
     
-    ${CMAKE_SOURCE_DIR}/src/pieces/WhiteWitch.cpp
+    ${CMAKE_SOURCE_DIR}/src/pieces/Witch.cpp
     ${CMAKE_SOURCE_DIR}/src/pieces/King.cpp
     
     ${CMAKE_SOURCE_DIR}/src/pieces/WhiteKnight.cpp
     
-    ${CMAKE_SOURCE_DIR}/src/pieces/WhiteAlchemist.cpp
+    ${CMAKE_SOURCE_DIR}/src/pieces/Alchemist.cpp
     
     ${CMAKE_SOURCE_DIR}/src/pieces/WhiteArcher.cpp
     

@@ -9,60 +9,35 @@ void Alchemist::GetLegalMoves(sf::Vector2i piecePosition, std::vector<ActionMove
 {
 	const BoardMatrix& boardMatrix = m_Board->GetBoard();
 
-	// TODO: add cleansing ability
 	switch (Alchemist::m_UpgradeLevel) 
 	{
 		case 1:
 			for (int dy = -1; dy <= 1; dy++)
 				for (int dx = -1; dx <= 1; dx++)
-					if (dy != 0 || dx != 0)
+				{
+					PiecePosition targetSquare = piecePosition + sf::Vector2i(dx, dy);
+					if (IsCellInBounds(targetSquare, m_Board->GetSize()))
 					{
-						PiecePosition targetSquare = piecePosition + sf::Vector2i(dx, dy);
-						if (IsCellInBounds(targetSquare, m_Board->GetSize()))
+						const auto& targetPiece = boardMatrix[targetSquare.y][targetSquare.x];
+						if (targetPiece.get() == nullptr)
 						{
-							// todo: Check if the target square is empty or occupied by a friendly piece
-							const auto& targetPiece = boardMatrix[targetSquare.y][targetSquare.x];
-							if (targetPiece.get() == nullptr)
+							// Check if the target square is not occupied by a friendly piece
+							if (!m_Board->IsTargetFriendly(PieceMove(piecePosition, targetSquare)))
 							{
-								// Check if the target square is not occupied by a friendly piece
-								if (!m_Board->IsTargetFriendly(PieceMove(piecePosition, targetSquare)))
-								{
-									legalMoves.push_back(ActionMove(targetSquare));
-								}
+								legalMoves.push_back(ActionMove(targetSquare));
 							}
 						}
 					}
+				}
 			break;
-		case 2:
+		default:
 			for (int dy = -2; dy <= 2; dy++)
 				for (int dx = -2; dx <= 2; dx++)
-					if ((dy != 0 || dx != 0) && (abs(dx) + abs(dy) <= 2))
+					if (abs(dx) + abs(dy) <= 2)
 					{
 						PiecePosition targetSquare = piecePosition + sf::Vector2i(dx, dy);
 						if (IsCellInBounds(targetSquare, m_Board->GetSize()))
 						{
-							// todo: Check if the target square is empty or occupied by a friendly piece
-							const auto& targetPiece = boardMatrix[targetSquare.y][targetSquare.x];
-							if (targetPiece.get() == nullptr)
-							{
-								// Check if the target square is not occupied by a friendly piece
-								if (!m_Board->IsTargetFriendly(PieceMove(piecePosition, targetSquare)))
-								{
-									legalMoves.push_back(ActionMove(targetSquare));
-								}
-							}
-						}
-					}
-			break;
-		case 3:
-			for (int dy = -2; dy <= 2; dy++)
-				for (int dx = -2; dx <= 2; dx++)
-					if ((dy != 0 || dx != 0) && (abs(dx) + abs(dy) <= 2))
-					{
-						PiecePosition targetSquare = piecePosition + sf::Vector2i(dx, dy);
-						if (IsCellInBounds(targetSquare, m_Board->GetSize()))
-						{
-							// todo: Check if the target square is empty or occupied by a friendly piece
 							const auto& targetPiece = boardMatrix[targetSquare.y][targetSquare.x];
 							if (targetPiece.get() == nullptr)
 							{

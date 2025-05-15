@@ -21,7 +21,9 @@ enum class PieceColor
 enum class Effect
 {
     None = 0,
-    Alchemist_Shield = 2
+    Stun = 1,
+    Alchemist_Shield = 2,
+    Hex = 3
 };
 
 
