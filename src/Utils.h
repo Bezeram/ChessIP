@@ -140,9 +140,12 @@ namespace Textures
 
 namespace Paths
 {
-    const inline static std::string Assets = "../../../../src/assets/";
+    const inline static std::string Root = "../";
+    const inline static std::string Assets = Root + "src/assets/";
     const inline static std::string Textures = Assets + "textures/";
     const inline static std::string Pieces = Textures + "pieces/";
+    const inline static std::string Sounds = Assets + "sounds/";
+    const inline static std::string Fonts = Assets + "fonts/";
 }
 
 inline bool IsWhitePiece(PieceType type)
