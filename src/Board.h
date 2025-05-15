@@ -6,8 +6,13 @@
 #include <cassert>
 #include <memory>
 
+#include <SFML/Audio.hpp>
+#include <SFML/Audio/Sound.hpp>
+
+#include "ResourceManager.h"
 #include "Utils.h"
 #include "pieces/AllPiecesHeader.h"
+#include "SoundPlayer.h"
 
 /**
 * First square starts from the bottom left, going to right and up

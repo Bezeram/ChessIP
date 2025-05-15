@@ -1,12 +1,14 @@
 #include "Application.h"
 
 Application::Application()
-    : m_Window(sf::RenderWindow(sf::VideoMode({ 1280, 720 }), "Chess9"))
+    // Remove sf::Style::None for windowed mode
+    : m_Window(sf::RenderWindow(sf::VideoMode::getDesktopMode(), "Chess9", sf::Style::None))
     , m_Viewport(sf::FloatRect(sf::Vector2f(0, 0), sf::Vector2f(m_Window.getSize().x, m_Window.getSize().y)))
     , m_Board(std::make_shared<Board>(GameType::OneVOne))
     , m_Renderer(m_Window.getSize(), m_Board->GetSize())
 {
 	ResourceManager::Initialise();
+	SoundPlayer::Initialize();
     
     m_Window.setFramerateLimit(400);
 	m_Window.setVerticalSyncEnabled(true);
@@ -31,6 +33,8 @@ void Application::Run()
         m_Renderer.DrawBoard(m_Window, *m_Board, m_SelectedSquare, m_PreviousMove);
 
         m_Window.display();
+
+        SoundPlayer::GetInstance().Update();
     }
 }
 

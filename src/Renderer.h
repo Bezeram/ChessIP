@@ -4,7 +4,6 @@
 #include <SFML/Graphics.hpp>
 
 #include "Board.h"
-#include "ResourceManager.h"
 
 class Renderer
 {
