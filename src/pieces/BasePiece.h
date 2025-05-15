@@ -15,8 +15,8 @@ typedef std::vector<std::vector<std::unique_ptr<BasePiece>>> BoardMatrix;
 class BasePiece
 {
 public:
-	BasePiece(std::shared_ptr<Board> board, PieceColor color)
-		: m_Board(std::move(board)), m_Color(color)
+	BasePiece(std::shared_ptr<Board> board, PieceColor color, uint32_t upgradeLevel = 1)
+		: m_Board(std::move(board)), m_Color(color), m_UpgradeLevel(upgradeLevel)
 	{
 	}
 
@@ -70,10 +70,30 @@ public:
 	{
 		return m_Color;
 	}
+
+	virtual std::vector<Effect> GetEffects()
+	{
+		return m_Effects;
+	}
+
+	virtual void AddEffect(Effect effect)
+	{
+		m_Effects.push_back(effect);
+	}
+
+	virtual void RemoveEffect(Effect effect)
+	{
+		auto it = std::remove(m_Effects.begin(), m_Effects.end(), effect);
+		if (it != m_Effects.end())
+		{
+			m_Effects.erase(it, m_Effects.end());
+		}
+	}
+
 protected:
 	std::vector<Effect> m_Effects;
 	std::shared_ptr<Board> m_Board;
-	uint32_t m_UpgradeLevel = 1;
+	uint32_t m_UpgradeLevel;
 	PieceColor m_Color;
 };
 
