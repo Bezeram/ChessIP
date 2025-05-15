@@ -36,7 +36,7 @@ public:
 	// Board position and scale are automatically calculated into the sprite beforehand
 	virtual void Render(sf::Sprite& sprite, sf::RenderWindow& window, const sf::Shader& pieceShader, bool isSelectedPiece)
 	{
-		if (isSelectedPiece && Global::MouseLeftPressed && sf::Mouse::isButtonPressed(sf::Mouse::Button::Left))
+		if (isSelectedPiece && Global::MouseLeftPressed)
 		{
 			// Piece is dragged with mouse
 			sf::Vector2i mousePosition = sf::Mouse::getPosition(window);
