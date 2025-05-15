@@ -9,7 +9,7 @@
 class Application
 {
 public:
-	Application();
+	Application(WindowSettings windowSettings);
 	~Application();
 
 	void Run();
