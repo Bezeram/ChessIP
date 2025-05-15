@@ -1,6 +1,6 @@
 #include "BlackWitch.h"
 
-void BlackWitch::GetLegalMoves(const BoardMatrix& board, sf::Vector2i piecePosition, std::vector<ActionMove>& validMoves)
+void BlackWitch::GetLegalMoves(sf::Vector2i piecePosition, std::vector<ActionMove>& legalMoves)
 {
 	// TODO: calculate valid moves/attacks
 }

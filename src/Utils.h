@@ -155,19 +155,18 @@ inline bool IsBlackPiece(PieceType type)
     return int(type) > int(PieceType::White_Dragon);
 }
 
+inline PieceColor GetPieceColor(PieceType type)
+{
+	if (IsWhitePiece(type))
+		return PieceColor::White;
+	return PieceColor::Black;
+}
+
 enum class GameType
 {
     OneVOne,
     TwoVTwo,
 };
-
-
-inline PieceColor GetPieceColor(PieceType type)
-{
-    if (IsWhitePiece(type))
-        return PieceColor::White;
-    return PieceColor::Black;
-}
 
 template<typename T>
 inline T Lerp(T start, T end, float t)
@@ -208,6 +207,16 @@ inline T ClampMin(T value, T min)
     if (value < min)
         return min;
     return value;
+}
+
+inline bool IsInBounds(int x, int size)
+{
+    return x >= 0 && x < size;
+}
+
+inline bool IsCellInBounds(PiecePosition cellIndex, int boardSize)
+{
+    return IsInBounds(cellIndex.x, boardSize) && IsInBounds(cellIndex.y, boardSize);
 }
 
 namespace Global

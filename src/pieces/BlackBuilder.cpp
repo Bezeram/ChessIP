@@ -1,6 +1,6 @@
 #include "BlackBuilder.h"
 
-void BlackBuilder::GetLegalMoves(const BoardMatrix& board, sf::Vector2i piecePosition, std::vector<ActionMove>& validMoves)
+void BlackBuilder::GetLegalMoves(sf::Vector2i piecePosition, std::vector<ActionMove>& legalMoves)
 {
 	// TODO: calculate valid moves/attacks
 }

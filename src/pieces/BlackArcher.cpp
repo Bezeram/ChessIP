@@ -1,6 +1,6 @@
 #include "BlackArcher.h"
 
-void BlackArcher::GetLegalMoves(const BoardMatrix& board, sf::Vector2i piecePosition, std::vector<ActionMove>& validMoves)
+void BlackArcher::GetLegalMoves(sf::Vector2i piecePosition, std::vector<ActionMove>& legalMoves)
 {
 	// TODO: calculate valid moves/attacks
 }

@@ -1,6 +1,6 @@
 #include "BlackRogue.h"
 
-void BlackRogue::GetLegalMoves(const BoardMatrix& board, sf::Vector2i piecePosition, std::vector<ActionMove>& validMoves)
+void BlackRogue::GetLegalMoves(sf::Vector2i piecePosition, std::vector<ActionMove>& legalMoves)
 {
 	// TODO: calculate valid moves/attacks
 }

@@ -1,6 +1,6 @@
 #include "WhiteDragon.h"
 
-void WhiteDragon::GetLegalMoves(const BoardMatrix& board, sf::Vector2i piecePosition, std::vector<ActionMove>& validMoves)
+void WhiteDragon::GetLegalMoves(sf::Vector2i piecePosition, std::vector<ActionMove>& legalMoves)
 {
 	// TODO: calculate valid moves/attacks
 }

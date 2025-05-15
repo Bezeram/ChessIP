@@ -23,7 +23,7 @@ public:
     void DeletePieceAt(PiecePosition position);
 
     // Get the square at a coordinate
-    //std::unique_ptr<BasePiece>& operator[](PiecePosition position);
+    std::unique_ptr<BasePiece>& operator[](PiecePosition position);
     const std::unique_ptr<BasePiece>& operator[](PiecePosition position) const;
 
 	int GetWhiteFlux() const { return m_WhiteFlux; }
@@ -36,8 +36,6 @@ public:
 
 	PiecePosition GetWhiteKingPosition() const;
 	PiecePosition GetBlackKingPosition() const;
-
-    bool IsCellOnBoard(const sf::Vector2i& cellIndex) const;
 
 private:
     void Init1v1Game();
@@ -54,5 +52,6 @@ private:
     int m_Size = 0;
     int m_BoardSize = 0;
     std::vector<std::vector<std::unique_ptr<BasePiece>>> m_Board;
+	std::shared_ptr<Board> m_SelfPtr;
 };
 

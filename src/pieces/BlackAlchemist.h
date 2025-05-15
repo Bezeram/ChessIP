@@ -6,7 +6,7 @@
 class BlackAlchemist : public BasePiece
 {
 public:
-	void GetLegalMoves(const BoardMatrix& board, sf::Vector2i piecePosition, std::vector<ActionMove>& validMoves) override;
+	void GetLegalMoves(sf::Vector2i piecePosition, std::vector<ActionMove>& legalMoves) override;
 	PieceType GetPieceType();
 private:
 	// TODO: Implement ExecuteMove() if necessary

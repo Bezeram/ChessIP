@@ -18,8 +18,7 @@ set (PIECES_HEADER_FILES
     ${CMAKE_SOURCE_DIR}/src/pieces/BasePiece.h
     ${CMAKE_SOURCE_DIR}/src/pieces/BlackWitch.h
     ${CMAKE_SOURCE_DIR}/src/pieces/WhiteWitch.h
-    ${CMAKE_SOURCE_DIR}/src/pieces/BlackKing.h
-    ${CMAKE_SOURCE_DIR}/src/pieces/WhiteKing.h
+    ${CMAKE_SOURCE_DIR}/src/pieces/King.h
     ${CMAKE_SOURCE_DIR}/src/pieces/BlackKnight.h
     ${CMAKE_SOURCE_DIR}/src/pieces/WhiteKnight.h
     ${CMAKE_SOURCE_DIR}/src/pieces/BlackAlchemist.h
@@ -48,8 +47,7 @@ set (PIECES_HEADER_FILES
 set (PIECES_SOURCE_FILES
     ${CMAKE_SOURCE_DIR}/src/pieces/BlackWitch.cpp
     ${CMAKE_SOURCE_DIR}/src/pieces/WhiteWitch.cpp
-    ${CMAKE_SOURCE_DIR}/src/pieces/BlackKing.cpp
-    ${CMAKE_SOURCE_DIR}/src/pieces/WhiteKing.cpp
+    ${CMAKE_SOURCE_DIR}/src/pieces/King.cpp
     ${CMAKE_SOURCE_DIR}/src/pieces/BlackKnight.cpp
     ${CMAKE_SOURCE_DIR}/src/pieces/WhiteKnight.cpp
     ${CMAKE_SOURCE_DIR}/src/pieces/BlackAlchemist.cpp

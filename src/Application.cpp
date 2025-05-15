@@ -74,7 +74,7 @@ void Application::EventHandler()
 
                 sf::Vector2i cellIndex = m_Renderer.MouseCellIndex(m_Window.getSize().y, mousePosition);
 				std::cout << "[MouseRank, MouseFile]: " << cellIndex.y << ", " << cellIndex.x << std::endl;
-                if (m_Board.IsCellOnBoard(cellIndex) && m_Board.IsValidPieceByTurn(cellIndex))
+                if (IsCellInBounds(cellIndex, m_Board.GetSize()) && m_Board.IsValidPieceByTurn(cellIndex))
                     m_SelectedSquare = cellIndex;
                 else
                     m_SelectedSquare = GlobalConstants::NullPosition;
@@ -98,7 +98,7 @@ void Application::EventHandler()
             {
                 sf::Vector2f mousePosition = sf::Vector2f(mouseReleased->position.x, mouseReleased->position.y);
                 sf::Vector2i cellIndex = m_Renderer.MouseCellIndex(m_Window.getSize().y, mousePosition);
-                if (m_Board.IsCellOnBoard(cellIndex))
+                if (IsCellInBounds(cellIndex, m_Board.GetSize()))
                 {
                     // Make move if a square was previously selected
                     if (m_SelectedSquare != GlobalConstants::NullPosition)

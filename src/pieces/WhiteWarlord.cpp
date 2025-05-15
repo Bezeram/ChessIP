@@ -1,6 +1,6 @@
 #include "WhiteWarlord.h"
 
-void WhiteWarlord::GetLegalMoves(const BoardMatrix& board, sf::Vector2i piecePosition, std::vector<ActionMove>& validMoves)
+void WhiteWarlord::GetLegalMoves(sf::Vector2i piecePosition, std::vector<ActionMove>& legalMoves)
 {
 	// TODO: calculate valid moves/attacks
 }

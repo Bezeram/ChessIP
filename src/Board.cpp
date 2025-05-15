@@ -1,6 +1,7 @@
 #include "Board.h"
 
 Board::Board(GameType gameType)
+	: m_SelfPtr(this)
 {
 	m_Board.resize(10);
 
@@ -38,12 +39,12 @@ void Board::Init1v1Game()
 	// Place pieces
 	// White
 	{
-		m_Board[whiteRank][kingFile] = std::make_unique<WhiteKing>();
+		m_Board[whiteRank][kingFile] = std::make_unique<King>(m_SelfPtr, PieceColor::White);
 	}
 
 	// Black
 	{
-		m_Board[blackRank][kingFile] = std::make_unique<BlackKing>();
+		m_Board[blackRank][kingFile] = std::make_unique<King>(m_SelfPtr, PieceColor::Black);
 	}
 }
 
@@ -80,11 +81,11 @@ bool Board::IsTargetFriendly(const PieceMove& move) const
 	return false;
 }
 
-//std::unique_ptr<BasePiece>& Board::operator[](PiecePosition position)
-//{
-//	assert(position.x >= 0 && position.x < m_Size && position.y >= 0 && position.y < m_Size);
-//	return m_Board[position.y][position.x];
-//}
+std::unique_ptr<BasePiece>& Board::operator[](PiecePosition position)
+{
+	assert(position.x >= 0 && position.x < m_Size && position.y >= 0 && position.y < m_Size);
+	return m_Board[position.y][position.x];
+}
 
 const std::unique_ptr<BasePiece>& Board::operator[](PiecePosition position) const
 {
@@ -105,12 +106,6 @@ bool Board::IsValidPieceByTurn(PiecePosition position) const
 	return IsWhitePiece(piece->GetPieceType()) == IsWhitesMove();
 }
 
-bool Board::IsCellOnBoard(const sf::Vector2i& cellIndex) const
-{
-	return (cellIndex.x >= 0 && cellIndex.x < m_Size &&
-		cellIndex.y >= 0 && cellIndex.y < m_Size);
-}
-
 bool Board::IsWhitesMove() const
 {
 	return m_IsWhitesTurn;
@@ -122,7 +117,7 @@ bool Board::MakeMove(PiecePosition piecePosition, PieceMove move)
 
 	if (selectedPiece.get() != nullptr)
 	{
-		ActionMove actionMove = selectedPiece->IsLegalMove(m_Board, move);
+		ActionMove actionMove = selectedPiece->IsLegalMove(move);
 		if (actionMove != GlobalConstants::NullActionMove)
 		{
 			selectedPiece->ExecuteMove(m_Board, piecePosition, actionMove);

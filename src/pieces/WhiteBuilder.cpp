@@ -1,6 +1,6 @@
 #include "WhiteBuilder.h"
 
-void WhiteBuilder::GetLegalMoves(const BoardMatrix& board, sf::Vector2i piecePosition, std::vector<ActionMove>& validMoves)
+void WhiteBuilder::GetLegalMoves(sf::Vector2i piecePosition, std::vector<ActionMove>& legalMoves)
 {
 	// TODO: calculate valid moves/attacks
 }

@@ -3,7 +3,7 @@
 #include "BasePiece.h"
 
 #include "WhiteWitch.h"
-#include "WhiteKing.h"
+#include "King.h"
 #include "WhiteKnight.h"
 #include "WhiteAlchemist.h"
 #include "WhiteArcher.h"
@@ -17,7 +17,6 @@
 #include "WhiteDragon.h"
 
 #include "BlackWitch.h"
-#include "BlackKing.h"
 #include "BlackKnight.h"
 #include "BlackAlchemist.h"
 #include "BlackArcher.h"
