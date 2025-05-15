@@ -31,6 +31,7 @@ void Application::Run()
 
         m_Window.setView(m_Viewport);
         m_Renderer.DrawBoard(m_Window, *m_Board, m_SelectedSquare, m_PreviousMove);
+		m_Renderer.DrawHUD(m_Window.getSize(), m_Board->GetSize());
 
         m_Window.display();
 
