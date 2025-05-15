@@ -119,18 +119,10 @@ bool Board::IsWhitesMove() const
 	return m_IsWhitesTurn;
 }
 
-bool Board::MakeMove(PiecePosition piecePosition, PieceMove move)
+bool Board::MakeMove(PiecePosition piecePosition, ActionMove actionMove)
 {
 	const auto& selectedPiece = (*this)[piecePosition];
-
-	if (selectedPiece.get() != nullptr)
-	{
-		ActionMove actionMove = selectedPiece->IsLegalMove(move);
-		if (actionMove != GlobalConstants::NullActionMove)
-		{
-			selectedPiece->ExecuteMove(m_Board, piecePosition, actionMove);
-		}
-	}
+	selectedPiece->ExecuteMove(m_Board, piecePosition, actionMove);
 
 	// Update flux and gold
 	UpdateResources();
