@@ -17,17 +17,21 @@ enum class PieceColor
     Black,
 };
 
+// Follow this rule:
+// All positive effects (buffs) are even numbers (2, 4, 6, ...)
+// All negative effects (debuffs) are odd numbers (1, 3, 5, ...)
 enum class Effect
 {
     None = 0,
-	// TODO: Add buffs and debuffs
+    Stun = 1,
+    Alchemist_Shield = 2,
+    Hex = 3
 };
 
-// TODO: update according to the effects added
+
 static bool IsEffectBuff(Effect effect)
 {
-	assert(effect != Effect::None);
-    return false;
+	return int(effect) % 2 == 0;
 }
 
 enum class MoveType 
@@ -45,7 +49,9 @@ struct ActionMove
 
     bool operator==(const ActionMove& other) const
     {
-        return TargetSquare == other.TargetSquare && Effect == other.Effect;
+        return TargetSquare == other.TargetSquare 
+            //&& Effect == other.Effect
+            ;
     }
     bool operator!=(const ActionMove& other) const
     {
@@ -122,6 +128,7 @@ namespace Textures
 	    { PieceType::White_Samurai,     "White_Samurai" },      { PieceType::Black_Samurai,     "Black_Samurai" },
 	    { PieceType::White_Dragon,      "White_Dragon" },       { PieceType::Black_Dragon,      "Black_Dragon" }
     };
+	const inline static std::string Placeholder = "Placeholder.png";
     const inline static std::string Null = "Null.png";
     const inline static std::string Board = "Board.jpg";
 

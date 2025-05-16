@@ -43,10 +43,16 @@ void Board::Init1v1Game(std::shared_ptr<Board>& boardRef)
 	{
 		m_Board[whiteRank][kingFile] = std::make_unique<King>(boardRef, PieceColor::White);
 	}
+	{
+		m_Board[whiteRank][kingFile + 1] = std::make_unique<Archer>(boardRef, PieceColor::White, 3);
+	}
 
 	// Black
 	{
 		m_Board[blackRank][kingFile] = std::make_unique<King>(boardRef, PieceColor::Black);
+	}
+	{
+		m_Board[blackRank][kingFile - 1] = std::make_unique<Archer>(boardRef, PieceColor::Black, 1);
 	}
 }
 

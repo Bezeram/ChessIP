@@ -15,9 +15,18 @@ typedef std::vector<std::vector<std::unique_ptr<BasePiece>>> BoardMatrix;
 class BasePiece
 {
 public:
-	BasePiece(std::shared_ptr<Board> board, PieceColor color)
-		: m_Board(std::move(board)), m_Color(color)
+	BasePiece(std::shared_ptr<Board> board, PieceColor color, uint32_t upgradeLevel = 1)
+		: m_Board(std::move(board)), m_Color(color), m_UpgradeLevel(upgradeLevel)
 	{
+	}
+
+	// Wrapper function to get the legal moves for a piece, made so that effects can be applied to available moves
+	// Maybe do this more elegantly
+	void GetLegalMovesWrapper(PiecePosition piecePosition, std::vector<ActionMove>& legalMoves)
+	{
+		GetLegalMoves(piecePosition, legalMoves);
+		
+		ProcessEffects(legalMoves);
 	}
 
 	// Every piece must implement this function to get the valid moves
@@ -46,14 +55,86 @@ public:
 			sprite.setOrigin(sf::Vector2f(texture.getSize().x / 2.f, texture.getSize().y / 2.f));
 		}
 
+		EffectTint(sprite);
+
 		window.draw(sprite, &pieceShader);
 	}
 
+	virtual void EffectTint(sf::Sprite& sprite)
+	{
+		for (auto effect : m_Effects)
+		{
+			switch (std::get<0>(effect))
+			{
+			case Effect::Alchemist_Shield:
+				sprite.setColor(sf::Color(0, 255, 0, 64)); // Green color with transparency
+				break;
+			case Effect::Stun:
+				sprite.setColor(sf::Color(0, 0, 0, 128)); // Black color with transparency
+				break;
+			case Effect::Hex:
+				sprite.setColor(sf::Color(255, 0, 0, 64)); // Red color with transparency
+				break;
+			default:
+				break;
+			}
+		}
+
+		// Dont know if unaffected pieces should have the effect "None" or should have an empty vector, could cause a bug.
+		if (m_Effects.empty())
+		{
+			sprite.setColor(sf::Color(255, 255, 255)); // Reset to original color
+		}
+	}
+
+	void ProcessEffects(std::vector<ActionMove>& legalMoves) {
+		for (auto effect : m_Effects)
+		{
+
+			// Could produce a bug if function is called without making a move
+			// Maybe should be called after the move is made, not whenever polling legal moves
+			// For now it works, but could be a problem in the future
+			if (std::get<1>(effect) > 0)
+			{
+				std::get<1>(effect)--;
+			}
+			else
+			{
+				RemoveEffect(std::get<0>(effect));
+			}
+
+			switch (std::get<0>(effect))
+			{
+			// Should be first effect in the effects vector maybe
+			case Effect::Alchemist_Shield:
+				for (auto debuff : m_Effects)
+					if (!IsEffectBuff(std::get<0>(debuff)))
+					{
+						RemoveEffect(std::get<0>(debuff));
+					}
+				break;
+			// A stunned piece has no legal moves
+			case Effect::Stun:
+				legalMoves.clear();
+				break;
+			case Effect::Hex:
+				if (m_UpgradeLevel > 1)
+				{
+					m_UpgradeLevel--;
+				}
+				break;
+			default:
+				break;
+			}
+		}
+
+		// After processing all effects, effects vector should be empty
+	}
 	// For a given attack move, checks if move is among valid ones
 	ActionMove BasePiece::IsLegalMove(PieceMove move, MoveType moveType)
 	{
 		std::vector<ActionMove> legalMoves;
-		GetLegalMoves(move.StartSquare, legalMoves);
+		GetLegalMovesWrapper(move.StartSquare, legalMoves);
 		for (const auto& legalMove : legalMoves)
 		{
 			if (legalMove.TargetSquare == move.TargetSquare && legalMove.MoveType == moveType)
@@ -64,16 +145,45 @@ public:
 
 		return Constants::NullActionMove;
 	}
+
 	
 	virtual PieceType GetPieceType() = 0;
 	PieceColor GetPieceColor() const
 	{
 		return m_Color;
 	}
+
+	virtual std::vector<std::tuple<Effect, int>> GetEffects()
+	{
+		return m_Effects;
+	}
+
+	virtual void AddEffect(Effect effect, int lifetime)
+	{
+		m_Effects.push_back(std::make_tuple(effect, lifetime));
+	}
+
+
+	// Copy pasted from llm, dont understand it
+	virtual void RemoveEffect(Effect effect)
+	{
+		// Use remove_if with a custom predicate to find tuples where the first element matches 'effect'
+		auto it = std::remove_if(m_Effects.begin(), m_Effects.end(),
+			[effect](const std::tuple<Effect, int>& item) {
+				return std::get<0>(item) == effect;
+			});
+
+		// Erase the removed elements
+		if (it != m_Effects.end())
+		{
+			m_Effects.erase(it, m_Effects.end());
+		}
+	}
+
 protected:
-	std::vector<Effect> m_Effects;
+	std::vector<std::tuple<Effect, int>> m_Effects;
 	std::shared_ptr<Board> m_Board;
-	uint32_t m_UpgradeLevel = 1;
+	uint32_t m_UpgradeLevel;
 	PieceColor m_Color;
 };
 

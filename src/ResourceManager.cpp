@@ -30,7 +30,7 @@ void ResourceManager::LoadAssets()
 	for (auto& type : Textures::PieceTypeToString)
 	{
 		const std::string& name = type.second;
-		const std::string& path = Paths::Pieces + name + ".jpg";
+		const std::string& path = Paths::Pieces + name + ".png";
 
 		AddTexture(path, name, true);
 	}
@@ -76,6 +76,11 @@ void ResourceManager::LoadAssets()
 const sf::Texture& ResourceManager::GetPieceTexture(PieceType type) const
 {
 	const std::string& key = Textures::PieceTypeToString.at(type);
+	if (m_Textures.find(key) == m_Textures.end())
+	{
+		std::cout << "Texture " << key << " not found!\n";
+		return m_Textures.at("White_King");
+	}
 	return m_Textures.at(key);
 }
 

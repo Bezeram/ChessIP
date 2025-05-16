@@ -10,13 +10,12 @@ Renderer::Renderer(const sf::Vector2u& screenSize, int boardTileSize)
 
 		void main()
 		{
-			vec4 color = texture2D(texture, gl_TexCoord[0].xy);
-    
+			vec4 texColor = texture2D(texture, gl_TexCoord[0].xy);
+			vec4 color = texColor * gl_Color;
+
 			// Discard almost-transparent pixels to avoid white outlines
-			if (color.a < 0.7)
+			if (color.a < 0.5)
 				discard;
-			else if (color.a < 1.0)
-				color = vec4(0, 0, 0, 1);
 
 			gl_FragColor = color;
 		}
@@ -50,7 +49,7 @@ void Renderer::DrawBoard(sf::RenderWindow& window, const Board& board, PiecePosi
 	{
 		const auto& selectedPiece = board[selectedPiecePosition];
 		if (selectedPiece.get() != nullptr)
-			selectedPiece->GetLegalMoves(selectedPiecePosition, legalMoves);
+			selectedPiece->GetLegalMovesWrapper(selectedPiecePosition, legalMoves);
 	}
 
 	/// Draw grid board
