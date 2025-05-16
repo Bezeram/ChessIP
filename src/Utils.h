@@ -32,13 +32,16 @@ static bool IsEffectBuff(Effect effect)
 
 enum class MoveType 
 {
-    Move = 0,
-    Action
+    None = 0,
+    Move,
+    Action,
+    Any
 };
 
 struct ActionMove
 {
-    ActionMove(PiecePosition targetSquare) : TargetSquare(targetSquare) {}
+    ActionMove(PiecePosition targetSquare, MoveType moveType = MoveType::Move) 
+        : TargetSquare(targetSquare), MoveType(moveType) {}
 
     bool operator==(const ActionMove& other) const
     {
@@ -51,9 +54,8 @@ struct ActionMove
 
     PiecePosition TargetSquare;
     Effect Effect = Effect::None;
-    MoveType MoveType = MoveType::Move;
+    MoveType MoveType;
 };
-
 
 struct PieceMove
 {

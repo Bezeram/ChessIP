@@ -13,7 +13,7 @@ public:
 	/*
 		Board is drawn from white's perspective, from the top left square, left to right;
 	*/
-	void DrawBoard(sf::RenderWindow& window, const Board& board, PiecePosition selectedSquare, const PieceMove& previousMove);
+	void DrawBoard(sf::RenderWindow& window, const Board& board, PiecePosition selectedSquare, MoveType moveType, const PieceMove& previousMove);
 	void CalculateBoard(const sf::Vector2u& screenSize, int boardTileSize);
 	void DrawHUD(const sf::Vector2u& screenSize, int boardTileSize);
 
@@ -37,4 +37,5 @@ private:
 	sf::Color m_ColorPreviousMove = { 255, 209, 0, 125 };
 
 	sf::Color m_ColorLegalMove = { 255, 30, 30 };
+	sf::Color m_ColorLegalAction = { 162, 0, 219 };
 };

@@ -33,7 +33,7 @@ void Application::Run()
         m_Window.clear();
 
         m_Window.setView(m_Viewport);
-        m_Renderer.DrawBoard(m_Window, *m_Board, m_SelectedSquare, m_PreviousMove);
+        m_Renderer.DrawBoard(m_Window, *m_Board, m_SelectedSquare, m_MoveType, m_PreviousMove);
 		m_Renderer.DrawHUD(m_Window.getSize(), m_Board->GetSize());
 
         m_Window.display();
@@ -79,52 +79,67 @@ void Application::EventHandler()
         {
             Global::MouseLeftPressed = true;
 
-            // Initial piece is selected
+            // Assign move type. 
+            // Left click generates legal piece moves
+            // Right click generates legal action moves
+            MoveType moveTypePressed = MoveType::None;
             if (mousePressed->button == sf::Mouse::Button::Left)
-            {
-                sf::Vector2f mousePosition = sf::Vector2f(mousePressed->position.x, mousePressed->position.y);
-                sf::Vector2i targetSquare = m_Renderer.MouseCellIndex(m_Window.getSize().y, mousePosition);
+                moveTypePressed = MoveType::Move;
+            if (mousePressed->button == sf::Mouse::Button::Right)
+                moveTypePressed = MoveType::Action;
 
-				if (m_SelectedSquare != GlobalConstants::NullPosition)
+            // Initial piece is selected
+            sf::Vector2f mousePosition = sf::Vector2f(mousePressed->position.x, mousePressed->position.y);
+            sf::Vector2i targetSquare = m_Renderer.MouseCellIndex(m_Window.getSize().y, mousePosition);
+
+			if (m_MoveType != MoveType::None && m_MoveType == moveTypePressed && 
+                    m_SelectedSquare != GlobalConstants::NullPosition)
+			{
+				// If the square is already selected make move using new selection
+				if (m_SelectedSquare != targetSquare)
 				{
-					// If the square is already selected make move using new selection
-					if (m_SelectedSquare != targetSquare)
-					{
-                        if (IsCellInBounds(targetSquare, m_Board->GetSize()))
+                    if (IsCellInBounds(targetSquare, m_Board->GetSize()))
+                    {
+                        // Make move if a square was previously selected
+                        if (m_SelectedSquare != GlobalConstants::NullPosition)
                         {
-                            // Make move if a square was previously selected
-                            if (m_SelectedSquare != GlobalConstants::NullPosition)
+                            PieceMove move = PieceMove(m_SelectedSquare, targetSquare);
+                            const auto& selectedPiece = (*m_Board)[move.StartSquare];
+
+                            if (selectedPiece.get() != nullptr)
                             {
-                                PieceMove move = PieceMove(m_SelectedSquare, targetSquare);
-                                const auto& selectedPiece = (*m_Board)[move.StartSquare];
-
-                                if (selectedPiece.get() != nullptr)
+                                ActionMove actionMove = selectedPiece->IsLegalMove(move, m_MoveType);
+                                if (actionMove != GlobalConstants::NullActionMove)
                                 {
-                                    ActionMove actionMove = selectedPiece->IsLegalMove(move);
-                                    if (actionMove != GlobalConstants::NullActionMove)
-                                    {
-                                        bool validMove = m_Board->MakeMove(move.StartSquare, actionMove);
+                                    bool validMove = m_Board->MakeMove(move.StartSquare, actionMove);
 
-                                        if (validMove)
-                                        {
-                                            m_PreviousMove = move;
-                                        }
+                                    if (validMove)
+                                    {
+                                        m_PreviousMove = move;
                                     }
                                 }
                             }
                         }
+                    }
 
-                        // Reset selection
-                        m_SelectedSquare = GlobalConstants::NullPosition;
-					}
+                    // Reset selection
+                    m_SelectedSquare = GlobalConstants::NullPosition;
+                    m_MoveType = MoveType::None;
 				}
-                else
+			}
+            else
+            {
+                if (IsCellInBounds(targetSquare, m_Board->GetSize()) && m_Board->IsValidPieceByTurn(targetSquare))
                 {
                     // Assign selected square
-                    if (IsCellInBounds(targetSquare, m_Board->GetSize()) && m_Board->IsValidPieceByTurn(targetSquare))
-                        m_SelectedSquare = targetSquare;
-                    else
-                        m_SelectedSquare = GlobalConstants::NullPosition;
+                    m_SelectedSquare = targetSquare;
+                    m_MoveType = moveTypePressed;
+                }
+                else
+                {
+                    // Reset selection
+                    m_SelectedSquare = GlobalConstants::NullPosition;
+                    m_MoveType = MoveType::None;
                 }
             }
         }
@@ -132,40 +147,46 @@ void Application::EventHandler()
         {
             Global::MouseLeftPressed = false;
 
+            MoveType moveTypeRelease = MoveType::None;
             if (mouseReleased->button == sf::Mouse::Button::Left)
+                moveTypeRelease = MoveType::Move;
+            if (mouseReleased->button == sf::Mouse::Button::Right)
+                moveTypeRelease = MoveType::Action;
+
+            sf::Vector2f mousePosition = sf::Vector2f(mouseReleased->position.x, mouseReleased->position.y);
+            sf::Vector2i targetSquare = m_Renderer.MouseCellIndex(m_Window.getSize().y, mousePosition);
+            if (m_MoveType != MoveType::None && m_MoveType == moveTypeRelease && 
+                IsCellInBounds(targetSquare, m_Board->GetSize()))
             {
-                sf::Vector2f mousePosition = sf::Vector2f(mouseReleased->position.x, mouseReleased->position.y);
-                sf::Vector2i targetSquare = m_Renderer.MouseCellIndex(m_Window.getSize().y, mousePosition);
-                if (IsCellInBounds(targetSquare, m_Board->GetSize()))
+                // Make move if a square was previously selected
+                if (m_SelectedSquare != GlobalConstants::NullPosition && m_SelectedSquare != targetSquare)
                 {
-                    // Make move if a square was previously selected
-                    if (m_SelectedSquare != GlobalConstants::NullPosition && m_SelectedSquare != targetSquare)
+                    PieceMove move = PieceMove(m_SelectedSquare, targetSquare);
+                    const auto& selectedPiece = (*m_Board)[move.StartSquare];
+
+                    if (selectedPiece.get() != nullptr)
                     {
-                        PieceMove move = PieceMove(m_SelectedSquare, targetSquare);
-                        const auto& selectedPiece = (*m_Board)[move.StartSquare];
-
-                        if (selectedPiece.get() != nullptr)
+                        ActionMove actionMove = selectedPiece->IsLegalMove(move, m_MoveType);
+                        if (actionMove != GlobalConstants::NullActionMove)
                         {
-                            ActionMove actionMove = selectedPiece->IsLegalMove(move);
-                            if (actionMove != GlobalConstants::NullActionMove)
-                            {
-                                bool validMove = m_Board->MakeMove(move.StartSquare, actionMove);
+                            bool validMove = m_Board->MakeMove(move.StartSquare, actionMove);
 
-                                if (validMove)
-                                {
-                                    m_PreviousMove = move;
-                                    // Reset selection
-                                    m_SelectedSquare = GlobalConstants::NullPosition;
-                                }
+                            if (validMove)
+                            {
+                                m_PreviousMove = move;
+                                // Reset selection
+                                m_SelectedSquare = GlobalConstants::NullPosition;
+                                m_MoveType = MoveType::None;
                             }
                         }
                     }
                 }
-                else
-                {
-                    // Reset selection
-                    m_SelectedSquare = GlobalConstants::NullPosition;
-                }
+            }
+            else
+            {
+                // Reset selection
+                m_SelectedSquare = GlobalConstants::NullPosition;
+                m_MoveType = MoveType::None;
             }
         }
     }
