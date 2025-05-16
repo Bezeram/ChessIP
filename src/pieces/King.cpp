@@ -30,6 +30,7 @@ void King::GetLegalMoves(sf::Vector2i piecePosition, std::vector<ActionMove>& le
 	{
 		legalMoves.push_back(ActionMove(piecePosition + sf::Vector2i(0, 2), MoveType::Action));
 	}
+	legalMoves.push_back(ActionMove(piecePosition, MoveType::Action));
 }
 
 PieceType King::GetPieceType()

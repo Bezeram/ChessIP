@@ -174,7 +174,9 @@ void Application::MoveHandler_MouseReleased(const sf::Event::MouseButtonReleased
         IsCellInBounds(targetSquare, m_Board->GetSize()))
     {
         // Make move if a square was previously selected
-        if (m_SelectedSquare != GlobalConstants::NullPosition && m_SelectedSquare != targetSquare)
+        // If the move is an action, allow for the target square to be selected again
+        if (m_SelectedSquare != GlobalConstants::NullPosition && 
+            (m_SelectedSquare != targetSquare || m_MoveType == MoveType::Action))
         {
             PieceMove move = PieceMove(m_SelectedSquare, targetSquare);
             const auto& selectedPiece = (*m_Board)[move.StartSquare];
