@@ -111,7 +111,6 @@ void Application::MoveHandler_MousePressed(const sf::Event::MouseButtonPressed* 
     if (m_MoveType != MoveType::None && m_MoveType == moveTypePressed &&
         m_SelectedSquare != GlobalConstants::NullPosition)
     {
-        // If the square is already selected make move using new selection
         if (m_SelectedSquare != targetSquare)
         {
             if (IsCellInBounds(targetSquare, m_Board->GetSize()));
