@@ -28,6 +28,9 @@ private:
 	PiecePosition m_SelectedSquare = GlobalConstants::NullPosition;
 	MoveType m_MoveType = MoveType::None;
 
+	void MoveHandler_MousePressed(const sf::Event::MouseButtonPressed* buttonPressed);
+	void MoveHandler_MouseReleased(const sf::Event::MouseButtonReleased* buttonReleased);
+
 	std::shared_ptr<Board> m_Board;
 	Renderer m_Renderer;
 };

@@ -14,12 +14,14 @@ public:
 		Board is drawn from white's perspective, from the top left square, left to right;
 	*/
 	void DrawBoard(sf::RenderWindow& window, const Board& board, PiecePosition selectedSquare, MoveType moveType, const PieceMove& previousMove);
-	void CalculateBoard(const sf::Vector2u& screenSize, int boardTileSize);
+	void CalculateBoardProperties(const sf::Vector2u& screenSize, int boardTileSize);
 	void DrawHUD(const sf::Vector2u& screenSize, int boardTileSize);
 
 	sf::Vector2f GetBoardPosition() const;
 	float GetBoardSize() const;
 	float GetBoardCellSize() const;
+
+	sf::Vector2f CalculateTilePosition(uint32_t windowHeight, PiecePosition position);
 
 	sf::Vector2i MouseCellIndex(int windowHeight, const sf::Vector2f& mousePosition) const;
 private:
