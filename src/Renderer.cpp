@@ -65,6 +65,8 @@ void Renderer::DrawBoard(sf::RenderWindow& window, const Board& board, PiecePosi
 		}
 	}
 
+	// If a move coincides with part of the previous to be displayed on board, that will be skipped.
+	bool previousAndLegalMoveCollision[2] = { false, false };
 	// Highlight legal moves and selected square
 	if (selectedPiecePosition != GlobalConstants::NullPosition)
 	{
@@ -72,16 +74,26 @@ void Renderer::DrawBoard(sf::RenderWindow& window, const Board& board, PiecePosi
 		for (const auto& move : legalMoves)
 		{
 			drawSquare(move.TargetSquare, m_ColorLegalMove);
+
+			// Register possible collisions with the previous move
+			if (move.TargetSquare == previousMove.StartSquare)
+				previousAndLegalMoveCollision[0] = true;
+			if (move.TargetSquare == previousMove.TargetSquare)
+				previousAndLegalMoveCollision[1] = true;
 		}
 
 		// Selected piece square
 		drawSquare(selectedPiecePosition, m_ColorSelectSquare);
+
 	}
-	// Highlight previous move
+	// Draw previous move
 	if (previousMove.StartSquare != GlobalConstants::NullPosition && previousMove.TargetSquare != GlobalConstants::NullPosition)
 	{
-		drawSquare(previousMove.StartSquare, m_ColorPreviousMove);
-		drawSquare(previousMove.TargetSquare, m_ColorPreviousMove);
+		// Highlight previous move if there were no collisions
+		if (!previousAndLegalMoveCollision[0])
+			drawSquare(previousMove.StartSquare, m_ColorPreviousMove);
+		if (!previousAndLegalMoveCollision[1])
+			drawSquare(previousMove.TargetSquare, m_ColorPreviousMove);
 	}
 	
 	// Draw pieces (from the top to bottom, left to right)

@@ -144,7 +144,6 @@ PiecePosition Board::GetWhiteKingPosition() const
 		}
 	}
 
-	assert(false && "[Board::GetWhiteKingPosition()] Black King not found");
 	return GlobalConstants::NullPosition;
 }
 
@@ -161,7 +160,6 @@ PiecePosition Board::GetBlackKingPosition() const
 		}
 	}
 
-	assert(false && "Board::GetBlackKingPosition()] Black King not found!");
 	return GlobalConstants::NullPosition;
 }
 
@@ -169,6 +167,9 @@ void Board::UpdateResources()
 {
 	PiecePosition whiteKingPosition = GetWhiteKingPosition();
 	PiecePosition blackKingPosition = GetBlackKingPosition();
+
+	if (whiteKingPosition == GlobalConstants::NullPosition || blackKingPosition == GlobalConstants::NullPosition)
+		return;
 
 	if (m_IsWhitesTurn)
 	{
