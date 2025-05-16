@@ -9,7 +9,7 @@
 class Application
 {
 public:
-	Application();
+	Application(WindowSettings windowSettings);
 	~Application();
 
 	void Run();
@@ -24,8 +24,12 @@ private:
 	sf::View m_Viewport;
 	bool m_IsRunning = true;
 		
-	PieceMove m_PreviousMove = { GlobalConstants::NullPosition, GlobalConstants::NullPosition };
-	PiecePosition m_SelectedSquare = GlobalConstants::NullPosition;
+	PieceMove m_PreviousMove = { Constants::NullPosition, Constants::NullPosition };
+	PiecePosition m_SelectedSquare = Constants::NullPosition;
+	MoveType m_MoveType = MoveType::None;
+
+	void MoveHandler_MousePressed(const sf::Event::MouseButtonPressed* buttonPressed);
+	void MoveHandler_MouseReleased(const sf::Event::MouseButtonReleased* buttonReleased);
 
 	std::shared_ptr<Board> m_Board;
 	Renderer m_Renderer;

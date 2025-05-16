@@ -1,6 +1,8 @@
 #pragma once
 
 #include <iostream>
+#include <fstream>
+#include <sstream>
 #include <SFML/Graphics.hpp>
 
 typedef sf::Vector2i PiecePosition;
@@ -15,27 +17,41 @@ enum class PieceColor
     Black,
 };
 
+// Follow this rule:
+// All positive effects (buffs) are even numbers (2, 4, 6, ...)
+// All negative effects (debuffs) are odd numbers (1, 3, 5, ...)
 enum class Effect
 {
     None = 0,
-	// TODO: Add buffs and debuffs
+    Stun = 1,
+    Alchemist_Shield = 2,
+    Hex = 3
 };
 
-// TODO: update according to the effects added
+
 static bool IsEffectBuff(Effect effect)
 {
-	assert(effect != Effect::None);
-    return false;
+	return int(effect) % 2 == 0;
 }
 
+enum class MoveType 
+{
+    None = 0,
+    Move,
+    Action,
+    Any
+};
 
 struct ActionMove
 {
-    ActionMove(PiecePosition targetSquare) : TargetSquare(targetSquare) {}
+    ActionMove(PiecePosition targetSquare, MoveType moveType = MoveType::Move) 
+        : TargetSquare(targetSquare), MoveType(moveType) {}
 
     bool operator==(const ActionMove& other) const
     {
-        return TargetSquare == other.TargetSquare && Effect == other.Effect;
+        return TargetSquare == other.TargetSquare 
+            //&& Effect == other.Effect
+            ;
     }
     bool operator!=(const ActionMove& other) const
     {
@@ -44,8 +60,8 @@ struct ActionMove
 
     PiecePosition TargetSquare;
     Effect Effect = Effect::None;
+    MoveType MoveType;
 };
-
 
 struct PieceMove
 {
@@ -87,7 +103,7 @@ enum class PieceType
 };
 
 // Global vars
-namespace GlobalConstants
+namespace Constants
 {
     const inline static PiecePosition NullPosition = { -1, -1 };
     const inline static ActionMove NullActionMove = ActionMove(PiecePosition(-1, -1));
@@ -112,6 +128,7 @@ namespace Textures
 	    { PieceType::White_Samurai,     "White_Samurai" },      { PieceType::Black_Samurai,     "Black_Samurai" },
 	    { PieceType::White_Dragon,      "White_Dragon" },       { PieceType::Black_Dragon,      "Black_Dragon" }
     };
+	const inline static std::string Placeholder = "Placeholder.png";
     const inline static std::string Null = "Null.png";
     const inline static std::string Board = "Board.jpg";
 
@@ -146,6 +163,8 @@ namespace Paths
     const inline static std::string Pieces = Textures + "pieces/";
     const inline static std::string Sounds = Assets + "sounds/";
     const inline static std::string Fonts = Assets + "fonts/";
+	const inline static std::string Config = Root + "config/";
+    const inline static std::string WindowConfig = Config + "window.txt";
 }
 
 inline bool IsWhitePiece(PieceType type)
@@ -225,6 +244,49 @@ inline bool IsCellInBounds(PiecePosition cellIndex, int boardSize)
 namespace Global
 {
     inline float AdjustableK = 0.1f;
+    inline bool MouseLeftPressed = false;
+}
+
+struct WindowSettings
+{
+	WindowSettings() = default;
+    sf::State State = sf::State::Fullscreen;
+    sf::Vector2u Resolution = { 0, 0 };
+};
+
+inline WindowSettings ParseWindowConfig(const std::string& filePath)
+{
+    WindowSettings settings{};
+    std::ifstream file(filePath);
+    if (!file.is_open())
+    {
+        // If file is not present, assume default options
+        return settings;
+    }
+
+    std::string line;
+    while (std::getline(file, line))
+    {
+        if (line.rfind("fullscreen=", 0) == 0)
+        {
+            std::string value = line.substr(11);
+            settings.State = (value == "1") ? sf::State::Fullscreen : sf::State::Windowed;
+        }
+        else if (line.rfind("resolution=", 0) == 0)
+        {
+            std::string value = line.substr(11);
+            auto commaPos = value.find('x');
+            if (commaPos != std::string::npos)
+            {
+                unsigned int width = std::stoul(value.substr(0, commaPos));
+                unsigned int height = std::stoul(value.substr(commaPos + 1));
+                settings.Resolution = sf::Vector2u(width, height);
+            }
+        }
+        // Ignore unrecognized lines or comments
+    }
+
+    return settings;
 }
 
 

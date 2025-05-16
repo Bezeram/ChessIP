@@ -3,9 +3,9 @@
 #include "BasePiece.h"
 
 #include "King.h"
-#include "WhiteWitch.h"
-#include "WhiteAlchemist.h"
-#include "WhiteArcher.h"
+#include "Witch.h"
+#include "Alchemist.h"
+#include "Archer.h"
 #include "WhiteBuilder.h"
 #include "WhiteGrimReaper.h"
 #include "WhitePlagueDoctor.h"

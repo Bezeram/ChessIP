@@ -16,15 +16,11 @@ void King::GetLegalMoves(sf::Vector2i piecePosition, std::vector<ActionMove>& le
 				PiecePosition targetSquare = piecePosition + sf::Vector2i(dx, dy);
 				if (IsCellInBounds(targetSquare, m_Board->GetSize()))
 				{
-					// todo: Check if the target square is empty or occupied by a friendly piece
 					const auto& targetPiece = boardMatrix[targetSquare.y][targetSquare.x];
-					if (targetPiece.get() == nullptr)
+					if (targetPiece.get() == nullptr || !m_Board->IsTargetFriendly(PieceMove(piecePosition, targetSquare)))
 					{
 						// Check if the target square is not occupied by a friendly piece
-						if (!m_Board->IsTargetFriendly(PieceMove(piecePosition, targetSquare)))
-						{
-							legalMoves.push_back(ActionMove(targetSquare));
-						}
+						legalMoves.push_back(ActionMove(targetSquare));
 					}
 				}
 			}
