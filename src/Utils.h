@@ -34,6 +34,11 @@ static bool IsEffectBuff(Effect effect)
 	return int(effect) % 2 == 0;
 }
 
+enum class MoveType 
+{
+    Move = 0,
+    Action
+};
 
 struct ActionMove
 {
@@ -51,8 +56,8 @@ struct ActionMove
     }
 
     PiecePosition TargetSquare;
-    // I commented this out, hopefully it won't cause problems
-    //Effect Effect = Effect::None;
+    Effect Effect = Effect::None;
+    MoveType MoveType = MoveType::Move;
 };
 
 
