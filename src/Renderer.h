@@ -35,7 +35,7 @@ private:
 
 	sf::Color m_ColorDarkSquare = { 89, 56, 0 };
 	sf::Color m_ColorWhiteSquare = { 255, 223, 170 };
-	sf::Color m_ColorSelectSquare = { 255, 184, 0, 125 };
+	sf::Color m_ColorSelectSquare = { 255, 122, 0 };
 	sf::Color m_ColorPreviousMove = { 255, 209, 0, 125 };
 
 	sf::Color m_ColorLegalMove = { 255, 30, 30 };
