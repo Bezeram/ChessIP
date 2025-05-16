@@ -53,7 +53,7 @@ void Renderer::DrawBoard(sf::RenderWindow& window, const Board& board, PiecePosi
 			selectedPiece->GetLegalMoves(selectedPiecePosition, legalMoves);
 	}
 
-	// Draw grid board
+	/// Draw grid board
 	for (int rank = 0; rank < board.GetSize(); rank++)
 	{
 		for (int file = 0; file < board.GetSize(); file++)
@@ -65,10 +65,11 @@ void Renderer::DrawBoard(sf::RenderWindow& window, const Board& board, PiecePosi
 		}
 	}
 
-	/// Draw legal moves and previous move
+	/// Draw legal moves, previous move and highlight selected square
 	// 
-	// If a move coincides with part of the previous to be displayed on board, that will be skipped.
-	bool previousAndLegalMoveCollision[2] = { false, false };
+	// Legal moves must be drawn on top of any other highlight
+	bool skipPreviousMoveRender[2] = { false, false };
+	bool skipSelectHighlight = false;
 	// Highlight legal moves and selected square
 	if (selectedPiecePosition != GlobalConstants::NullPosition)
 	{
@@ -81,24 +82,28 @@ void Renderer::DrawBoard(sf::RenderWindow& window, const Board& board, PiecePosi
 				sf::Color color = (moveType == MoveType::Move) ? m_ColorLegalMove : m_ColorLegalAction;
 				drawSquare(move.TargetSquare, color);
 
-				// Register possible collisions with the previous move
+				// Register possible collisions with the previous move..
 				if (move.TargetSquare == previousMove.StartSquare)
-					previousAndLegalMoveCollision[0] = true;
+					skipPreviousMoveRender[0] = true;
 				if (move.TargetSquare == previousMove.TargetSquare)
-					previousAndLegalMoveCollision[1] = true;
+					skipPreviousMoveRender[1] = true;
+				// ..and with the select position
+				if (move.TargetSquare == selectedPiecePosition)
+					skipSelectHighlight = true;
 			}
 		}
 
 		// Selected piece square
-		drawSquare(selectedPiecePosition, m_ColorSelectSquare);
+		if (!skipSelectHighlight)
+			drawSquare(selectedPiecePosition, m_ColorSelectSquare);
 	}
 	// Draw previous move
 	if (previousMove.StartSquare != GlobalConstants::NullPosition && previousMove.TargetSquare != GlobalConstants::NullPosition)
 	{
 		// Highlight previous move if there were no collisions
-		if (!previousAndLegalMoveCollision[0])
+		if (!skipPreviousMoveRender[0])
 			drawSquare(previousMove.StartSquare, m_ColorPreviousMove);
-		if (!previousAndLegalMoveCollision[1])
+		if (!skipPreviousMoveRender[1])
 			drawSquare(previousMove.TargetSquare, m_ColorPreviousMove);
 	}
 	
