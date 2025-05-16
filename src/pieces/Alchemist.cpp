@@ -22,9 +22,16 @@ void Alchemist::GetLegalMoves(sf::Vector2i piecePosition, std::vector<ActionMove
 						if (targetPiece.get() == nullptr)
 						{
 							// Check if the target square is not occupied by a friendly piece
-							if (!m_Board->IsTargetFriendly(PieceMove(piecePosition, targetSquare)) || targetSquare == piecePosition)
+							if (!m_Board->IsTargetFriendly(PieceMove(piecePosition, targetSquare)))
 							{
-								legalMoves.push_back(ActionMove(targetSquare));
+								legalMoves.push_back(ActionMove(targetSquare, MoveType::Move));
+							}
+						}
+						else
+						{
+							if (targetSquare == piecePosition)
+							{
+								legalMoves.push_back(ActionMove(targetSquare, MoveType::Action));
 							}
 						}
 					}
@@ -42,24 +49,38 @@ void Alchemist::GetLegalMoves(sf::Vector2i piecePosition, std::vector<ActionMove
 							if (targetPiece.get() == nullptr)
 							{
 								// Check if the target square is not occupied by a friendly piece
-								if (!m_Board->IsTargetFriendly(PieceMove(piecePosition, targetSquare)) || targetSquare == piecePosition)
+								if (!m_Board->IsTargetFriendly(PieceMove(piecePosition, targetSquare)))
 								{
-									legalMoves.push_back(ActionMove(targetSquare));
+									legalMoves.push_back(ActionMove(targetSquare, MoveType::Move));
+								}
+							}
+							else
+							{
+								if (targetSquare == piecePosition)
+								{
+									legalMoves.push_back(ActionMove(targetSquare, MoveType::Action));
 								}
 							}
 						}
 					}
 			break;
-
 	}
 }
 
 void Alchemist::ExecuteMove(BoardMatrix& board, PiecePosition piecePosition, ActionMove move)
 {
-	if (move.TargetSquare == piecePosition)
+	// Move action
+	if (move.MoveType == MoveType::Move)
+	{
+		PiecePosition targetSquare = move.TargetSquare;
+		// Move piece to the new square
+		board[targetSquare.y][targetSquare.x] = std::move(board[piecePosition.y][piecePosition.x]);
+		// Clear old position
+		board[piecePosition.y][piecePosition.x] = nullptr;
+	}
+	else
 	{
 		// Ability used
-
 		std::vector <BasePiece*> piecesToCleanse;
 		// Add all nearby pieces, including self, to a list
 		switch (Alchemist::m_UpgradeLevel)
@@ -67,19 +88,25 @@ void Alchemist::ExecuteMove(BoardMatrix& board, PiecePosition piecePosition, Act
 			case 1:
 				for (int dy = -1; dy <= 1; dy++)
 					for (int dx = -1; dx <= 1; dx++)
-						if (board[piecePosition.y + dy][piecePosition.x + dx].get()->GetPieceType() != PieceType::None)
+					{
+						BasePiece *piece = board[piecePosition.y + dy][piecePosition.x + dx].get();
+						if (piece != nullptr && piece->GetPieceType() != PieceType::None)
 						{
-							piecesToCleanse.push_back(board[piecePosition.y + dy][piecePosition.x + dx].get());
+							piecesToCleanse.push_back(piece);
 						}
+					}
 				break;
 			default:
 				for (int dy = -2; dy <= 2; dy++)
 					for (int dx = -2; dx <= 2; dx++)
-						if (board[piecePosition.y + dy][piecePosition.x + dx].get()->GetPieceType() != PieceType::None
-							&& (abs(dx) + abs(dy) <= 2))
-						{
-							piecesToCleanse.push_back(board[piecePosition.y + dy][piecePosition.x + dx].get());
-						}
+						if (abs(dy) + abs(dx) <= 2)
+							{
+								BasePiece* piece = board[piecePosition.y + dy][piecePosition.x + dx].get();
+								if (piece != nullptr && piece->GetPieceType() != PieceType::None)
+								{
+									piecesToCleanse.push_back(piece);
+								}
+							}
 				break;
 		}
 
@@ -87,31 +114,22 @@ void Alchemist::ExecuteMove(BoardMatrix& board, PiecePosition piecePosition, Act
 		for (BasePiece* piece : piecesToCleanse)
 		{
 			// If any other piece uses the cleanse mechanic, it should be modularized into a function
-			for (Effect effect : piece->GetEffects())
+			for (auto effect : piece->GetEffects())
 			{
 				// If the effect is negative, remove it
-				if (!IsEffectBuff(effect))
+				if (!IsEffectBuff(std::get<0>(effect)))
 				{
-					piece->RemoveEffect(effect);
+					piece->RemoveEffect(std::get<0>(effect));
 				}
 			}
 
 			// Level 3 alchemist adds 1-round shield to the piece
 			if (Alchemist::m_UpgradeLevel == 3)
 			{
-				piece->AddEffect(Effect::Alchemist_Shield);
+				piece->AddEffect(Effect::Alchemist_Shield, 1);
 			}
 		}
 
-	}
-	else
-	{
-		// Normal move
-		PiecePosition targetSquare = move.TargetSquare;
-		// Move piece to the new square
-		board[targetSquare.y][targetSquare.x] = std::move(board[piecePosition.y][piecePosition.x]);
-		// Clear old position
-		board[piecePosition.y][piecePosition.x] = nullptr;
 	}
 }
 
