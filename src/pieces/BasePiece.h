@@ -36,7 +36,7 @@ public:
 	// Board position and scale are automatically calculated into the sprite beforehand
 	virtual void Render(sf::Sprite& sprite, sf::RenderWindow& window, const sf::Shader& pieceShader, bool isSelectedPiece)
 	{
-		if (isSelectedPiece && sf::Mouse::isButtonPressed(sf::Mouse::Button::Left))
+		if (isSelectedPiece && Global::MouseLeftPressed)
 		{
 			// Piece is dragged with mouse
 			sf::Vector2i mousePosition = sf::Mouse::getPosition(window);
@@ -50,19 +50,19 @@ public:
 	}
 
 	// For a given attack move, checks if move is among valid ones
-	ActionMove BasePiece::IsLegalMove(PieceMove move)
+	ActionMove BasePiece::IsLegalMove(PieceMove move, MoveType moveType)
 	{
 		std::vector<ActionMove> legalMoves;
 		GetLegalMoves(move.StartSquare, legalMoves);
 		for (const auto& legalMove : legalMoves)
 		{
-			if (legalMove.TargetSquare == move.TargetSquare)
+			if (legalMove.TargetSquare == move.TargetSquare && legalMove.MoveType == moveType)
 			{
 				return legalMove;
 			}
 		}
 
-		return GlobalConstants::NullActionMove;
+		return Constants::NullActionMove;
 	}
 	
 	virtual PieceType GetPieceType() = 0;

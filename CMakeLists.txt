@@ -3,6 +3,8 @@ project(ChessIP LANGUAGES CXX)
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 set(ASSETS_DIR "${CMAKE_SOURCE_DIR}/assets")
+set(CONFIG_DIR "${CMAKE_SOURCE_DIR}/config")
+set(CONFIG_DEST_DIR "${CMAKE_BINARY_DIR}/config")
 
 include(FetchContent)
 FetchContent_Declare(SFML
@@ -14,6 +16,16 @@ FetchContent_Declare(SFML
 FetchContent_MakeAvailable(SFML)
 
 file(COPY ${ASSETS_DIR} DESTINATION ${CMAKE_BINARY_DIR})
+
+if(EXISTS "${CONFIG_DIR}")
+    file(COPY "${CONFIG_DIR}" DESTINATION "${CMAKE_BINARY_DIR}")
+else()
+    message(WARNING "Config directory not found: ${CONFIG_DIR}. Skipping copy.")
+    if(EXISTS "${CONFIG_DEST_DIR}")
+        file(REMOVE_RECURSE "${CONFIG_DEST_DIR}")
+        message(STATUS "Removed existing config directory in build: ${CONFIG_DEST_DIR}")
+    endif()
+endif()
 
 # Pieces header files
 set (PIECES_HEADER_FILES

@@ -38,7 +38,7 @@ public:
     bool IsTargetFriendly(const PieceMove& move) const;
     bool IsValidPieceByTurn(PiecePosition position) const;
     bool IsWhitesMove() const;
-    bool MakeMove(PiecePosition piecePosition, PieceMove move);
+    bool MakeMove(PiecePosition piecePosition, ActionMove actionMove);
 
 	PiecePosition GetWhiteKingPosition() const;
 	PiecePosition GetBlackKingPosition() const;
