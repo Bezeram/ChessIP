@@ -1,7 +1,6 @@
 #include "Application.h"
 
 Application::Application(WindowSettings settings)
-// Remove sf::Style::None for windowed mode
     : m_Window(sf::RenderWindow(
         (settings.Resolution.x == 0) ? sf::VideoMode::getDesktopMode() : sf::VideoMode(settings.Resolution),
         "Chess9", sf::Style::Default, settings.State)
