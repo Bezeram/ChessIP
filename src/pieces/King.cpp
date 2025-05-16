@@ -24,13 +24,6 @@ void King::GetLegalMoves(sf::Vector2i piecePosition, std::vector<ActionMove>& le
 					}
 				}
 			}
-
-	// DEBUG TEST
-	if (IsCellInBounds(piecePosition + sf::Vector2i(0, 2), m_Board->GetSize()))
-	{
-		legalMoves.push_back(ActionMove(piecePosition + sf::Vector2i(0, 2), MoveType::Action));
-	}
-	legalMoves.push_back(ActionMove(piecePosition, MoveType::Action));
 }
 
 PieceType King::GetPieceType()
