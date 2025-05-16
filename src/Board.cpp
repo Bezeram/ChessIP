@@ -144,7 +144,7 @@ PiecePosition Board::GetWhiteKingPosition() const
 		}
 	}
 
-	return GlobalConstants::NullPosition;
+	return Constants::NullPosition;
 }
 
 PiecePosition Board::GetBlackKingPosition() const
@@ -160,7 +160,7 @@ PiecePosition Board::GetBlackKingPosition() const
 		}
 	}
 
-	return GlobalConstants::NullPosition;
+	return Constants::NullPosition;
 }
 
 void Board::UpdateResources()
@@ -168,7 +168,7 @@ void Board::UpdateResources()
 	PiecePosition whiteKingPosition = GetWhiteKingPosition();
 	PiecePosition blackKingPosition = GetBlackKingPosition();
 
-	if (whiteKingPosition == GlobalConstants::NullPosition || blackKingPosition == GlobalConstants::NullPosition)
+	if (whiteKingPosition == Constants::NullPosition || blackKingPosition == Constants::NullPosition)
 		return;
 
 	if (m_IsWhitesTurn)

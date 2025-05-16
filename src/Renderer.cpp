@@ -46,7 +46,7 @@ void Renderer::DrawBoard(sf::RenderWindow& window, const Board& board, PiecePosi
 
 	/// Get legal moves
 	std::vector<ActionMove> legalMoves;
-	if (selectedPiecePosition != GlobalConstants::NullPosition)
+	if (selectedPiecePosition != Constants::NullPosition)
 	{
 		const auto& selectedPiece = board[selectedPiecePosition];
 		if (selectedPiece.get() != nullptr)
@@ -71,7 +71,7 @@ void Renderer::DrawBoard(sf::RenderWindow& window, const Board& board, PiecePosi
 	bool skipPreviousMoveRender[2] = { false, false };
 	bool skipSelectHighlight = false;
 	// Highlight legal moves and selected square
-	if (selectedPiecePosition != GlobalConstants::NullPosition)
+	if (selectedPiecePosition != Constants::NullPosition)
 	{
 		// Legal moves
 		for (const auto& move : legalMoves)
@@ -98,7 +98,7 @@ void Renderer::DrawBoard(sf::RenderWindow& window, const Board& board, PiecePosi
 			drawSquare(selectedPiecePosition, m_ColorSelectSquare);
 	}
 	// Draw previous move
-	if (previousMove.StartSquare != GlobalConstants::NullPosition && previousMove.TargetSquare != GlobalConstants::NullPosition)
+	if (previousMove.StartSquare != Constants::NullPosition && previousMove.TargetSquare != Constants::NullPosition)
 	{
 		// Highlight previous move if there were no collisions
 		if (!skipPreviousMoveRender[0])
@@ -112,14 +112,11 @@ void Renderer::DrawBoard(sf::RenderWindow& window, const Board& board, PiecePosi
 	// The position of a piece is counted from the bottom-left, going left to right and bottom-top
 	{
 		const ResourceManager& rm = ResourceManager::GetInstance();
-		for (int rank = 0; rank < board.GetSize(); rank++)
-		{
-			for (int file = 0; file < board.GetSize(); file++)
+		// Render piece inner function
+		auto renderPiece = [&](PiecePosition position)
 			{
-				PiecePosition piecePosition = PiecePosition(file, rank);
-				const auto& piece = board[piecePosition];
-				if (piece.get() == nullptr)
-					continue;
+				const auto& piece = board[position];
+				bool isSelectedPiece = position == selectedPiecePosition;
 
 				// Set texture and shader
 				const auto& texture = rm.GetPieceTexture(piece->GetPieceType());
@@ -127,16 +124,33 @@ void Renderer::DrawBoard(sf::RenderWindow& window, const Board& board, PiecePosi
 
 				sf::Sprite sprite(texture);
 				// Set sprite position and scale on board tile
-				sf::Vector2f drawPosition = CalculateTilePosition(window.getSize().y, piecePosition);
+				sf::Vector2f drawPosition = CalculateTilePosition(window.getSize().y, position);
 				float scale = m_BoardCellSize / texture.getSize().x;
 				sprite.setPosition(drawPosition);
 				sprite.setScale(sf::Vector2f(scale, scale));
 
 				// Sprite is finally rendered using its own function
-				bool isSelectedPiece = piecePosition == selectedPiecePosition;
 				piece->Render(sprite, window, m_PieceShader, isSelectedPiece);
+			};
+
+		for (int rank = 0; rank < board.GetSize(); rank++)
+		{
+			for (int file = 0; file < board.GetSize(); file++)
+			{
+				PiecePosition piecePosition = PiecePosition(file, rank);
+				bool isSelectedPiece = piecePosition == selectedPiecePosition;
+				const auto& piece = board[piecePosition];
+				// Skip if empty tile, or if it's the selected piece
+				// which must be drawn at the end, on top of everything else
+				if (piece.get() == nullptr || isSelectedPiece)
+					continue;
+
+				renderPiece(piecePosition);
 			}
 		}
+		// Render selected piece
+		if (selectedPiecePosition != Constants::NullPosition)
+			renderPiece(selectedPiecePosition);
 	}
 }
 

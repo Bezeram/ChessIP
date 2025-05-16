@@ -109,7 +109,7 @@ void Application::MoveHandler_MousePressed(const sf::Event::MouseButtonPressed* 
     sf::Vector2i targetSquare = m_Renderer.MouseCellIndex(m_Window.getSize().y, mousePosition);
 
     if (m_MoveType != MoveType::None && m_MoveType == moveTypePressed &&
-        m_SelectedSquare != GlobalConstants::NullPosition)
+        m_SelectedSquare != Constants::NullPosition)
     {
         if (m_SelectedSquare != targetSquare)
         {
@@ -122,7 +122,7 @@ void Application::MoveHandler_MousePressed(const sf::Event::MouseButtonPressed* 
                 if (selectedPiece.get() != nullptr)
                 {
                     ActionMove actionMove = selectedPiece->IsLegalMove(move, m_MoveType);
-                    if (actionMove != GlobalConstants::NullActionMove)
+                    if (actionMove != Constants::NullActionMove)
                     {
                         bool validMove = m_Board->MakeMove(move.StartSquare, actionMove);
 
@@ -135,7 +135,7 @@ void Application::MoveHandler_MousePressed(const sf::Event::MouseButtonPressed* 
             }
 
             // Reset selection
-            m_SelectedSquare = GlobalConstants::NullPosition;
+            m_SelectedSquare = Constants::NullPosition;
             m_MoveType = MoveType::None;
         }
     }
@@ -150,7 +150,7 @@ void Application::MoveHandler_MousePressed(const sf::Event::MouseButtonPressed* 
         else
         {
             // Reset selection
-            m_SelectedSquare = GlobalConstants::NullPosition;
+            m_SelectedSquare = Constants::NullPosition;
             m_MoveType = MoveType::None;
         }
     }
@@ -174,7 +174,7 @@ void Application::MoveHandler_MouseReleased(const sf::Event::MouseButtonReleased
     {
         // Make move if a square was previously selected
         // If the move is an action, allow for the target square to be selected again
-        if (m_SelectedSquare != GlobalConstants::NullPosition && 
+        if (m_SelectedSquare != Constants::NullPosition && 
             (m_SelectedSquare != targetSquare || m_MoveType == MoveType::Action))
         {
             PieceMove move = PieceMove(m_SelectedSquare, targetSquare);
@@ -183,7 +183,7 @@ void Application::MoveHandler_MouseReleased(const sf::Event::MouseButtonReleased
             if (selectedPiece.get() != nullptr)
             {
                 ActionMove actionMove = selectedPiece->IsLegalMove(move, m_MoveType);
-                if (actionMove != GlobalConstants::NullActionMove)
+                if (actionMove != Constants::NullActionMove)
                 {
                     bool validMove = m_Board->MakeMove(move.StartSquare, actionMove);
 
@@ -191,7 +191,7 @@ void Application::MoveHandler_MouseReleased(const sf::Event::MouseButtonReleased
                     {
                         m_PreviousMove = move;
                         // Reset selection
-                        m_SelectedSquare = GlobalConstants::NullPosition;
+                        m_SelectedSquare = Constants::NullPosition;
                         m_MoveType = MoveType::None;
                     }
                 }
@@ -201,7 +201,7 @@ void Application::MoveHandler_MouseReleased(const sf::Event::MouseButtonReleased
     else
     {
         // Reset selection
-        m_SelectedSquare = GlobalConstants::NullPosition;
+        m_SelectedSquare = Constants::NullPosition;
         m_MoveType = MoveType::None;
     }
 }

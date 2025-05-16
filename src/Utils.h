@@ -103,7 +103,7 @@ enum class PieceType
 };
 
 // Global vars
-namespace GlobalConstants
+namespace Constants
 {
     const inline static PiecePosition NullPosition = { -1, -1 };
     const inline static ActionMove NullActionMove = ActionMove(PiecePosition(-1, -1));
