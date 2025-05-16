@@ -62,7 +62,7 @@ public:
 			}
 		}
 
-		return GlobalConstants::NullActionMove;
+		return Constants::NullActionMove;
 	}
 	
 	virtual PieceType GetPieceType() = 0;

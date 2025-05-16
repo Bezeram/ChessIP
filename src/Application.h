@@ -24,8 +24,8 @@ private:
 	sf::View m_Viewport;
 	bool m_IsRunning = true;
 		
-	PieceMove m_PreviousMove = { GlobalConstants::NullPosition, GlobalConstants::NullPosition };
-	PiecePosition m_SelectedSquare = GlobalConstants::NullPosition;
+	PieceMove m_PreviousMove = { Constants::NullPosition, Constants::NullPosition };
+	PiecePosition m_SelectedSquare = Constants::NullPosition;
 	MoveType m_MoveType = MoveType::None;
 
 	void MoveHandler_MousePressed(const sf::Event::MouseButtonPressed* buttonPressed);
