@@ -50,13 +50,13 @@ public:
 	}
 
 	// For a given attack move, checks if move is among valid ones
-	ActionMove BasePiece::IsLegalMove(PieceMove move)
+	ActionMove BasePiece::IsLegalMove(PieceMove move, MoveType moveType)
 	{
 		std::vector<ActionMove> legalMoves;
 		GetLegalMoves(move.StartSquare, legalMoves);
 		for (const auto& legalMove : legalMoves)
 		{
-			if (legalMove.TargetSquare == move.TargetSquare)
+			if (legalMove.TargetSquare == move.TargetSquare && legalMove.MoveType == moveType)
 			{
 				return legalMove;
 			}

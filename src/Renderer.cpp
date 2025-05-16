@@ -29,7 +29,7 @@ Renderer::Renderer(const sf::Vector2u& screenSize, int boardTileSize)
 	CalculateBoard(screenSize, boardTileSize);
 }
 
-void Renderer::DrawBoard(sf::RenderWindow& window, const Board& board, PiecePosition selectedPiecePosition, const PieceMove& previousMove)
+void Renderer::DrawBoard(sf::RenderWindow& window, const Board& board, PiecePosition selectedPiecePosition, MoveType moveType, const PieceMove& previousMove)
 {
 	CalculateBoard(window.getSize(), board.GetSize());
 	// Function for drawing a square
@@ -73,18 +73,22 @@ void Renderer::DrawBoard(sf::RenderWindow& window, const Board& board, PiecePosi
 		// Legal moves
 		for (const auto& move : legalMoves)
 		{
-			drawSquare(move.TargetSquare, m_ColorLegalMove);
+			// Only consider the specified move type
+			if (move.MoveType == moveType)
+			{
+				sf::Color color = (moveType == MoveType::Move) ? m_ColorLegalMove : m_ColorLegalAction;
+				drawSquare(move.TargetSquare, color);
 
-			// Register possible collisions with the previous move
-			if (move.TargetSquare == previousMove.StartSquare)
-				previousAndLegalMoveCollision[0] = true;
-			if (move.TargetSquare == previousMove.TargetSquare)
-				previousAndLegalMoveCollision[1] = true;
+				// Register possible collisions with the previous move
+				if (move.TargetSquare == previousMove.StartSquare)
+					previousAndLegalMoveCollision[0] = true;
+				if (move.TargetSquare == previousMove.TargetSquare)
+					previousAndLegalMoveCollision[1] = true;
+			}
 		}
 
 		// Selected piece square
 		drawSquare(selectedPiecePosition, m_ColorSelectSquare);
-
 	}
 	// Draw previous move
 	if (previousMove.StartSquare != GlobalConstants::NullPosition && previousMove.TargetSquare != GlobalConstants::NullPosition)

@@ -26,6 +26,7 @@ private:
 		
 	PieceMove m_PreviousMove = { GlobalConstants::NullPosition, GlobalConstants::NullPosition };
 	PiecePosition m_SelectedSquare = GlobalConstants::NullPosition;
+	MoveType m_MoveType = MoveType::None;
 
 	std::shared_ptr<Board> m_Board;
 	Renderer m_Renderer;
