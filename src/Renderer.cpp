@@ -49,7 +49,7 @@ void Renderer::DrawBoard(sf::RenderWindow& window, const Board& board, PiecePosi
 	{
 		const auto& selectedPiece = board[selectedPiecePosition];
 		if (selectedPiece.get() != nullptr)
-			selectedPiece->GetLegalMoves(selectedPiecePosition, legalMoves);
+			selectedPiece->GetLegalMovesWrapper(selectedPiecePosition, legalMoves);
 	}
 
 	/// Draw grid board
