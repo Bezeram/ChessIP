@@ -2,7 +2,7 @@
 
 Application::Application(WindowSettings settings)
     : m_Window(sf::RenderWindow(
-        (settings.Resolution.x == 0) ? sf::VideoMode::getDesktopMode() : sf::VideoMode(settings.Resolution),
+        (settings.Resolution.x == 0 || settings.Resolution.y == 0) ? sf::VideoMode::getDesktopMode() : sf::VideoMode(settings.Resolution),
         "Chess9", sf::Style::Default, settings.State)
     )
     , m_Viewport(sf::FloatRect(sf::Vector2f(0, 0), sf::Vector2f(m_Window.getSize().x, m_Window.getSize().y)))
