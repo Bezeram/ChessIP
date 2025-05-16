@@ -1,10 +1,10 @@
 #include "ResourceManager.h"
 
-using namespace ChessIP;
-
 void ResourceManager::Initialise()
 {
 	assert(s_ResourceManager == nullptr);
+
+	
 
 	s_ResourceManager = new ResourceManager();
 }
@@ -27,64 +27,108 @@ void ResourceManager::Shutdown()
 void ResourceManager::LoadAssets()
 {
 	// Load pieces
-	for (int i = 0; i < 12; i++)
+	for (auto& type : Textures::PieceTypeToString)
 	{
-		PieceType type = PieceType(i);
-		std::string name = m_PieceIDToResource[type];
-		std::string path = "./assets/textures/1024x1024/" + name + ".png";
-		AddTexture(path.c_str(), name.c_str());
+		const std::string& name = type.second;
+		const std::string& path = Paths::Pieces + name + ".png";
+
+		AddTexture(path, name, true);
 	}
 
 	// Board
-	std::string path = "./assets/textures/board.jpg";
-	AddTexture(path.c_str(), "board");
+	AddTexture(Paths::Textures + Textures::Board, Textures::Board);
 
 	// Resources bars
+	for (int i = 0; i <= 9; i++)
 	{
-		std::string path = "./assets/textures/resources-bars.jpg";
-		sf::Image resourceBarImg(path.c_str());
-		// Mask background from the resources bar
-		resourceBarImg.createMaskFromColor(sf::Color::Black, 0);
-		sf::Texture texture;
-		if (!texture.loadFromImage(resourceBarImg))
-		{
-			std::cout << "Could not load resources bar texture.\n";
-		}
-		else
-		{
-			m_Textures["resources_bars"] = std::move(texture);
-			// rect size (545, 144)
-		}
+		AddTexture(Paths::Textures + Textures::Gold_Bar_0, Textures::Gold_Bar_0 + std::to_string(i), true);
+		AddTexture(Paths::Textures + Textures::Flux_Bar_0, Textures::Flux_Bar_0 + std::to_string(i), true);
 	}
 
 	// Load font
 	{
-		std::string name = "JetBrainsMono-Bold";
-		std::string path = "./assets/fonts/" + name + ".ttf";
+		std::string name = "JetBrainsMono_Bold";
+		std::string path = Paths::Fonts + name + ".ttf";
+
 		AddFont(path.c_str(), name.c_str());
+	}
+	
+	// Load sounds
+	{
+		// load all sounds from path
+
+		std::string path = Paths::Sounds;
+
+		for (const auto & entry : std::filesystem::directory_iterator(path))
+		{
+			std::string name = entry.path().filename().string();
+			std::string ext = entry.path().extension().string();
+			if (ext != ".ogg" && ext != ".wav" && ext != ".mp3")
+				continue;
+			name = name.substr(0, name.size() - ext.size());
+            std::string soundPath = entry.path().string();
+			AddSound(soundPath.c_str(), name.c_str());
+		}
+		
 	}
 }
 
 const sf::Texture& ResourceManager::GetPieceTexture(PieceType type) const
 {
-	const std::string& key = m_PieceIDToResource.at(type);
+	const std::string& key = Textures::PieceTypeToString.at(type);
+	if (m_Textures.find(key) == m_Textures.end())
+	{
+		std::cout << "Texture " << key << " not found!\n";
+		return m_Textures.at("White_King");
+	}
 	return m_Textures.at(key);
 }
 
-const sf::Texture& ResourceManager::AddTexture(const char* filePath, const char* name)
+const sf::Texture& ResourceManager::AddTexture(const std::string& filePath, const std::string& name, bool applyMask)
 {
+	if (!applyMask)
+	{
+		auto it = m_Textures.find(name);
+		if (it != m_Textures.end())
+		{
+			std::cout << "Texture " << name << " has already been loaded.\n";
+		}
+		
+		sf::Texture texture;
+		if (!texture.loadFromFile(filePath))
+		{
+			return m_Textures[Textures::Null];
+		}
+
+		texture.setSmooth(true);
+		texture.setRepeated(false);
+		if (!texture.generateMipmap())
+			std::cout << "Mipmaps unavailable for texture at " << filePath << std::endl;
+		m_Textures[name] = std::move(texture);
+		return m_Textures[name];
+	}
+
+	// Load to image, apply mask and then load to texture
 	auto it = m_Textures.find(name);
 	if (it != m_Textures.end())
 	{
 		std::cout << "Texture " << name << " has already been loaded.\n";
 	}
-		
-	sf::Texture texture;
-	if (!texture.loadFromFile(filePath))
+
+	sf::Image image;
+	if (!image.loadFromFile(filePath.c_str()))
 	{
-		throw std::runtime_error("Failed to load texture at " + std::string(filePath));
+		return m_Textures[Textures::Null];
 	}
 
+	sf::Color maskPixelColor = image.getPixel({ 0, 0 });
+	image.createMaskFromColor(maskPixelColor, 0);
+
+	sf::Texture texture;
+	if (!texture.loadFromImage(image))
+	{
+		return m_Textures[Textures::Null];
+	}
 	texture.setSmooth(true);
 	texture.setRepeated(false);
 	if (!texture.generateMipmap())
@@ -93,7 +137,7 @@ const sf::Texture& ResourceManager::AddTexture(const char* filePath, const char*
 	return m_Textures[name];
 }
 
-const sf::Font& ResourceManager::AddFont(const char* filePath, const char* name)
+const sf::Font& ResourceManager::AddFont(const std::string& filePath, const std::string& name)
 {
 	auto it = m_Fonts.find(name);
 	if (it != m_Fonts.end())
@@ -111,7 +155,7 @@ const sf::Font& ResourceManager::AddFont(const char* filePath, const char* name)
 	return m_Fonts[name];
 }
 
-const sf::SoundBuffer& ResourceManager::AddSound(const char* filePath, const char* name)
+const sf::SoundBuffer& ResourceManager::AddSound(const std::string& filePath, const std::string& name)
 {
 	auto it = m_Sounds.find(name);
 	if (it != m_Sounds.end())
@@ -129,17 +173,17 @@ const sf::SoundBuffer& ResourceManager::AddSound(const char* filePath, const cha
 	return m_Sounds[name];
 }
 
-const sf::Texture& ResourceManager::GetTexture(const char* key) const
+const sf::Texture& ResourceManager::GetTexture(const std::string& key) const
 {
 	auto it = m_Textures.find(key);
 	if (it == m_Textures.end()) 
 	{
-		throw std::runtime_error("Font not found!");
+		return m_Textures.at(Textures::Null);
 	}
 	return it->second;
 }
 
-const sf::Font& ResourceManager::GetFont(const char* key) const
+const sf::Font& ResourceManager::GetFont(const std::string& key) const
 {
 	auto it = m_Fonts.find(key);
 	if (it == m_Fonts.end()) 
@@ -149,36 +193,21 @@ const sf::Font& ResourceManager::GetFont(const char* key) const
 	return it->second;
 }
 
-const sf::SoundBuffer& ResourceManager::GetSound(const char* key) const
+const sf::SoundBuffer& ResourceManager::GetSound(const std::string& key) const
 {
 	auto it = m_Sounds.find(key);
 	if (it == m_Sounds.end()) 
 	{
-		throw std::runtime_error("Sound not found!");
+		return m_Sounds.at("move1");
 	}
 	return it->second;
 }
 
 ResourceManager::ResourceManager()
 {
-	SetPieceIDToResource();
+	AddTexture(Paths::Textures, Textures::Null);
+	assert(m_Textures.find(Textures::Null) != m_Textures.end());
 
 	LoadAssets();
 }
 
-void ResourceManager::SetPieceIDToResource()
-{
-	std::string pieceColor[] = { "white", "black" };
-	std::string pieceType[] = { "pawn", "knight", "bishop", "rook", "queen", "king" };
-	int i = 0;
-	for (auto& color : pieceColor)
-	{
-		for (auto& type : pieceType)
-		{
-			std::string name = color + "-" + type;
-			m_PieceIDToResource[PieceType(i)] = name;
-			
-			i++;
-		}
-	}
-}

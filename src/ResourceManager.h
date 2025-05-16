@@ -4,41 +4,36 @@
 #include <iostream>
 #include <string>
 
+
 #include <SFML/Graphics.hpp>
 #include <SFML/Audio.hpp>
 
 #include "Utils.h"
 
-namespace ChessIP
+class ResourceManager
 {
-	class ResourceManager
-	{
-	public:
-		static void Initialise();
-		static const ResourceManager& GetInstance();
-		static void Shutdown();
+public:
+	static void Initialise();
+	static const ResourceManager& GetInstance();
+	static void Shutdown();
 
-		const sf::Texture& GetPieceTexture(PieceType type) const;
+	const sf::Texture& GetPieceTexture(PieceType type) const;
 
-		const sf::Texture& AddTexture(const char* filePath, const char* name);
-		const sf::Font& AddFont(const char* filePath, const char* name);
-		const sf::SoundBuffer& AddSound(const char* filePath, const char* name);
+	const sf::Texture& AddTexture(const std::string& filePath, const std::string& name, bool applyMask = false);
+	const sf::Font& AddFont(const std::string& filePath, const std::string& name);
+	const sf::SoundBuffer& AddSound(const std::string& filePath, const std::string& name);
 
-		const sf::Texture& GetTexture(const char* key) const;
-		const sf::Font& GetFont(const char* key) const ;
-		const sf::SoundBuffer& GetSound(const char* key) const;
-	private:
-		void LoadAssets();
-		ResourceManager();
-		void SetPieceIDToResource();
+	const sf::Texture& GetTexture(const std::string& key) const;
+	const sf::Font& GetFont(const std::string& key) const ;
+	const sf::SoundBuffer& GetSound(const std::string& key) const;
+private:
+	void LoadAssets();
+	ResourceManager();
 
-	private:
-		std::unordered_map<std::string, sf::Texture> m_Textures;
-		std::unordered_map<std::string, sf::Font> m_Fonts;
-		std::unordered_map<std::string, sf::SoundBuffer> m_Sounds;
+private:
+	std::unordered_map<TextureString, sf::Texture> m_Textures;
+	std::unordered_map<FontString, sf::Font> m_Fonts;
+	std::unordered_map<SoundString, sf::SoundBuffer> m_Sounds;
 
-		std::unordered_map<PieceType, std::string> m_PieceIDToResource;
-
-		static inline ResourceManager* s_ResourceManager = nullptr;
-	};
-}
+	static inline ResourceManager* s_ResourceManager = nullptr;
+};

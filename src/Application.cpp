@@ -1,18 +1,21 @@
 #include "Application.h"
 
-using namespace ChessIP;
-
-
-Application::Application()
-    // Remove sf::Style::None for windowed mode
-    : m_Window(sf::RenderWindow(sf::VideoMode::getDesktopMode(), "Chess9", sf::Style::None))
+Application::Application(WindowSettings settings)
+    : m_Window(sf::RenderWindow(
+        (settings.Resolution.x == 0 || settings.Resolution.y == 0) ? sf::VideoMode::getDesktopMode() : sf::VideoMode(settings.Resolution),
+        "Chess9", sf::Style::Default, settings.State)
+    )
     , m_Viewport(sf::FloatRect(sf::Vector2f(0, 0), sf::Vector2f(m_Window.getSize().x, m_Window.getSize().y)))
-    , m_Board(GameType::OneVOne)
-    , m_Renderer(m_Window.getSize(), m_Board.GetSize())
+    , m_Board(std::make_shared<Board>(GameType::OneVOne))
+    , m_Renderer(m_Window.getSize(), m_Board->GetSize())
 {
 	ResourceManager::Initialise();
+	SoundPlayer::Initialize();
     
     m_Window.setFramerateLimit(400);
+	m_Window.setVerticalSyncEnabled(true);
+
+	m_Board->Init1v1Game(m_Board);
 }
 
 Application::~Application()
@@ -29,10 +32,12 @@ void Application::Run()
         m_Window.clear();
 
         m_Window.setView(m_Viewport);
-
-        m_Renderer.DrawBoard(m_Window, m_Board, m_SelectedSquare, m_PreviousMove);
+        m_Renderer.DrawBoard(m_Window, *m_Board, m_SelectedSquare, m_MoveType, m_PreviousMove);
+		m_Renderer.DrawHUD(m_Window.getSize(), m_Board->GetSize());
 
         m_Window.display();
+
+        SoundPlayer::GetInstance().Update();
     }
 }
 
@@ -42,18 +47,21 @@ void Application::EventHandler()
     {
         if (event->is<sf::Event::Closed>())
         {
+            // Window close button
             m_Window.close();
             m_IsRunning = false;
             return;
         }
         else if (const auto* resized = event->getIf<sf::Event::Resized>())
         {
+            // Reset viewport to match new window size
             sf::Vector2f newSize = sf::Vector2f(resized->size.x, resized->size.y);
             m_Viewport.setCenter(newSize / 2.f);
             m_Viewport.setSize(newSize);
         }
         else if (const auto* keyPressed = event->getIf<sf::Event::KeyPressed>())
         {
+            // Quit
             if (keyPressed->scancode == sf::Keyboard::Scan::Escape)
             {
                 m_Window.close();
@@ -61,56 +69,139 @@ void Application::EventHandler()
                 return;
             }
 
+            // Global variable adjusted by key
             if (keyPressed->scancode == sf::Keyboard::Scan::K)
             {
                 if (keyPressed->shift)
-                    g_AdjustableK -= 0.1f;
+                    Global::AdjustableK -= 0.1f;
                 else
-                    g_AdjustableK += 0.1f;
+                    Global::AdjustableK += 0.1f;
             }
         }
         else if (const auto* mousePressed = event->getIf<sf::Event::MouseButtonPressed>())
         {
-            // Initial piece is selected
-            if (mousePressed->button == sf::Mouse::Button::Left)
-            {
-                sf::Vector2f mousePosition = sf::Vector2f(mousePressed->position.x, mousePressed->position.y);
+            Global::MouseLeftPressed = true;
 
-                sf::Vector2i cellIndex = m_Renderer.MouseCellIndex(mousePosition);
-                int selectPosition = cellIndex.y * m_Board.GetSize() + cellIndex.x;
-                if (m_Renderer.IsMouseOnBoard(mousePosition) && m_Board.IsValidPieceByTurn(selectPosition))
-                {
-                    m_SelectedSquare = selectPosition;
-                }
-                else
-                    m_SelectedSquare = -1;
-            }
-
+            MoveHandler_MousePressed(mousePressed);
         }
         else if (const auto* mouseReleased = event->getIf<sf::Event::MouseButtonReleased>())
         {
-            if (mouseReleased->button == sf::Mouse::Button::Left)
+            Global::MouseLeftPressed = false;
+
+            MoveHandler_MouseReleased(mouseReleased);
+        }
+    }
+}
+
+void Application::MoveHandler_MousePressed(const sf::Event::MouseButtonPressed* mousePressed)
+{
+    // Assign move type. 
+    // Left click generates legal piece moves
+    // Right click generates legal action moves
+    MoveType moveTypePressed = MoveType::None;
+    if (mousePressed->button == sf::Mouse::Button::Left)
+        moveTypePressed = MoveType::Move;
+    if (mousePressed->button == sf::Mouse::Button::Right)
+        moveTypePressed = MoveType::Action;
+
+    // Initial piece is selected
+    sf::Vector2f mousePosition = sf::Vector2f(mousePressed->position.x, mousePressed->position.y);
+    sf::Vector2i targetSquare = m_Renderer.MouseCellIndex(m_Window.getSize().y, mousePosition);
+
+    if (m_MoveType != MoveType::None && m_MoveType == moveTypePressed &&
+        m_SelectedSquare != Constants::NullPosition)
+    {
+        if (m_SelectedSquare != targetSquare)
+        {
+            if (IsCellInBounds(targetSquare, m_Board->GetSize()));
             {
-                sf::Vector2f mousePosition = sf::Vector2f(mouseReleased->position.x, mouseReleased->position.y);
-                if (m_Renderer.IsMouseOnBoard(mousePosition))
+                // Make move if a square was previously selected
+                PieceMove move = PieceMove(m_SelectedSquare, targetSquare);
+                const auto& selectedPiece = (*m_Board)[move.StartSquare];
+
+                if (selectedPiece.get() != nullptr)
                 {
-                    sf::Vector2i cellIndex = m_Renderer.MouseCellIndex(mousePosition);
-                    int targetPosition = cellIndex.y * m_Board.GetSize() + cellIndex.x;
-                    // Make move if a square was previously selected
-                    if (m_SelectedSquare != -1)
+                    ActionMove actionMove = selectedPiece->IsLegalMove(move, m_MoveType);
+                    if (actionMove != Constants::NullActionMove)
                     {
-                        Move move = Move(m_SelectedSquare, targetPosition);
-                        bool validMove = m_Board.MakeMove(move);
+                        bool validMove = m_Board->MakeMove(move.StartSquare, actionMove);
+
                         if (validMove)
                         {
                             m_PreviousMove = move;
                         }
                     }
                 }
+            }
 
-                // Reset selection
-                m_SelectedSquare = -1;
+            // Reset selection
+            m_SelectedSquare = Constants::NullPosition;
+            m_MoveType = MoveType::None;
+        }
+    }
+    else
+    {
+        if (IsCellInBounds(targetSquare, m_Board->GetSize()) && m_Board->IsValidPieceByTurn(targetSquare))
+        {
+            // Assign selected square
+            m_SelectedSquare = targetSquare;
+            m_MoveType = moveTypePressed;
+        }
+        else
+        {
+            // Reset selection
+            m_SelectedSquare = Constants::NullPosition;
+            m_MoveType = MoveType::None;
+        }
+    }
+}
+
+void Application::MoveHandler_MouseReleased(const sf::Event::MouseButtonReleased* mouseReleased)
+{
+    // Assign move type. 
+    // Left click generates legal piece moves
+    // Right click generates legal action moves
+    MoveType moveTypeRelease = MoveType::None;
+    if (mouseReleased->button == sf::Mouse::Button::Left)
+        moveTypeRelease = MoveType::Move;
+    if (mouseReleased->button == sf::Mouse::Button::Right)
+        moveTypeRelease = MoveType::Action;
+
+    sf::Vector2f mousePosition = sf::Vector2f(mouseReleased->position.x, mouseReleased->position.y);
+    sf::Vector2i targetSquare = m_Renderer.MouseCellIndex(m_Window.getSize().y, mousePosition);
+    if (m_MoveType != MoveType::None && m_MoveType == moveTypeRelease &&
+        IsCellInBounds(targetSquare, m_Board->GetSize()))
+    {
+        // Make move if a square was previously selected
+        // If the move is an action, allow for the target square to be selected again
+        if (m_SelectedSquare != Constants::NullPosition && 
+            (m_SelectedSquare != targetSquare || m_MoveType == MoveType::Action))
+        {
+            PieceMove move = PieceMove(m_SelectedSquare, targetSquare);
+            const auto& selectedPiece = (*m_Board)[move.StartSquare];
+
+            if (selectedPiece.get() != nullptr)
+            {
+                ActionMove actionMove = selectedPiece->IsLegalMove(move, m_MoveType);
+                if (actionMove != Constants::NullActionMove)
+                {
+                    bool validMove = m_Board->MakeMove(move.StartSquare, actionMove);
+
+                    if (validMove)
+                    {
+                        m_PreviousMove = move;
+                        // Reset selection
+                        m_SelectedSquare = Constants::NullPosition;
+                        m_MoveType = MoveType::None;
+                    }
+                }
             }
         }
+    }
+    else
+    {
+        // Reset selection
+        m_SelectedSquare = Constants::NullPosition;
+        m_MoveType = MoveType::None;
     }
 }
