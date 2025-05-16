@@ -26,25 +26,25 @@ Renderer::Renderer(const sf::Vector2u& screenSize, int boardTileSize)
 		std::cout << "Shader outlineFix could not be loaded.\n";
 
 	// Calculate rendered board properties
-	CalculateBoard(screenSize, boardTileSize);
+	CalculateBoardProperties(screenSize, boardTileSize);
 }
 
 void Renderer::DrawBoard(sf::RenderWindow& window, const Board& board, PiecePosition selectedPiecePosition, MoveType moveType, const PieceMove& previousMove)
 {
-	CalculateBoard(window.getSize(), board.GetSize());
-	// Function for drawing a square
+	CalculateBoardProperties(window.getSize(), board.GetSize());
+
+	// Helper function for drawing a board tile
+	sf::RectangleShape tile(sf::Vector2f(m_BoardCellSize, m_BoardCellSize));
 	auto drawSquare = [&](PiecePosition position, sf::Color color)
 		{
-			sf::RectangleShape tile(sf::Vector2f(m_BoardCellSize, m_BoardCellSize));
-			sf::Vector2f drawPosition = sf::Vector2f(m_BoardPosition.x + position.x * m_BoardCellSize,
-				window.getSize().y - m_BoardPosition.y - (position.y + 1) * m_BoardCellSize);
+			sf::Vector2f drawPosition = CalculateTilePosition(window.getSize().y, position);
 
 			tile.setFillColor(color);
 			tile.setPosition(drawPosition);
 			window.draw(tile);
 		};
 
-	// Check for valid moves to highlight over the board
+	/// Get legal moves
 	std::vector<ActionMove> legalMoves;
 	if (selectedPiecePosition != GlobalConstants::NullPosition)
 	{
@@ -65,6 +65,8 @@ void Renderer::DrawBoard(sf::RenderWindow& window, const Board& board, PiecePosi
 		}
 	}
 
+	/// Draw legal moves and previous move
+	// 
 	// If a move coincides with part of the previous to be displayed on board, that will be skipped.
 	bool previousAndLegalMoveCollision[2] = { false, false };
 	// Highlight legal moves and selected square
@@ -100,7 +102,8 @@ void Renderer::DrawBoard(sf::RenderWindow& window, const Board& board, PiecePosi
 			drawSquare(previousMove.TargetSquare, m_ColorPreviousMove);
 	}
 	
-	// Draw pieces (from the top to bottom, left to right)
+	/// Draw pieces (from the top to bottom, left to right)
+	// 
 	// The position of a piece is counted from the bottom-left, going left to right and bottom-top
 	{
 		const ResourceManager& rm = ResourceManager::GetInstance();
@@ -118,17 +121,11 @@ void Renderer::DrawBoard(sf::RenderWindow& window, const Board& board, PiecePosi
 				m_PieceShader.setUniform(std::string("texture"), sf::Shader::CurrentTexture);
 
 				sf::Sprite sprite(texture);
-				// Calculate position and scale
-				{
-					sf::Vector2f drawPosition;
-					// Setup position
-					drawPosition = sf::Vector2f(m_BoardPosition.x + file * m_BoardCellSize,
-							window.getSize().y - m_BoardPosition.y - (rank + 1) * m_BoardCellSize);
-					float scale = m_BoardCellSize / texture.getSize().x;
-
-					sprite.setPosition(drawPosition);
-					sprite.setScale(sf::Vector2f(scale, scale));
-				}
+				// Set sprite position and scale on board tile
+				sf::Vector2f drawPosition = CalculateTilePosition(window.getSize().y, piecePosition);
+				float scale = m_BoardCellSize / texture.getSize().x;
+				sprite.setPosition(drawPosition);
+				sprite.setScale(sf::Vector2f(scale, scale));
 
 				// Sprite is finally rendered using its own function
 				bool isSelectedPiece = piecePosition == selectedPiecePosition;
@@ -138,7 +135,7 @@ void Renderer::DrawBoard(sf::RenderWindow& window, const Board& board, PiecePosi
 	}
 }
 
-void Renderer::CalculateBoard(const sf::Vector2u& screenSize, int boardGridSize)
+void Renderer::CalculateBoardProperties(const sf::Vector2u& screenSize, int boardGridSize)
 {
 	sf::Vector2u resolution = screenSize;
 	sf::Vector2f boardPadding = { resolution.x * m_BoardPadding01.x, resolution.y * m_BoardPadding01.y };
@@ -168,6 +165,14 @@ float Renderer::GetBoardSize() const
 float Renderer::GetBoardCellSize() const
 {
 	return m_BoardCellSize;
+}
+
+sf::Vector2f Renderer::CalculateTilePosition(uint32_t windowHeight, PiecePosition position)
+{
+	int file = position.x;
+	int rank = position.y;
+	return sf::Vector2f(m_BoardPosition.x + file * m_BoardCellSize,
+		windowHeight - m_BoardPosition.y - (rank + 1) * m_BoardCellSize);
 }
 
 sf::Vector2i Renderer::MouseCellIndex(int windowHeight, const sf::Vector2f& mousePosition) const
