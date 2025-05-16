@@ -39,7 +39,7 @@ set (PIECES_HEADER_FILES
     
     ${CMAKE_SOURCE_DIR}/src/pieces/Alchemist.h
     
-    ${CMAKE_SOURCE_DIR}/src/pieces/WhiteArcher.h
+    ${CMAKE_SOURCE_DIR}/src/pieces/Archer.h
     
     ${CMAKE_SOURCE_DIR}/src/pieces/WhiteBuilder.h
     
@@ -68,7 +68,7 @@ set (PIECES_SOURCE_FILES
     
     ${CMAKE_SOURCE_DIR}/src/pieces/Alchemist.cpp
     
-    ${CMAKE_SOURCE_DIR}/src/pieces/WhiteArcher.cpp
+    ${CMAKE_SOURCE_DIR}/src/pieces/Archer.cpp
     
     ${CMAKE_SOURCE_DIR}/src/pieces/WhiteBuilder.cpp
     

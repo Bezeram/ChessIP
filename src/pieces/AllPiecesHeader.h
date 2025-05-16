@@ -5,7 +5,7 @@
 #include "King.h"
 #include "Witch.h"
 #include "Alchemist.h"
-#include "WhiteArcher.h"
+#include "Archer.h"
 #include "WhiteBuilder.h"
 #include "WhiteGrimReaper.h"
 #include "WhitePlagueDoctor.h"

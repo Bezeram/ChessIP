@@ -22,7 +22,7 @@ void Alchemist::GetLegalMoves(sf::Vector2i piecePosition, std::vector<ActionMove
 						if (targetPiece.get() == nullptr)
 						{
 							// Check if the target square is not occupied by a friendly piece
-							if (!m_Board->IsTargetFriendly(PieceMove(piecePosition, targetSquare)))
+							if (!m_Board->IsTargetFriendly(PieceMove(piecePosition, targetSquare)) || targetSquare == piecePosition)
 							{
 								legalMoves.push_back(ActionMove(targetSquare));
 							}
@@ -42,7 +42,7 @@ void Alchemist::GetLegalMoves(sf::Vector2i piecePosition, std::vector<ActionMove
 							if (targetPiece.get() == nullptr)
 							{
 								// Check if the target square is not occupied by a friendly piece
-								if (!m_Board->IsTargetFriendly(PieceMove(piecePosition, targetSquare)))
+								if (!m_Board->IsTargetFriendly(PieceMove(piecePosition, targetSquare)) || targetSquare == piecePosition)
 								{
 									legalMoves.push_back(ActionMove(targetSquare));
 								}

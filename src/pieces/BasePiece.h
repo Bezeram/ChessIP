@@ -46,6 +46,24 @@ public:
 			sprite.setOrigin(sf::Vector2f(texture.getSize().x / 2.f, texture.getSize().y / 2.f));
 		}
 
+		for (auto effect : m_Effects)
+		{
+			switch (effect)
+			{
+			case Effect::Alchemist_Shield:
+				sprite.setColor(sf::Color(0, 255, 0)); // Green color with transparency
+				break;
+			case Effect::Stun:
+				sprite.setColor(sf::Color(0, 0, 0)); // Black color with transparency
+				break;
+			case Effect::Hex:
+				sprite.setColor(sf::Color(255, 0, 0)); // Red color with transparency
+				break;
+			default:
+				break;
+			}
+		}
+
 		window.draw(sprite, &pieceShader);
 	}
 
