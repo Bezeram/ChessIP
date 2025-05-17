@@ -132,27 +132,30 @@ namespace Textures
     const inline static std::string Null = "Null.png";
     const inline static std::string Board = "Board.jpg";
 
-    const inline static std::string Gold_Bar_0 = "Gold_Bar_0.jpg";
-    const inline static std::string Gold_Bar_1 = "Gold_Bar_1.jpg";
-    const inline static std::string Gold_Bar_2 = "Gold_Bar_2.jpg";
-    const inline static std::string Gold_Bar_3 = "Gold_Bar_3.jpg";
-    const inline static std::string Gold_Bar_4 = "Gold_Bar_4.jpg";
-    const inline static std::string Gold_Bar_5 = "Gold_Bar_5.jpg";
-    const inline static std::string Gold_Bar_6 = "Gold_Bar_6.jpg";
-    const inline static std::string Gold_Bar_7 = "Gold_Bar_7.jpg";
-    const inline static std::string Gold_Bar_8 = "Gold_Bar_8.jpg";
-    const inline static std::string Gold_Bar_9 = "Gold_Bar_9.jpg";
+    const inline static std::string Gold_Bar_ = "Gold_Bar_";
+    const inline static std::string Flux_Bar_ = "Flux_Bar_";
 
-    const inline static std::string Flux_Bar_0 = "Gold_Bar_0.jpg";
-    const inline static std::string Flux_Bar_1 = "Gold_Bar_1.jpg";
-    const inline static std::string Flux_Bar_2 = "Gold_Bar_2.jpg";
-    const inline static std::string Flux_Bar_3 = "Gold_Bar_3.jpg";
-    const inline static std::string Flux_Bar_4 = "Gold_Bar_4.jpg";
-    const inline static std::string Flux_Bar_5 = "Gold_Bar_5.jpg";
-    const inline static std::string Flux_Bar_6 = "Gold_Bar_6.jpg";
-    const inline static std::string Flux_Bar_7 = "Gold_Bar_7.jpg";
-    const inline static std::string Flux_Bar_8 = "Gold_Bar_8.jpg";
-    const inline static std::string Flux_Bar_9 = "Gold_Bar_9.jpg";
+    const inline static std::string Gold_Bar_0 = "Gold_Bar_0";
+    const inline static std::string Gold_Bar_1 = "Gold_Bar_1";
+    const inline static std::string Gold_Bar_2 = "Gold_Bar_2";
+    const inline static std::string Gold_Bar_3 = "Gold_Bar_3";
+    const inline static std::string Gold_Bar_4 = "Gold_Bar_4";
+    const inline static std::string Gold_Bar_5 = "Gold_Bar_5";
+    const inline static std::string Gold_Bar_6 = "Gold_Bar_6";
+    const inline static std::string Gold_Bar_7 = "Gold_Bar_7";
+    const inline static std::string Gold_Bar_8 = "Gold_Bar_8";
+    const inline static std::string Gold_Bar_9 = "Gold_Bar_9";
+
+    const inline static std::string Flux_Bar_0 = "Gold_Bar_0";
+    const inline static std::string Flux_Bar_1 = "Gold_Bar_1";
+    const inline static std::string Flux_Bar_2 = "Gold_Bar_2";
+    const inline static std::string Flux_Bar_3 = "Gold_Bar_3";
+    const inline static std::string Flux_Bar_4 = "Gold_Bar_4";
+    const inline static std::string Flux_Bar_5 = "Gold_Bar_5";
+    const inline static std::string Flux_Bar_6 = "Gold_Bar_6";
+    const inline static std::string Flux_Bar_7 = "Gold_Bar_7";
+    const inline static std::string Flux_Bar_8 = "Gold_Bar_8";
+    const inline static std::string Flux_Bar_9 = "Gold_Bar_9";
 }
 
 namespace Paths
@@ -160,6 +163,8 @@ namespace Paths
     const inline static std::string Root = "../";
     const inline static std::string Assets = Root + "assets/";
     const inline static std::string Textures = Assets + "textures/";
+    const inline static std::string Gold = Assets + "textures/bars/gold/";
+    const inline static std::string Flux = Assets + "textures/bars/flux/";
     const inline static std::string Pieces = Textures + "pieces/";
     const inline static std::string Sounds = Assets + "sounds/";
     const inline static std::string Fonts = Assets + "fonts/";

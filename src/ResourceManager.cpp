@@ -29,21 +29,29 @@ void ResourceManager::LoadAssets()
 	// Load pieces
 	for (const auto& [type, name] : Textures::PieceTypeToString)
 	{
-		if (type == PieceType::None)
-			continue;
+		const std::string& name = type.second;
+		const std::string& path = Paths::Pieces + name + ".png";
 
 		const std::string& path = Paths::Pieces + name + ".png";
 		AddTexture(path, name, true);
 	}
 
 	// Board
-	AddTexture(Paths::Textures + Textures::Board, Textures::Board);
+	AddTexture(Paths::Textures + "tile_white.png", "tile_white");
+	AddTexture(Paths::Textures + "tile_black.png", "tile_black");
+	AddTexture(Paths::Textures + "board_border.png", "board_border");
+
+	// Background
+	AddTexture(Paths::Textures + "background.png", "background");
+
+	// Inventory
+	AddTexture(Paths::Textures + "inventory.png", "inventory", true);
 
 	// Resources bars
 	for (int i = 0; i <= 9; i++)
 	{
-		AddTexture(Paths::Textures + Textures::Gold_Bar_0, Textures::Gold_Bar_0 + std::to_string(i), true);
-		AddTexture(Paths::Textures + Textures::Flux_Bar_0, Textures::Flux_Bar_0 + std::to_string(i), true);
+		AddTexture(Paths::Gold + Textures::Gold_Bar_ + std::to_string(i) + ".png", Textures::Gold_Bar_ + std::to_string(i), true);
+		AddTexture(Paths::Flux + Textures::Flux_Bar_ + std::to_string(i) + ".png", Textures::Flux_Bar_ + std::to_string(i), true);
 	}
 
 	// Load font
