@@ -1,158 +1,102 @@
-#include "Archer.h"
+﻿#include "Archer.h"
 
 Archer::Archer(std::shared_ptr<Board> board, PieceColor color, uint32_t upgradeLevel)
-	: BasePiece(board, color, upgradeLevel)
+    : BasePiece(board, color, upgradeLevel)
 {
 }
 
 // Cast ray to check if the path is clear for the move
 bool CastRay(const BoardMatrix& board, PiecePosition piecePosition, ActionMove move) {
-	PiecePosition targetSquare = move.TargetSquare;
-	int dx = targetSquare.x - piecePosition.x;
-	int dy = targetSquare.y - piecePosition.y;
-	int stepX = (dx > 0) ? 1 : (dx < 0) ? -1 : 0;
-	int stepY = (dy > 0) ? 1 : (dy < 0) ? -1 : 0;
-	for (int x = piecePosition.x + stepX, y = piecePosition.y + stepY; x != targetSquare.x || y != targetSquare.y; x += stepX, y += stepY) {
-		if (board[y][x] != nullptr) {
-			return false; // Path is blocked
-		}
-	}
-	return true; // Path is clear
+    PiecePosition targetSquare = move.TargetSquare;
+    int dx = targetSquare.x - piecePosition.x;
+    int dy = targetSquare.y - piecePosition.y;
+    int stepX = (dx > 0) ? 1 : (dx < 0) ? -1 : 0;
+    int stepY = (dy > 0) ? 1 : (dy < 0) ? -1 : 0;
+    for (int x = piecePosition.x + stepX, y = piecePosition.y + stepY;
+        x != targetSquare.x || y != targetSquare.y; x += stepX, y += stepY) {
+        if (board[y][x] != nullptr) {
+            return false; // Path is blocked
+        }
+    }
+    return true; // Path is clear
 }
 
 void Archer::GetLegalMoves(sf::Vector2i piecePosition, std::vector<ActionMove>& legalMoves)
 {
-	const BoardMatrix& boardMatrix = m_Board->GetBoard();
+    const BoardMatrix& boardMatrix = m_Board->GetBoard();
 
+    // Mutări normale în jurul piesei
+    for (int dy = -1; dy <= 1; dy++) {
+        for (int dx = -1; dx <= 1; dx++) {
+            if (dy != 0 || dx != 0) {
+                PiecePosition targetSquare = piecePosition + sf::Vector2i(dx, dy);
+                if (IsCellInBounds(targetSquare, m_Board->GetSize())) {
+                    const auto& targetPiece = boardMatrix[targetSquare.y][targetSquare.x];
+                    if (targetPiece == nullptr || !m_Board->IsTargetFriendly(PieceMove(piecePosition, targetSquare))) {
+                        legalMoves.push_back(ActionMove(targetSquare, MoveType::Move));
+                    }
+                }
+            }
+        }
+    }
 
-	// Logic for generating move commands
-	for (int dy = -1; dy <= 1; dy++)
-		for (int dx = -1; dx <= 1; dx++)
-			if (dy != 0 || dx != 0)
-			{
-				PiecePosition targetSquare = piecePosition + sf::Vector2i(dx, dy);
-				if (IsCellInBounds(targetSquare, m_Board->GetSize()))
-				{
-					const auto& targetPiece = boardMatrix[targetSquare.y][targetSquare.x];
-					if (targetPiece.get() == nullptr || !m_Board->IsTargetFriendly(PieceMove(piecePosition, targetSquare)))
-					{
-						// Check if the target square is not occupied by a friendly piece
-						legalMoves.push_back(ActionMove(targetSquare));
-					}
-				}
-			}
+    // Atacuri în funcție de nivel (vizualizează tot range-ul)
+    int maxRange = (m_UpgradeLevel == 1) ? 2 : (m_UpgradeLevel == 2) ? 3 : 4;
 
-	switch (Archer::m_UpgradeLevel)
-	{
-	case 1:
-		for (int dy = -2; dy <= 2; dy++)
-			for (int dx = -2; dx <= 2; dx++)
-				if ((dx == 0 || dy == 0 || abs(dx) == abs(dy)) && (dx != 0 || dy != 0))
-				{
-					PiecePosition targetSquare = piecePosition + sf::Vector2i(dx, dy);
-					if (IsCellInBounds(targetSquare, m_Board->GetSize()))
-					{
-						const auto& targetPiece = boardMatrix[targetSquare.y][targetSquare.x];
-						if (targetPiece.get() != nullptr)
-						{
-							// Check if the target square is not occupied by a friendly piece
-							if (!m_Board->IsTargetFriendly(PieceMove(piecePosition, targetSquare)))
-							{
-								if (CastRay(boardMatrix, piecePosition, ActionMove(targetSquare))) // Check if the path is clear
-								{
-									legalMoves.push_back(ActionMove(targetSquare));
-								}
-							}
-						}
-					}
-				}
-		break;
-	case 2:
-		for (int dy = -3; dy <= 3; dy++)
-			for (int dx = -3; dx <= 3; dx++)
-				if ((dx == 0 || dy == 0 || abs(dx) == abs(dy)) && (dx != 0 || dy != 0))
-				{
-					PiecePosition targetSquare = piecePosition + sf::Vector2i(dx, dy);
-					if (IsCellInBounds(targetSquare, m_Board->GetSize()))
-					{
-						const auto& targetPiece = boardMatrix[targetSquare.y][targetSquare.x];
-						if (targetPiece.get() != nullptr)
-						{
-							// Check if the target square is not occupied by a friendly piece
-							if (!m_Board->IsTargetFriendly(PieceMove(piecePosition, targetSquare)))
-							{
-								if (CastRay(boardMatrix, piecePosition, ActionMove(targetSquare))) // Check if the path is clear
-								{
-									legalMoves.push_back(ActionMove(targetSquare));
-								}
-							}
-						}
-					}
-				}
-		break;
-	case 3:
-		for (int dy = -4; dy <= 4; dy++)
-			for (int dx = -4; dx <= 4; dx++)
-				if ((dx == 0 || dy == 0 || abs(dx) == abs(dy)) && (dx != 0 || dy != 0))
-				{
-					PiecePosition targetSquare = piecePosition + sf::Vector2i(dx, dy);
-					if (IsCellInBounds(targetSquare, m_Board->GetSize()))
-					{
-						const auto& targetPiece = boardMatrix[targetSquare.y][targetSquare.x];
-						if (targetPiece.get() != nullptr)
-						{
-							// Check if the target square is not occupied by a friendly piece
-							if (!m_Board->IsTargetFriendly(PieceMove(piecePosition, targetSquare)))
-							{
-								if (CastRay(boardMatrix, piecePosition, ActionMove(targetSquare))) // Check if the path is clear
-								{
-									legalMoves.push_back(ActionMove(targetSquare));
-								}
-							}
-						}
-					}
-				}
-		break;
-	}
+    for (int dy = -maxRange; dy <= maxRange; dy++) {
+        for (int dx = -maxRange; dx <= maxRange; dx++) {
+            if ((dx == 0 && dy == 0) || !(dx == 0 || dy == 0 || abs(dx) == abs(dy)))
+                continue;
+
+            PiecePosition targetSquare = piecePosition + sf::Vector2i(dx, dy);
+            if (!IsCellInBounds(targetSquare, m_Board->GetSize()))
+                continue;
+
+            if (CastRay(boardMatrix, piecePosition, ActionMove(targetSquare))) {
+                legalMoves.push_back(ActionMove(targetSquare, MoveType::Action));  // colorăm toată raza
+            }
+        }
+    }
 }
 
 bool Archer::ExecuteMove(BoardMatrix& board, PiecePosition piecePosition, ActionMove move)
 {
-	// Move move
-	if (board[move.TargetSquare.y][move.TargetSquare.x] == nullptr)
-	{
-		// Normal move
-		PiecePosition targetSquare = move.TargetSquare;
-		// Move piece to the new square
-		board[targetSquare.y][targetSquare.x] = std::move(board[piecePosition.y][piecePosition.x]);
-		// Clear old position
-		board[piecePosition.y][piecePosition.x] = nullptr;
-	}
-	else
-		// Attack move
-	{
-		PiecePosition targetSquare = move.TargetSquare;
-		// Attack the piece on the target square
-		// Move piece one space towards the target square
-		// Move piece one space towards the target square
-		int moveX = targetSquare.x - piecePosition.x;
-		int moveY = targetSquare.y - piecePosition.y;
-		int stepX = (moveX > 0) ? 1 : (moveX < 0) ? -1 : 0;
-		int stepY = (moveY > 0) ? 1 : (moveY < 0) ? -1 : 0;
-		PiecePosition newPosition = piecePosition + sf::Vector2i(stepX, stepY);
-		board[newPosition.y][newPosition.x] = std::move(board[piecePosition.y][piecePosition.x]);
+    if (move.MoveType == MoveType::Move) {
+        PiecePosition target = move.TargetSquare;
+        board[target.y][target.x] = std::move(board[piecePosition.y][piecePosition.x]);
+        board[piecePosition.y][piecePosition.x] = nullptr;
+        return true;
+    }
+    else if (move.MoveType == MoveType::Action) {
+        auto& targetPiece = board[move.TargetSquare.y][move.TargetSquare.x];
 
-		board[piecePosition.y][piecePosition.x] = nullptr; // Clear old position
+        // 1. Nu ataca dacă e pătrat gol
+        if (targetPiece == nullptr)
+            return false;
 
-		// Remove the attacked piece from the board
-		board[targetSquare.y][targetSquare.x] = nullptr;
-	}
-	return true;
+        // 2. Nu ataca dacă e piesă prietenă
+        BasePiece* rawTarget = targetPiece.get();
+        if (::GetPieceColor(rawTarget->GetPieceType()) == m_Color)
+            return false;
+
+        // 3. Atac valid – mută Archer un pătrat în direcția țintei
+        int dx = move.TargetSquare.x - piecePosition.x;
+        int dy = move.TargetSquare.y - piecePosition.y;
+        int stepX = (dx > 0) ? 1 : (dx < 0) ? -1 : 0;
+        int stepY = (dy > 0) ? 1 : (dy < 0) ? -1 : 0;
+        PiecePosition newPosition = piecePosition + sf::Vector2i(stepX, stepY);
+
+        board[newPosition.y][newPosition.x] = std::move(board[piecePosition.y][piecePosition.x]);
+        board[piecePosition.y][piecePosition.x] = nullptr;
+        board[move.TargetSquare.y][move.TargetSquare.x] = nullptr;
+
+        return true;
+    }
+
+    return false;
 }
-
-
 
 PieceType Archer::GetPieceType()
 {
-	return (m_Color == PieceColor::White) ? PieceType::White_Archer : PieceType::Black_Archer;
+    return (m_Color == PieceColor::White) ? PieceType::White_Archer : PieceType::Black_Archer;
 }
