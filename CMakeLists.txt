@@ -32,6 +32,7 @@ set (PIECES_HEADER_FILES
     ${CMAKE_SOURCE_DIR}/src/pieces/AllPiecesHeader.h
     ${CMAKE_SOURCE_DIR}/src/pieces/BasePiece.h
     
+    ${CMAKE_SOURCE_DIR}/src/pieces/Wall.h
     ${CMAKE_SOURCE_DIR}/src/pieces/Witch.h
     ${CMAKE_SOURCE_DIR}/src/pieces/King.h
     
@@ -41,7 +42,7 @@ set (PIECES_HEADER_FILES
     
     ${CMAKE_SOURCE_DIR}/src/pieces/Archer.h
     
-    ${CMAKE_SOURCE_DIR}/src/pieces/WhiteBuilder.h
+    ${CMAKE_SOURCE_DIR}/src/pieces/Builder.h
     
     ${CMAKE_SOURCE_DIR}/src/pieces/WhiteGrimReaper.h
     
@@ -61,8 +62,10 @@ set (PIECES_HEADER_FILES
 # Pieces source files
 set (PIECES_SOURCE_FILES
     
+
     ${CMAKE_SOURCE_DIR}/src/pieces/Witch.cpp
     ${CMAKE_SOURCE_DIR}/src/pieces/King.cpp
+    ${CMAKE_SOURCE_DIR}/src/pieces/Wall.cpp
     
     ${CMAKE_SOURCE_DIR}/src/pieces/WhiteKnight.cpp
     
@@ -70,7 +73,7 @@ set (PIECES_SOURCE_FILES
     
     ${CMAKE_SOURCE_DIR}/src/pieces/Archer.cpp
     
-    ${CMAKE_SOURCE_DIR}/src/pieces/WhiteBuilder.cpp
+    ${CMAKE_SOURCE_DIR}/src/pieces/Builder.cpp
     
     ${CMAKE_SOURCE_DIR}/src/pieces/WhiteGrimReaper.cpp
     
