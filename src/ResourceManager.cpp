@@ -27,11 +27,12 @@ void ResourceManager::Shutdown()
 void ResourceManager::LoadAssets()
 {
 	// Load pieces
-	for (auto& type : Textures::PieceTypeToString)
+	for (const auto& [type, name] : Textures::PieceTypeToString)
 	{
-		const std::string& name = type.second;
-		const std::string& path = Paths::Pieces + name + ".png";
+		if (type == PieceType::None)
+			continue;
 
+		const std::string& path = Paths::Pieces + name + ".png";
 		AddTexture(path, name, true);
 	}
 
@@ -79,7 +80,7 @@ const sf::Texture& ResourceManager::GetPieceTexture(PieceType type) const
 	if (m_Textures.find(key) == m_Textures.end())
 	{
 		std::cout << "Texture " << key << " not found!\n";
-		return m_Textures.at("White_King");
+		return m_Textures.at(Textures::Null);
 	}
 	return m_Textures.at(key);
 }
