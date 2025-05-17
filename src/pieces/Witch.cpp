@@ -61,7 +61,7 @@ void Witch::GetLegalMoves(sf::Vector2i piecePosition, std::vector<ActionMove>& l
 	}
 }
 
-void Witch::ExecuteMove(BoardMatrix& board, PiecePosition piecePosition, ActionMove move)
+bool Witch::ExecuteMove(BoardMatrix& board, PiecePosition piecePosition, ActionMove move)
 {
 	// Normal move
 	if (move.MoveType == MoveType::Move)
@@ -120,7 +120,7 @@ void Witch::ExecuteMove(BoardMatrix& board, PiecePosition piecePosition, ActionM
 
 		}
 	}
-	
+	return true;
 }
 
 PieceType Witch::GetPieceType()

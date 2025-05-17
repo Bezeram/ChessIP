@@ -30,7 +30,7 @@ void ResourceManager::LoadAssets()
 	for (auto& type : Textures::PieceTypeToString)
 	{
 		const std::string& name = type.second;
-		const std::string& path = Paths::Pieces + name + ".png";
+		const std::string& path = Paths::Pieces + name + ".jpg";
 
 		AddTexture(path, name, true);
 	}

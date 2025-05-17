@@ -67,7 +67,7 @@ void Alchemist::GetLegalMoves(sf::Vector2i piecePosition, std::vector<ActionMove
 	}
 }
 
-void Alchemist::ExecuteMove(BoardMatrix& board, PiecePosition piecePosition, ActionMove move)
+bool Alchemist::ExecuteMove(BoardMatrix& board, PiecePosition piecePosition, ActionMove move)
 {
 	// Move action
 	if (move.MoveType == MoveType::Move)
@@ -131,6 +131,7 @@ void Alchemist::ExecuteMove(BoardMatrix& board, PiecePosition piecePosition, Act
 		}
 
 	}
+	return true;
 }
 
  PieceType Alchemist::GetPieceType()

@@ -33,13 +33,14 @@ public:
 	virtual void GetLegalMoves(PiecePosition piecePosition, std::vector<ActionMove>& legalMoves) = 0;
 	// By default it moves the piece to the corepondent square
 	// Assumes the move is valid
-	virtual void ExecuteMove(BoardMatrix& board, PiecePosition piecePosition, ActionMove move)
+	virtual bool ExecuteMove(BoardMatrix& board, PiecePosition piecePosition, ActionMove move)
 	{
 		PiecePosition targetSquare = move.TargetSquare;
 		// Move piece to the new square
 		board[targetSquare.y][targetSquare.x] = std::move(board[piecePosition.y][piecePosition.x]);
 		// Clear old position
 		board[piecePosition.y][piecePosition.x] = nullptr;
+		return true;
 	}
 	// Add extra effects to sprite, like changing color, adding another sprite overlayed etc.
 	// Board position and scale are automatically calculated into the sprite beforehand

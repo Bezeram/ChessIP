@@ -44,7 +44,16 @@ void Board::Init1v1Game(std::shared_ptr<Board>& boardRef)
 		m_Board[whiteRank][kingFile] = std::make_unique<King>(boardRef, PieceColor::White);
 	}
 	{
-		m_Board[whiteRank][kingFile + 1] = std::make_unique<Archer>(boardRef, PieceColor::White, 3);
+		m_Board[whiteRank][kingFile - 1] = std::make_unique<Archer>(boardRef, PieceColor::White, 3);
+	}
+	{
+		m_Board[whiteRank][kingFile + 1] = std::make_unique<Alchemist>(boardRef, PieceColor::White, 3);
+	}
+	{
+		m_Board[whiteRank][kingFile - 2] = std::make_unique<Witch>(boardRef, PieceColor::White, 3);
+	}
+	{
+		m_Board[whiteRank][kingFile + 2] = std::make_unique<Trebuchet>(boardRef, PieceColor::White, 3);
 	}
 
 	// Black
@@ -53,6 +62,15 @@ void Board::Init1v1Game(std::shared_ptr<Board>& boardRef)
 	}
 	{
 		m_Board[blackRank][kingFile - 1] = std::make_unique<Archer>(boardRef, PieceColor::Black, 1);
+	}
+	{
+		m_Board[blackRank][kingFile + 1] = std::make_unique<Alchemist>(boardRef, PieceColor::Black, 1);
+	}
+	{
+		m_Board[blackRank][kingFile - 2] = std::make_unique<Witch>(boardRef, PieceColor::Black, 1);
+	}
+	{
+		m_Board[blackRank][kingFile + 2] = std::make_unique<Trebuchet>(boardRef, PieceColor::Black, 1);
 	}
 }
 
@@ -122,11 +140,16 @@ bool Board::IsWhitesMove() const
 bool Board::MakeMove(PiecePosition piecePosition, ActionMove actionMove)
 {
 	const auto& selectedPiece = (*this)[piecePosition];
-	selectedPiece->ExecuteMove(m_Board, piecePosition, actionMove);
+	if (!selectedPiece)
+		return false;
 
-	// Update flux and gold
+	// ?? Rulãm mutarea ?i verificãm dacã a fost validã
+	bool valid = selectedPiece->ExecuteMove(m_Board, piecePosition, actionMove);
+	if (!valid)
+		return false;
+
+	// ? Dacã mutarea a fost validã, actualizãm starea jocului
 	UpdateResources();
-	// Flip turn
 	m_IsWhitesTurn = !m_IsWhitesTurn;
 	return true;
 }

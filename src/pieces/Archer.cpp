@@ -116,7 +116,7 @@ void Archer::GetLegalMoves(sf::Vector2i piecePosition, std::vector<ActionMove>& 
 	}
 }
 
-void Archer::ExecuteMove(BoardMatrix& board, PiecePosition piecePosition, ActionMove move)
+bool Archer::ExecuteMove(BoardMatrix& board, PiecePosition piecePosition, ActionMove move)
 {
 	// Move move
 	if (board[move.TargetSquare.y][move.TargetSquare.x] == nullptr)
@@ -147,6 +147,7 @@ void Archer::ExecuteMove(BoardMatrix& board, PiecePosition piecePosition, Action
 		// Remove the attacked piece from the board
 		board[targetSquare.y][targetSquare.x] = nullptr;
 	}
+	return true;
 }
 
 

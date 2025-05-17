@@ -125,10 +125,12 @@ void Application::MoveHandler_MousePressed(const sf::Event::MouseButtonPressed* 
                     if (actionMove != Constants::NullActionMove)
                     {
                         bool validMove = m_Board->MakeMove(move.StartSquare, actionMove);
-
-                        if (validMove)
-                        {
+                        if (validMove) {
                             m_PreviousMove = move;
+
+                            // ? DOAR dacã mutarea a fost validã, deselectãm piesa ?i tipul de mutare
+                            m_SelectedSquare = Constants::NullPosition;
+                            m_MoveType = MoveType::None;
                         }
                     }
                 }
