@@ -5,6 +5,123 @@ Builder::Builder(std::shared_ptr<Board> board, PieceColor color, uint32_t upgrad
 {
 }
 
+void Builder::GetRange(sf::Vector2i piecePosition, std::vector<ActionMove>& legalMoves)
+{
+	for (int dy = -2; dy <= 2; dy++)
+		for (int dx = -2; dx <= 2; dx++)
+			if ((dx == 0 || dy == 0) && (dx != 0 || dy != 0))
+			{
+				PiecePosition targetSquare = piecePosition + sf::Vector2i(dx, dy);
+				if (IsCellInBounds(targetSquare, m_Board->GetSize()))
+				{
+					legalMoves.push_back(ActionMove(targetSquare, MoveType::Move));
+				}
+			}
+
+	std::vector<PiecePosition> targetSquareVector;
+
+
+	// Junk so compiler doesn't scream at me
+	PiecePosition targetSquare1;
+	PiecePosition targetSquare2;
+	PiecePosition targetSquare3;
+	PiecePosition targetSquareMiddle;
+
+	switch (Builder::m_UpgradeLevel)
+	{
+	case 1:
+		// black builder should be able to place walls only downwards, not upwards
+		if (Builder::GetPieceColor() == PieceColor::Black)
+		{
+			targetSquareVector = {
+				piecePosition + sf::Vector2i(-1, -1),
+				piecePosition + sf::Vector2i(0, -1),
+				piecePosition + sf::Vector2i(1, -1)
+			};
+		}
+		else
+		{
+			targetSquareVector = {
+				piecePosition + sf::Vector2i(-1, 1),
+				piecePosition + sf::Vector2i(0, 1),
+				piecePosition + sf::Vector2i(1, 1)
+			};
+		}
+		for (PiecePosition target : targetSquareVector)
+		{
+			if (IsCellInBounds(target, m_Board->GetSize()))
+			{
+				legalMoves.push_back(ActionMove(target, MoveType::Move));
+				legalMoves.push_back(ActionMove(target, MoveType::Action));
+			}
+		}
+
+
+		break;
+	case 2:
+
+		if (Builder::GetPieceColor() == PieceColor::Black)
+		{
+			targetSquare1 = piecePosition + sf::Vector2i(-1, -1);
+			targetSquare2 = piecePosition + sf::Vector2i(1, -1);
+			targetSquareMiddle = piecePosition + sf::Vector2i(0, -1);
+		}
+		else
+		{
+			targetSquare1 = piecePosition + sf::Vector2i(-1, 1);
+			targetSquare2 = piecePosition + sf::Vector2i(1, 1);
+			targetSquareMiddle = piecePosition + sf::Vector2i(0, 1);
+		}
+
+
+		if (IsCellInBounds(targetSquare1, m_Board->GetSize()))
+		{
+			legalMoves.push_back(ActionMove(targetSquare1, MoveType::Move));
+			legalMoves.push_back(ActionMove(targetSquare1, MoveType::Action));
+		}
+		if (IsCellInBounds(targetSquare2, m_Board->GetSize()))
+		{
+			legalMoves.push_back(ActionMove(targetSquare2, MoveType::Move));
+			legalMoves.push_back(ActionMove(targetSquare2, MoveType::Action));
+		}
+		break;
+	case 3:
+
+		if (Builder::GetPieceColor() == PieceColor::Black)
+		{
+			targetSquare1 = piecePosition + sf::Vector2i(-1, -1);
+			targetSquare2 = piecePosition + sf::Vector2i(0, -1);
+			targetSquare3 = piecePosition + sf::Vector2i(1, -1);
+		}
+		else
+		{
+			targetSquare1 = piecePosition + sf::Vector2i(-1, 1);
+			targetSquare2 = piecePosition + sf::Vector2i(0, 1);
+			targetSquare3 = piecePosition + sf::Vector2i(1, 1);
+		}
+
+		if (IsCellInBounds(targetSquare1 + sf::Vector2i(-1, 0), m_Board->GetSize()))
+		{
+			legalMoves.push_back(ActionMove(targetSquare1, MoveType::Move));
+			legalMoves.push_back(ActionMove(targetSquare1, MoveType::Action));
+		}
+
+		if (IsCellInBounds(targetSquare2 + sf::Vector2i(-1, 0), m_Board->GetSize())
+			&& IsCellInBounds(targetSquare2 + sf::Vector2i(1, 0), m_Board->GetSize()))
+		{
+			legalMoves.push_back(ActionMove(targetSquare2, MoveType::Move));
+			legalMoves.push_back(ActionMove(targetSquare2, MoveType::Action));
+		}
+
+		if (IsCellInBounds(targetSquare3 + sf::Vector2i(1, 0), m_Board->GetSize()))
+		{
+			legalMoves.push_back(ActionMove(targetSquare3, MoveType::Move));
+			legalMoves.push_back(ActionMove(targetSquare3, MoveType::Action));
+		}
+
+	}
+}
+
 void Builder::GetLegalMoves(sf::Vector2i piecePosition, std::vector<ActionMove>& legalMoves)
 {
 	const BoardMatrix& boardMatrix = m_Board->GetBoard();

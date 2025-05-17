@@ -5,6 +5,39 @@ Witch::Witch(std::shared_ptr<Board> board, PieceColor color, uint32_t upgradeLev
 {
 }
 
+void Witch::GetRange(sf::Vector2i piecePosition, std::vector<ActionMove>& legalMoves)
+{
+	switch (Witch::m_UpgradeLevel)
+	{
+	case 1:
+		for (int dy = -2; dy <= 2; dy++)
+			for (int dx = -2; dx <= 2; dx++)
+				if ((dy != 0 || dx != 0) && (abs(dx) + abs(dy) <= 2))
+				{
+					PiecePosition targetSquare = piecePosition + sf::Vector2i(dx, dy);
+					if (IsCellInBounds(targetSquare, m_Board->GetSize()))
+					{
+						legalMoves.push_back(ActionMove(targetSquare, MoveType::Move));
+						legalMoves.push_back(ActionMove(targetSquare, MoveType::Action));
+					}
+				}
+		break;
+	default:
+		for (int dy = -3; dy <= 3; dy++)
+			for (int dx = -3; dx <= 3; dx++)
+				if ((dy != 0 || dx != 0) && (abs(dx) + abs(dy) <= 3))
+				{
+					PiecePosition targetSquare = piecePosition + sf::Vector2i(dx, dy);
+					if (IsCellInBounds(targetSquare, m_Board->GetSize()))
+					{
+						legalMoves.push_back(ActionMove(targetSquare, MoveType::Move));
+						legalMoves.push_back(ActionMove(targetSquare, MoveType::Action));
+					}
+				}
+		break;
+	}
+}
+
 void Witch::GetLegalMoves(sf::Vector2i piecePosition, std::vector<ActionMove>& legalMoves)
 {
 	const BoardMatrix& boardMatrix = m_Board->GetBoard();
@@ -75,13 +108,11 @@ void Witch::ExecuteMove(BoardMatrix& board, PiecePosition piecePosition, ActionM
 	else
 	// Action move
 	{
-		std::cout << "ACTION MOVE!" << std::endl;
 		if (board[move.TargetSquare.y][move.TargetSquare.x] != nullptr)
 		{
 			PiecePosition targetSquare = move.TargetSquare;
 			// Stun enemy in the square
 			board[targetSquare.y][targetSquare.x]->AddEffect(Effect::Stun, 1);
-			std::cout << "STUNNED!" << std::endl;
 
 			if (Witch::m_UpgradeLevel == 3)
 			{

@@ -5,6 +5,38 @@ Alchemist::Alchemist(std::shared_ptr<Board> board, PieceColor color, uint32_t up
 {
 }
 
+void Alchemist::GetRange(sf::Vector2i piecePosition, std::vector<ActionMove>& legalMoves)
+{
+	legalMoves.push_back(ActionMove(piecePosition, MoveType::Action));
+
+	switch (Alchemist::m_UpgradeLevel)
+	{
+	case 1:
+		for (int dy = -1; dy <= 1; dy++)
+			for (int dx = -1; dx <= 1; dx++)
+			{
+				PiecePosition targetSquare = piecePosition + sf::Vector2i(dx, dy);
+				if (IsCellInBounds(targetSquare, m_Board->GetSize()))
+				{
+					legalMoves.push_back(ActionMove(targetSquare, MoveType::Move));
+				}
+			}
+		break;
+	default:
+		for (int dy = -2; dy <= 2; dy++)
+			for (int dx = -2; dx <= 2; dx++)
+				if (abs(dx) + abs(dy) <= 2)
+				{
+					PiecePosition targetSquare = piecePosition + sf::Vector2i(dx, dy);
+					if (IsCellInBounds(targetSquare, m_Board->GetSize()))
+					{
+						legalMoves.push_back(ActionMove(targetSquare, MoveType::Move));
+					}
+				}
+		break;
+	}
+}
+
 void Alchemist::GetLegalMoves(sf::Vector2i piecePosition, std::vector<ActionMove>& legalMoves)
 {
 	const BoardMatrix& boardMatrix = m_Board->GetBoard();

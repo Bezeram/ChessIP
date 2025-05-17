@@ -20,13 +20,29 @@ public:
 	{
 	}
 
+	virtual void GetRange(PiecePosition piecePosition, std::vector<ActionMove>& legalMoves) = 0;
+
 	// Wrapper function to get the legal moves for a piece, made so that effects can be applied to available moves
 	// Maybe do this more elegantly
 	void GetLegalMovesWrapper(PiecePosition piecePosition, std::vector<ActionMove>& legalMoves)
 	{
 		GetLegalMoves(piecePosition, legalMoves);
-		
+		// TODO: cast ray to see if path is blocked
 		ProcessEffects(legalMoves);
+	}
+
+	static bool CastRay(const BoardMatrix& board, PiecePosition piecePosition, ActionMove move) {
+		PiecePosition targetSquare = move.TargetSquare;
+		int dx = targetSquare.x - piecePosition.x;
+		int dy = targetSquare.y - piecePosition.y;
+		int stepX = (dx > 0) ? 1 : (dx < 0) ? -1 : 0;
+		int stepY = (dy > 0) ? 1 : (dy < 0) ? -1 : 0;
+		for (int x = piecePosition.x + stepX, y = piecePosition.y + stepY; x != targetSquare.x || y != targetSquare.y; x += stepX, y += stepY) {
+			if (board[y][x] != nullptr) {
+				return false; // Path is blocked
+			}
+		}
+		return true; // Path is clear
 	}
 
 	// Every piece must implement this function to get the valid moves

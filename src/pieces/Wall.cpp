@@ -5,6 +5,11 @@ Wall::Wall(std::shared_ptr<Board> board, PieceColor color, uint32_t upgradeLevel
 {
 }
 
+void Wall::GetRange(sf::Vector2i piecePosition, std::vector<ActionMove>& legalMoves)
+{
+	legalMoves.clear();
+}
+
 void Wall::GetLegalMoves(sf::Vector2i piecePosition, std::vector<ActionMove>& legalMoves)
 {
 	legalMoves.clear();
