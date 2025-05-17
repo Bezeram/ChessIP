@@ -10,7 +10,7 @@
 #include "WhiteGrimReaper.h"
 #include "WhitePlagueDoctor.h"
 #include "WhiteRogue.h"
-#include "WhiteTrebuchet.h"
+#include "Trebuchet.h"
 
 #include "WhiteWarlord.h"
 #include "WhiteKnight.h"

@@ -1,4 +1,4 @@
-#include "Board.h"
+ï»¿#include "Board.h"
 
 Board::Board(GameType gameType)
 {
@@ -70,7 +70,7 @@ void Board::Init1v1Game(std::shared_ptr<Board>& boardRef)
 		m_Board[blackRank][kingFile - 2] = std::make_unique<Witch>(boardRef, PieceColor::Black, 1);
 	}
 	{
-		m_Board[blackRank][kingFile + 2] = std::make_unique<Trebuchet>(boardRef, PieceColor::Black, 1);
+		m_Board[blackRank][kingFile + 2] = std::make_unique<Trebuchet>(boardRef, PieceColor::Black, 2);
 	}
 }
 
@@ -143,12 +143,12 @@ bool Board::MakeMove(PiecePosition piecePosition, ActionMove actionMove)
 	if (!selectedPiece)
 		return false;
 
-	// ?? Rulãm mutarea ?i verificãm dacã a fost validã
+	// ðŸ‘‰ RulÄƒm mutarea È™i verificÄƒm dacÄƒ a fost validÄƒ
 	bool valid = selectedPiece->ExecuteMove(m_Board, piecePosition, actionMove);
 	if (!valid)
 		return false;
 
-	// ? Dacã mutarea a fost validã, actualizãm starea jocului
+	// âœ… DacÄƒ mutarea a fost validÄƒ, actualizÄƒm starea jocului
 	UpdateResources();
 	m_IsWhitesTurn = !m_IsWhitesTurn;
 	return true;

@@ -1,4 +1,4 @@
-#include "Alchemist.h"
+﻿#include "Alchemist.h"
 
 Alchemist::Alchemist(std::shared_ptr<Board> board, PieceColor color, uint32_t upgradeLevel)
 	: BasePiece(board, color, upgradeLevel)
@@ -9,11 +9,38 @@ void Alchemist::GetLegalMoves(sf::Vector2i piecePosition, std::vector<ActionMove
 {
 	const BoardMatrix& boardMatrix = m_Board->GetBoard();
 
-	switch (Alchemist::m_UpgradeLevel) 
+	switch (Alchemist::m_UpgradeLevel)
 	{
-		case 1:
-			for (int dy = -1; dy <= 1; dy++)
-				for (int dx = -1; dx <= 1; dx++)
+	case 1:
+		for (int dy = -1; dy <= 1; dy++)
+			for (int dx = -1; dx <= 1; dx++)
+			{
+				PiecePosition targetSquare = piecePosition + sf::Vector2i(dx, dy);
+				if (IsCellInBounds(targetSquare, m_Board->GetSize()))
+				{
+					const auto& targetPiece = boardMatrix[targetSquare.y][targetSquare.x];
+					if (targetPiece.get() == nullptr)
+					{
+						// Check if the target square is not occupied by a friendly piece
+						if (!m_Board->IsTargetFriendly(PieceMove(piecePosition, targetSquare)))
+						{
+							legalMoves.push_back(ActionMove(targetSquare, MoveType::Move));
+						}
+					}
+					else
+					{
+						if (targetSquare == piecePosition)
+						{
+							legalMoves.push_back(ActionMove(targetSquare, MoveType::Action));
+						}
+					}
+				}
+			}
+		break;
+	default:
+		for (int dy = -2; dy <= 2; dy++)
+			for (int dx = -2; dx <= 2; dx++)
+				if (abs(dx) + abs(dy) <= 2)
 				{
 					PiecePosition targetSquare = piecePosition + sf::Vector2i(dx, dy);
 					if (IsCellInBounds(targetSquare, m_Board->GetSize()))
@@ -36,34 +63,7 @@ void Alchemist::GetLegalMoves(sf::Vector2i piecePosition, std::vector<ActionMove
 						}
 					}
 				}
-			break;
-		default:
-			for (int dy = -2; dy <= 2; dy++)
-				for (int dx = -2; dx <= 2; dx++)
-					if (abs(dx) + abs(dy) <= 2)
-					{
-						PiecePosition targetSquare = piecePosition + sf::Vector2i(dx, dy);
-						if (IsCellInBounds(targetSquare, m_Board->GetSize()))
-						{
-							const auto& targetPiece = boardMatrix[targetSquare.y][targetSquare.x];
-							if (targetPiece.get() == nullptr)
-							{
-								// Check if the target square is not occupied by a friendly piece
-								if (!m_Board->IsTargetFriendly(PieceMove(piecePosition, targetSquare)))
-								{
-									legalMoves.push_back(ActionMove(targetSquare, MoveType::Move));
-								}
-							}
-							else
-							{
-								if (targetSquare == piecePosition)
-								{
-									legalMoves.push_back(ActionMove(targetSquare, MoveType::Action));
-								}
-							}
-						}
-					}
-			break;
+		break;
 	}
 }
 
@@ -85,29 +85,29 @@ bool Alchemist::ExecuteMove(BoardMatrix& board, PiecePosition piecePosition, Act
 		// Add all nearby pieces, including self, to a list
 		switch (Alchemist::m_UpgradeLevel)
 		{
-			case 1:
-				for (int dy = -1; dy <= 1; dy++)
-					for (int dx = -1; dx <= 1; dx++)
+		case 1:
+			for (int dy = -1; dy <= 1; dy++)
+				for (int dx = -1; dx <= 1; dx++)
+				{
+					BasePiece* piece = board[piecePosition.y + dy][piecePosition.x + dx].get();
+					if (piece != nullptr && piece->GetPieceType() != PieceType::None)
 					{
-						BasePiece *piece = board[piecePosition.y + dy][piecePosition.x + dx].get();
+						piecesToCleanse.push_back(piece);
+					}
+				}
+			break;
+		default:
+			for (int dy = -2; dy <= 2; dy++)
+				for (int dx = -2; dx <= 2; dx++)
+					if (abs(dy) + abs(dx) <= 2)
+					{
+						BasePiece* piece = board[piecePosition.y + dy][piecePosition.x + dx].get();
 						if (piece != nullptr && piece->GetPieceType() != PieceType::None)
 						{
 							piecesToCleanse.push_back(piece);
 						}
 					}
-				break;
-			default:
-				for (int dy = -2; dy <= 2; dy++)
-					for (int dx = -2; dx <= 2; dx++)
-						if (abs(dy) + abs(dx) <= 2)
-							{
-								BasePiece* piece = board[piecePosition.y + dy][piecePosition.x + dx].get();
-								if (piece != nullptr && piece->GetPieceType() != PieceType::None)
-								{
-									piecesToCleanse.push_back(piece);
-								}
-							}
-				break;
+			break;
 		}
 
 		// Cleanse the negative effects off all pieces on the list
@@ -134,7 +134,7 @@ bool Alchemist::ExecuteMove(BoardMatrix& board, PiecePosition piecePosition, Act
 	return true;
 }
 
- PieceType Alchemist::GetPieceType()
+PieceType Alchemist::GetPieceType()
 {
 	return (m_Color == PieceColor::White) ? PieceType::White_Alchemist : PieceType::Black_Alchemist;
 }
