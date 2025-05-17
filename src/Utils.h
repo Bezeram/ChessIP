@@ -146,16 +146,16 @@ namespace Textures
     const inline static std::string Gold_Bar_8 = "Gold_Bar_8";
     const inline static std::string Gold_Bar_9 = "Gold_Bar_9";
 
-    const inline static std::string Flux_Bar_0 = "Gold_Bar_0";
-    const inline static std::string Flux_Bar_1 = "Gold_Bar_1";
-    const inline static std::string Flux_Bar_2 = "Gold_Bar_2";
-    const inline static std::string Flux_Bar_3 = "Gold_Bar_3";
-    const inline static std::string Flux_Bar_4 = "Gold_Bar_4";
-    const inline static std::string Flux_Bar_5 = "Gold_Bar_5";
-    const inline static std::string Flux_Bar_6 = "Gold_Bar_6";
-    const inline static std::string Flux_Bar_7 = "Gold_Bar_7";
-    const inline static std::string Flux_Bar_8 = "Gold_Bar_8";
-    const inline static std::string Flux_Bar_9 = "Gold_Bar_9";
+    const inline static std::string Flux_Bar_0 = "Flux_Bar_0";
+    const inline static std::string Flux_Bar_1 = "Flux_Bar_1";
+    const inline static std::string Flux_Bar_2 = "Flux_Bar_2";
+    const inline static std::string Flux_Bar_3 = "Flux_Bar_3";
+    const inline static std::string Flux_Bar_4 = "Flux_Bar_4";
+    const inline static std::string Flux_Bar_5 = "Flux_Bar_5";
+    const inline static std::string Flux_Bar_6 = "Flux_Bar_6";
+    const inline static std::string Flux_Bar_7 = "Flux_Bar_7";
+    const inline static std::string Flux_Bar_8 = "Flux_Bar_8";
+    const inline static std::string Flux_Bar_9 = "Flux_Bar_9";
 }
 
 namespace Paths
