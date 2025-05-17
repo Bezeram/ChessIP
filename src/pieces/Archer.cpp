@@ -140,14 +140,12 @@ void Archer::ExecuteMove(BoardMatrix& board, PiecePosition piecePosition, Action
 		int stepX = (moveX > 0) ? 1 : (moveX < 0) ? -1 : 0;
 		int stepY = (moveY > 0) ? 1 : (moveY < 0) ? -1 : 0;
 		PiecePosition newPosition = piecePosition + sf::Vector2i(stepX, stepY);
-
-		// Remove the attacked piece from the board
-		board[targetSquare.y][targetSquare.x] = nullptr;
-
 		board[newPosition.y][newPosition.x] = std::move(board[piecePosition.y][piecePosition.x]);
 
 		board[piecePosition.y][piecePosition.x] = nullptr; // Clear old position
 
+		// Remove the attacked piece from the board
+		board[targetSquare.y][targetSquare.x] = nullptr;
 	}
 }
 
