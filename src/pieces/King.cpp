@@ -5,6 +5,21 @@ King::King(std::shared_ptr<Board> board, PieceColor color)
 {
 }
 
+void King::GetRange(PiecePosition piecePosition, std::vector<ActionMove>& legalMoves)
+{
+	for (int dy = -1; dy <= 1; dy++)
+		for (int dx = -1; dx <= 1; dx++)
+			if (dy != 0 || dx != 0)
+			{
+				PiecePosition targetSquare = piecePosition + sf::Vector2i(dx, dy);
+				if (IsCellInBounds(targetSquare, m_Board->GetSize()))
+				{
+					legalMoves.push_back(ActionMove(targetSquare, MoveType::Move));
+					legalMoves.push_back(ActionMove(targetSquare, MoveType::Action));
+				}
+			}
+}
+
 void King::GetLegalMoves(sf::Vector2i piecePosition, std::vector<ActionMove>& legalMoves)
 {
 	const BoardMatrix& boardMatrix = m_Board->GetBoard();
