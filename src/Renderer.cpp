@@ -1,4 +1,4 @@
-#include "Renderer.h"
+﻿#include "Renderer.h"
 
 #include <iostream>
 
@@ -28,9 +28,36 @@ Renderer::Renderer(const sf::Vector2u& screenSize, int boardTileSize)
 	CalculateBoardProperties(screenSize, boardTileSize);
 }
 
+void Renderer::DrawBackground(sf::RenderWindow& window)
+{
+	const auto& tex = ResourceManager::GetInstance().GetTexture("background");
+	sf::Sprite sprite(tex);
+
+	float scaleX = static_cast<float>(window.getSize().x) / tex.getSize().x;
+	float scaleY = static_cast<float>(window.getSize().y) / tex.getSize().y;
+	sprite.setScale(sf::Vector2f(scaleX, scaleY));
+	sprite.setPosition(sf::Vector2f(0.f, 0.f));
+
+	window.draw(sprite);
+}
+
 void Renderer::DrawBoard(sf::RenderWindow& window, const Board& board, PiecePosition selectedPiecePosition, MoveType moveType, const PieceMove& previousMove)
 {
 	CalculateBoardProperties(window.getSize(), board.GetSize());
+
+	const auto& borderTexture = ResourceManager::GetInstance().GetTexture("board_border");
+
+	sf::Sprite borderSprite(borderTexture);
+
+	// Calculează scalare și poziție
+	float scale = (m_BoardLength + m_BoardCellSize * 0.4f) / borderTexture.getSize().x;
+	borderSprite.setScale(sf::Vector2f(scale, scale));
+
+	// Pozitionare: deplasezi astfel încât tabla să fie centrată în interior
+	sf::Vector2f offset(m_BoardCellSize * 0.2f, m_BoardCellSize * 0.2f);
+	borderSprite.setPosition(m_BoardPosition - offset);
+
+	window.draw(borderSprite); // desenează înainte de orice
 
 	// Helper function for drawing a board tile
 	sf::RectangleShape tile(sf::Vector2f(m_BoardCellSize, m_BoardCellSize));
@@ -53,16 +80,23 @@ void Renderer::DrawBoard(sf::RenderWindow& window, const Board& board, PiecePosi
 	}
 
 	/// Draw grid board
+	const auto& whiteTex = ResourceManager::GetInstance().GetTexture("tile_white");
+	const auto& blackTex = ResourceManager::GetInstance().GetTexture("tile_black");
+
 	for (int rank = 0; rank < board.GetSize(); rank++)
 	{
 		for (int file = 0; file < board.GetSize(); file++)
 		{
 			PiecePosition gridPosition = PiecePosition(file, rank);
-			sf::Color gridColor = (rank + file) % 2 == 0 ? m_ColorWhiteSquare : m_ColorDarkSquare;
+			const sf::Texture& tex = ((rank + file) % 2 == 0) ? whiteTex : blackTex;
 
-			drawSquare(gridPosition, gridColor);
+			sf::Sprite sprite(tex);
+			sprite.setScale(sf::Vector2f(m_BoardCellSize / tex.getSize().x, m_BoardCellSize / tex.getSize().y));
+			sprite.setPosition(CalculateTilePosition(window.getSize().y, gridPosition));
+			window.draw(sprite);
 		}
 	}
+
 
 	/// Draw legal moves, previous move and highlight selected square
 	// 
@@ -165,7 +199,69 @@ void Renderer::CalculateBoardProperties(const sf::Vector2u& screenSize, int boar
 	m_BoardPosition = sf::Vector2f(boardPositionX, boardPositionY);
 }
 
-void Renderer::DrawHUD(const sf::Vector2u& screenSize, int boardTileSize)
+void Renderer::DrawInventory(sf::RenderWindow& window)
+{
+	const auto& inventoryTexture = ResourceManager::GetInstance().GetTexture("inventory");
+
+	sf::Sprite inventorySprite(inventoryTexture);
+
+	// Dorim:
+	// - înălțimea = 1/3 din m_BoardLength
+	// - lățimea = 2/3 din m_BoardLength
+
+	float targetHeight = m_BoardLength / 3.f;
+	float targetWidth = m_BoardLength * (2.f / 3.f);
+
+	// Obține dimensiunile originale ale texturii
+	float texWidth = static_cast<float>(inventoryTexture.getSize().x);
+	float texHeight = static_cast<float>(inventoryTexture.getSize().y);
+
+	// Calculează scaling pe x și y separat
+	float scaleX = targetWidth / texWidth;
+	float scaleY = targetHeight / texHeight;
+
+	inventorySprite.setScale(sf::Vector2f(scaleX, scaleY));
+
+	// Poziționare: în dreapta tablei + puțin spațiu
+	sf::Vector2f offset(m_BoardCellSize * 0.95f, 0.f);
+	float posX = m_BoardPosition.x + m_BoardLength + offset.x;
+	float posY = m_BoardPosition.y + m_BoardLength - targetHeight;
+
+	inventorySprite.setPosition(sf::Vector2f(posX, posY));
+
+	window.draw(inventorySprite);
+}
+
+void Renderer::DrawResourceBars(sf::RenderWindow& window)
+{
+	const auto& goldTex = ResourceManager::GetInstance().GetTexture(Textures::Gold_Bar_0);
+	const auto& fluxTex = ResourceManager::GetInstance().GetTexture(Textures::Flux_Bar_0);
+
+	sf::Sprite goldSprite(goldTex);
+	sf::Sprite fluxSprite(fluxTex);
+
+	// Dimensiuni dorite: înălțimea să fie 1/10 din tabla
+	float targetHeight = m_BoardLength / 8.f;
+
+	float goldScale = targetHeight * 1.2f / static_cast<float>(goldTex.getSize().y);
+	float fluxScale = targetHeight * 1.2f / static_cast<float>(fluxTex.getSize().y);
+
+	goldSprite.setScale(sf::Vector2f(goldScale, goldScale));
+	fluxSprite.setScale(sf::Vector2f(fluxScale, fluxScale));
+
+	// Poziții: dreapta tablei, sus
+	float margin = m_BoardCellSize * 0.75f;
+	float posX = m_BoardPosition.x + m_BoardLength + margin;
+
+	goldSprite.setPosition(sf::Vector2f(posX, margin * 0.3f));
+	fluxSprite.setPosition(sf::Vector2f(posX, goldSprite.getGlobalBounds().size.y + margin * 0.2f));
+
+	window.draw(goldSprite);
+	window.draw(fluxSprite);
+}
+
+
+void Renderer::DrawHUD(sf::RenderWindow& window, const sf::Vector2u& screenSize, int boardTileSize)
 {
 	// TODO: (Lungu)
 }

@@ -13,9 +13,12 @@ public:
 	/*
 		Board is drawn from white's perspective, from the top left square, left to right;
 	*/
+	void Renderer::DrawBackground(sf::RenderWindow& window);
 	void DrawBoard(sf::RenderWindow& window, const Board& board, PiecePosition selectedSquare, MoveType moveType, const PieceMove& previousMove);
 	void CalculateBoardProperties(const sf::Vector2u& screenSize, int boardTileSize);
-	void DrawHUD(const sf::Vector2u& screenSize, int boardTileSize);
+	void Renderer::DrawInventory(sf::RenderWindow& window);
+	void DrawResourceBars(sf::RenderWindow& window);
+	void DrawHUD(sf::RenderWindow& window, const sf::Vector2u& screenSize, int boardTileSize);
 
 	sf::Vector2f GetBoardPosition() const;
 	float GetBoardSize() const;
@@ -33,8 +36,8 @@ private:
 	float m_BoardLength;
 	float m_BoardCellSize;
 
-	sf::Color m_ColorDarkSquare = { 89, 56, 0 };
-	sf::Color m_ColorWhiteSquare = { 255, 223, 170 };
+	sf::Color m_ColorDarkSquare = { 0, 0, 0 };
+	sf::Color m_ColorWhiteSquare = { 255, 255, 255 };
 	sf::Color m_ColorSelectSquare = { 255, 122, 0 };
 	sf::Color m_ColorPreviousMove = { 255, 209, 0, 125 };
 
