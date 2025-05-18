@@ -47,9 +47,9 @@ set (PIECES_HEADER_FILES
     
     ${CMAKE_SOURCE_DIR}/src/pieces/WhitePlagueDoctor.h
     
-    ${CMAKE_SOURCE_DIR}/src/pieces/WhiteRogue.h
+    ${CMAKE_SOURCE_DIR}/src/pieces/Rogue.h
     
-    "src/pieces/Trebuchet.h"
+    ${CMAKE_SOURCE_DIR}/src/pieces/Trebuchet.h
     
     ${CMAKE_SOURCE_DIR}/src/pieces/WhiteWarlord.h
     
@@ -76,9 +76,9 @@ set (PIECES_SOURCE_FILES
     
     ${CMAKE_SOURCE_DIR}/src/pieces/WhitePlagueDoctor.cpp
     
-    ${CMAKE_SOURCE_DIR}/src/pieces/WhiteRogue.cpp
+    ${CMAKE_SOURCE_DIR}/src/pieces/Rogue.cpp
     
-    "src/pieces/Trebuchet.cpp"
+    ${CMAKE_SOURCE_DIR}/src/pieces/Trebuchet.cpp
     
     ${CMAKE_SOURCE_DIR}/src/pieces/WhiteWarlord.cpp
     
