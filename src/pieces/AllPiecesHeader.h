@@ -8,7 +8,7 @@
 #include "Archer.h"
 #include "WhiteBuilder.h"
 #include "GrimReaper.h"
-#include "WhitePlagueDoctor.h"
+#include "PlagueDoctor.h"
 #include "Rogue.h"
 #include "Trebuchet.h"
 

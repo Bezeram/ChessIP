@@ -43,9 +43,9 @@ set (PIECES_HEADER_FILES
     
     ${CMAKE_SOURCE_DIR}/src/pieces/WhiteBuilder.h
     
-    "src/pieces/GrimReaper.h"
+    ${CMAKE_SOURCE_DIR}/src/pieces/GrimReaper.h
     
-    ${CMAKE_SOURCE_DIR}/src/pieces/WhitePlagueDoctor.h
+    ${CMAKE_SOURCE_DIR}/src/pieces/PlagueDoctor.h
     
     ${CMAKE_SOURCE_DIR}/src/pieces/Rogue.h
     
@@ -72,9 +72,9 @@ set (PIECES_SOURCE_FILES
     
     ${CMAKE_SOURCE_DIR}/src/pieces/WhiteBuilder.cpp
     
-    "src/pieces/GrimReaper.cpp"
+    ${CMAKE_SOURCE_DIR}/src/pieces/GrimReaper.cpp
     
-    ${CMAKE_SOURCE_DIR}/src/pieces/WhitePlagueDoctor.cpp
+    ${CMAKE_SOURCE_DIR}/src/pieces/PlagueDoctor.cpp
     
     ${CMAKE_SOURCE_DIR}/src/pieces/Rogue.cpp
     
