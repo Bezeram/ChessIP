@@ -58,6 +58,9 @@ void Board::Init1v1Game(std::shared_ptr<Board>& boardRef)
 	{
 		m_Board[whiteRank][kingFile - 2] = std::make_unique<Rogue>(boardRef, PieceColor::White, 3);
 	}
+	{
+		m_Board[whiteRank][kingFile - 3] = std::make_unique<GrimReaper>(boardRef, PieceColor::White, 3);
+	}
 
 	// Black
 	{
@@ -77,6 +80,9 @@ void Board::Init1v1Game(std::shared_ptr<Board>& boardRef)
 	}
 	{
 		m_Board[blackRank][kingFile - 2] = std::make_unique<Rogue>(boardRef, PieceColor::Black, 2);
+	}
+	{
+		m_Board[blackRank][kingFile - 3] = std::make_unique<GrimReaper>(boardRef, PieceColor::Black, 3);
 	}
 }
 
@@ -149,6 +155,17 @@ bool Board::MakeMove(PiecePosition piecePosition, ActionMove actionMove)
 
 	// Update flux and gold
 	UpdateResources();
+
+	// ?terge piesele afectate de Curse
+	for (int y = 0; y < m_Size; ++y) {
+		for (int x = 0; x < m_Size; ++x) {
+			auto& piece = m_Board[y][x];
+			if (piece && piece->IsMarkedForDeletion()) {
+				piece.reset(); // eliminã piesa
+			}
+		}
+	}
+
 	// Flip turn
 	m_IsWhitesTurn = !m_IsWhitesTurn;
 	return true;

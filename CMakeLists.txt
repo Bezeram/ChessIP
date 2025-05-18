@@ -43,7 +43,7 @@ set (PIECES_HEADER_FILES
     
     ${CMAKE_SOURCE_DIR}/src/pieces/WhiteBuilder.h
     
-    ${CMAKE_SOURCE_DIR}/src/pieces/WhiteGrimReaper.h
+    "src/pieces/GrimReaper.h"
     
     ${CMAKE_SOURCE_DIR}/src/pieces/WhitePlagueDoctor.h
     
@@ -72,7 +72,7 @@ set (PIECES_SOURCE_FILES
     
     ${CMAKE_SOURCE_DIR}/src/pieces/WhiteBuilder.cpp
     
-    ${CMAKE_SOURCE_DIR}/src/pieces/WhiteGrimReaper.cpp
+    "src/pieces/GrimReaper.cpp"
     
     ${CMAKE_SOURCE_DIR}/src/pieces/WhitePlagueDoctor.cpp
     
