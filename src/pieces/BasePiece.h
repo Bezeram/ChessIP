@@ -91,6 +91,9 @@ public:
 			case Effect::Hex:
 				sprite.setColor(sf::Color(255, 0, 0, 64)); // Red color with transparency
 				break;
+			case Effect::Curse:
+				sprite.setColor(sf::Color(100, 0, 255, 100)); // Violet semitransparent
+				break;
 			default:
 				break;
 			}
@@ -139,6 +142,12 @@ public:
 					m_UpgradeLevel--;
 				}
 				break;
+			case Effect::Curse:
+				if (m_Board && std::get<1>(effect) <= 0) {
+					// Mark piece as dead (will be deleted externally)
+					m_MarkedForDeletion = true;
+				}
+				break;
 			default:
 				break;
 			}
@@ -174,6 +183,9 @@ public:
 		return m_Effects;
 	}
 
+	bool IsMarkedForDeletion() const { return m_MarkedForDeletion; }
+	void ClearDeletionMark() { m_MarkedForDeletion = false; }
+
 	virtual void AddEffect(Effect effect, int lifetime)
 	{
 		m_Effects.push_back(std::make_tuple(effect, lifetime));
@@ -201,6 +213,7 @@ protected:
 	std::shared_ptr<Board> m_Board;
 	uint32_t m_UpgradeLevel;
 	PieceColor m_Color;
+	bool m_MarkedForDeletion = false;
 };
 
 #include "../Board.h"

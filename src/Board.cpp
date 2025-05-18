@@ -1,4 +1,4 @@
-#include "Board.h"
+﻿#include "Board.h"
 
 Board::Board(GameType gameType)
 {
@@ -46,16 +46,51 @@ void Board::Init1v1Game(std::shared_ptr<Board>& boardRef)
 	{
 		m_Board[whiteRank][kingFile + 1] = std::make_unique<Archer>(boardRef, PieceColor::White, 3);
 	}
+	{
+		m_Board[whiteRank][kingFile + 2] = std::make_unique<Alchemist>(boardRef, PieceColor::White, 3);
+	}
+	{
+		m_Board[whiteRank][kingFile + 3] = std::make_unique<Witch>(boardRef, PieceColor::White, 3);
+	}
+	{
+		m_Board[whiteRank][kingFile - 1] = std::make_unique<Trebuchet>(boardRef, PieceColor::White, 3);
+	}
+	{
+		m_Board[whiteRank][kingFile - 2] = std::make_unique<Rogue>(boardRef, PieceColor::White, 3);
+	}
+	{
+		m_Board[whiteRank][kingFile - 3] = std::make_unique<GrimReaper>(boardRef, PieceColor::White, 3);
+	}
+	{
+		m_Board[whiteRank][kingFile - 4] = std::make_unique<PlagueDoctor>(boardRef, PieceColor::White, 3);
+	}
 
 	// Black
 	{
 		m_Board[blackRank][kingFile] = std::make_unique<King>(boardRef, PieceColor::Black);
 	}
 	{
-		m_Board[blackRank][kingFile - 1] = std::make_unique<Archer>(boardRef, PieceColor::Black, 1);
+		m_Board[blackRank][kingFile + 1] = std::make_unique<Archer>(boardRef, PieceColor::Black, 3);
+	}
+	{
+		m_Board[blackRank][kingFile + 2] = std::make_unique<Alchemist>(boardRef, PieceColor::Black, 3);
+	}
+	{
+		m_Board[blackRank][kingFile + 3] = std::make_unique<Witch>(boardRef, PieceColor::Black, 3);
+	}
+	{
+		m_Board[blackRank][kingFile - 1] = std::make_unique<Trebuchet>(boardRef, PieceColor::Black, 3);
+	}
+	{
+		m_Board[blackRank][kingFile - 2] = std::make_unique<Rogue>(boardRef, PieceColor::Black, 2);
+	}
+	{
+		m_Board[blackRank][kingFile - 3] = std::make_unique<GrimReaper>(boardRef, PieceColor::Black, 3);
+	}
+	{
+		m_Board[blackRank][kingFile - 4] = std::make_unique<PlagueDoctor>(boardRef, PieceColor::Black, 3);
 	}
 }
-
 
 const BoardMatrix& Board::GetBoard() const
 {
@@ -126,6 +161,17 @@ bool Board::MakeMove(PiecePosition piecePosition, ActionMove actionMove)
 
 	// Update flux and gold
 	UpdateResources();
+
+	// Șterge piesele afectate de Curse
+	for (int y = 0; y < m_Size; ++y) {
+		for (int x = 0; x < m_Size; ++x) {
+			auto& piece = m_Board[y][x];
+			if (piece && piece->IsMarkedForDeletion()) {
+				piece.reset(); // elimină piesa
+			}
+		}
+	}
+
 	// Flip turn
 	m_IsWhitesTurn = !m_IsWhitesTurn;
 	return true;

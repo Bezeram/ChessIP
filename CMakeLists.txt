@@ -43,13 +43,13 @@ set (PIECES_HEADER_FILES
     
     ${CMAKE_SOURCE_DIR}/src/pieces/WhiteBuilder.h
     
-    ${CMAKE_SOURCE_DIR}/src/pieces/WhiteGrimReaper.h
+    ${CMAKE_SOURCE_DIR}/src/pieces/GrimReaper.h
     
-    ${CMAKE_SOURCE_DIR}/src/pieces/WhitePlagueDoctor.h
+    ${CMAKE_SOURCE_DIR}/src/pieces/PlagueDoctor.h
     
-    ${CMAKE_SOURCE_DIR}/src/pieces/WhiteRogue.h
+    ${CMAKE_SOURCE_DIR}/src/pieces/Rogue.h
     
-    ${CMAKE_SOURCE_DIR}/src/pieces/WhiteTrebuchet.h
+    ${CMAKE_SOURCE_DIR}/src/pieces/Trebuchet.h
     
     ${CMAKE_SOURCE_DIR}/src/pieces/WhiteWarlord.h
     
@@ -72,13 +72,13 @@ set (PIECES_SOURCE_FILES
     
     ${CMAKE_SOURCE_DIR}/src/pieces/WhiteBuilder.cpp
     
-    ${CMAKE_SOURCE_DIR}/src/pieces/WhiteGrimReaper.cpp
+    ${CMAKE_SOURCE_DIR}/src/pieces/GrimReaper.cpp
     
-    ${CMAKE_SOURCE_DIR}/src/pieces/WhitePlagueDoctor.cpp
+    ${CMAKE_SOURCE_DIR}/src/pieces/PlagueDoctor.cpp
     
-    ${CMAKE_SOURCE_DIR}/src/pieces/WhiteRogue.cpp
+    ${CMAKE_SOURCE_DIR}/src/pieces/Rogue.cpp
     
-    ${CMAKE_SOURCE_DIR}/src/pieces/WhiteTrebuchet.cpp
+    ${CMAKE_SOURCE_DIR}/src/pieces/Trebuchet.cpp
     
     ${CMAKE_SOURCE_DIR}/src/pieces/WhiteWarlord.cpp
     

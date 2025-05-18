@@ -25,7 +25,8 @@ enum class Effect
     None = 0,
     Stun = 1,
     Alchemist_Shield = 2,
-    Hex = 3
+    Hex = 3,
+    Curse = 5
 };
 
 
