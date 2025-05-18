@@ -97,11 +97,18 @@ void Trebuchet::AddAttackOffsets(std::vector<ActionMove>& legalMoves, PiecePosit
 			});
 	}
 
+	const BoardMatrix& boardMatrix = m_Board->GetBoard();
+
 	for (const auto& offset : offsets)
 	{
 		PiecePosition pos = center + offset;
-		if (IsCellInBounds(pos, m_Board->GetSize()))
+		if (!IsCellInBounds(pos, m_Board->GetSize()))
+			continue;
+
+		const auto& targetPiece = boardMatrix[pos.y][pos.x];
+		if (targetPiece != nullptr && !m_Board->IsTargetFriendly(PieceMove(center, pos)))
 		{
+			// Este o piesă inamică -> poate fi atacată
 			legalMoves.push_back(ActionMove(pos, MoveType::Action));
 		}
 	}
