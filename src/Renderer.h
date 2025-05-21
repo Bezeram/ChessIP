@@ -41,11 +41,11 @@ private:
 
 	sf::Color m_ColorDarkSquare = { 0, 0, 0 };
 	sf::Color m_ColorWhiteSquare = { 255, 255, 255 };
-	sf::Color m_ColorSelectSquare = { 255, 122, 0 };
+	sf::Color m_ColorSelectSquare = { 255, 122, 0, 127 };
 	sf::Color m_ColorPreviousMove = { 255, 209, 0, 125 };
 
-	sf::Color m_ColorLegalMove = { 255, 30, 30 };
-	sf::Color m_ColorLegalAction = { 162, 0, 219 };
+	sf::Color m_ColorLegalMove = { 255, 30, 30, 127 };
+	sf::Color m_ColorLegalAction = { 162, 0, 219, 127 };
 
 	sf::Time m_InventoryHighlightTimer = sf::Time::Zero;
 	sf::Time m_InventoryHighlightTotalTime = sf::seconds(2.5f);

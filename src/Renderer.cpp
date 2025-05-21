@@ -73,11 +73,15 @@ void Renderer::DrawBoard(sf::RenderWindow& window, const Board& board, PiecePosi
 
 	/// Get legal moves
 	std::vector<ActionMove> maybeLegalMoves;
+	std::vector<ActionMove> legalMoves;
 	if (selectedPiecePosition != Constants::NullPosition)
 	{
 		const auto& selectedPiece = board[selectedPiecePosition];
 		if (selectedPiece.get() != nullptr)
+		{
 			selectedPiece->GetRange(selectedPiecePosition, maybeLegalMoves);
+			selectedPiece->GetLegalMovesWrapper(selectedPiecePosition, legalMoves);
+		}
 	}
 
 	/// Draw grid board
@@ -113,8 +117,23 @@ void Renderer::DrawBoard(sf::RenderWindow& window, const Board& board, PiecePosi
 			// Only consider the specified move type
 			if (move.MoveType == moveType)
 			{
-				sf::Color color = (moveType == MoveType::Move) ? m_ColorLegalMove : m_ColorLegalAction;
-				drawSquare(move.TargetSquare, color);
+				sf::Color moveColor = (moveType == MoveType::Move) ? m_ColorLegalMove : m_ColorLegalAction;
+				bool isLegal = false;
+				// Search the move in the legal moves vector
+				for (const auto& legalMove : legalMoves)
+				{
+					if (move.TargetSquare == legalMove.TargetSquare)
+					{
+						isLegal = true;
+						break;
+					}
+				}
+				if (!isLegal)
+				{
+					moveColor = sf::Color(2, 2, 2, 200);
+				}
+
+				drawSquare(move.TargetSquare, moveColor);
 
 				// Register possible collisions with the previous move..
 				if (move.TargetSquare == previousMove.StartSquare)
