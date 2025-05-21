@@ -41,7 +41,8 @@ void Renderer::DrawBackground(sf::RenderWindow& window)
 	window.draw(sprite);
 }
 
-void Renderer::DrawBoard(sf::RenderWindow& window, const Board& board, PiecePosition selectedPiecePosition, MoveType moveType, const PieceMove& previousMove)
+void Renderer::DrawBoard(sf::RenderWindow& window, const Board& board, PiecePosition selectedPiecePosition, 
+	MoveType moveType, const PieceMove& previousMove, sf::Time deltaTime)
 {
 	CalculateBoardProperties(window.getSize(), board.GetSize());
 
@@ -71,12 +72,16 @@ void Renderer::DrawBoard(sf::RenderWindow& window, const Board& board, PiecePosi
 		};
 
 	/// Get legal moves
+	std::vector<ActionMove> maybeLegalMoves;
 	std::vector<ActionMove> legalMoves;
 	if (selectedPiecePosition != Constants::NullPosition)
 	{
 		const auto& selectedPiece = board[selectedPiecePosition];
 		if (selectedPiece.get() != nullptr)
+		{
+			selectedPiece->GetRange(selectedPiecePosition, maybeLegalMoves);
 			selectedPiece->GetLegalMovesWrapper(selectedPiecePosition, legalMoves);
+		}
 	}
 
 	/// Draw grid board
@@ -107,13 +112,28 @@ void Renderer::DrawBoard(sf::RenderWindow& window, const Board& board, PiecePosi
 	if (selectedPiecePosition != Constants::NullPosition)
 	{
 		// Legal moves
-		for (const auto& move : legalMoves)
+		for (const auto& move : maybeLegalMoves)
 		{
 			// Only consider the specified move type
 			if (move.MoveType == moveType)
 			{
-				sf::Color color = (moveType == MoveType::Move) ? m_ColorLegalMove : m_ColorLegalAction;
-				drawSquare(move.TargetSquare, color);
+				sf::Color moveColor = (moveType == MoveType::Move) ? m_ColorLegalMove : m_ColorLegalAction;
+				bool isLegal = false;
+				// Search the move in the legal moves vector
+				for (const auto& legalMove : legalMoves)
+				{
+					if (move.TargetSquare == legalMove.TargetSquare)
+					{
+						isLegal = true;
+						break;
+					}
+				}
+				if (!isLegal)
+				{
+					moveColor = m_ColorIllegalMove;
+				}
+
+				drawSquare(move.TargetSquare, moveColor);
 
 				// Register possible collisions with the previous move..
 				if (move.TargetSquare == previousMove.StartSquare)
@@ -139,11 +159,27 @@ void Renderer::DrawBoard(sf::RenderWindow& window, const Board& board, PiecePosi
 		if (!skipPreviousMoveRender[1])
 			drawSquare(previousMove.TargetSquare, m_ColorPreviousMove);
 	}
+
 	
 	/// Draw pieces (from the top to bottom, left to right)
 	// 
 	// The position of a piece is counted from the bottom-left, going left to right and bottom-top
 	{
+		// Update effect animation timer
+		// Calculate effect tint keyframe
+		// Update timer
+		m_EffectAnimationTimer += deltaTime;
+		// Keep in range [0, animationTime]
+		while (m_EffectAnimationTimer > m_EffectAnimationTotalTime)
+			m_EffectAnimationTimer -= m_EffectAnimationTotalTime;
+
+		// Calculate keyframe
+		float animationTime = m_EffectAnimationTotalTime.asSeconds();
+		float keyFrame = Animation::RiseAndFall(m_EffectAnimationTimer.asSeconds(), animationTime / 2);
+		float tEffect = keyFrame / (animationTime / 2);
+		tEffect = Animation::EaseOutCubic(tEffect);
+		// tEffect is passed in the piece->RenderWrapper function below
+
 		const ResourceManager& rm = ResourceManager::GetInstance();
 		// Render piece inner function
 		auto renderPiece = [&](PiecePosition position)
@@ -162,8 +198,8 @@ void Renderer::DrawBoard(sf::RenderWindow& window, const Board& board, PiecePosi
 				sprite.setPosition(drawPosition);
 				sprite.setScale(sf::Vector2f(scale, scale));
 
-				// Sprite is finally rendered using its own function
-				piece->Render(sprite, window, m_PieceShader, isSelectedPiece);
+				// Sprite is rendered using a wrapper, which calls an overriden function where the sprite is drawn
+				piece->RenderWrapper(sprite, window, m_PieceShader, isSelectedPiece, tEffect);
 			};
 
 		for (int rank = 0; rank < board.GetSize(); rank++)
@@ -194,48 +230,89 @@ void Renderer::CalculateBoardProperties(const sf::Vector2u& screenSize, int boar
 	m_BoardLength = resolution.y - boardPadding.y * 2.f;
 	m_BoardCellSize = m_BoardLength / (float)boardGridSize;
 	// Calculate board position (centralised according to screen, drawn from the bottom left)
-	float boardPositionX = (resolution.x - m_BoardLength) / 8.f;
+	float boardPositionX = (resolution.x - m_BoardLength) / (float)boardGridSize;
 	float boardPositionY = resolution.y * m_BoardPadding01.y;
 	m_BoardPosition = sf::Vector2f(boardPositionX, boardPositionY);
 }
 
-void Renderer::DrawInventory(sf::RenderWindow& window)
+void Renderer::DrawInventory(sf::RenderWindow& window, Inventory inventory, sf::Vector2i selectedSlotIndex, sf::Time deltaTime)
 {
 	const auto& inventoryTexture = ResourceManager::GetInstance().GetTexture("inventory");
 
 	sf::Sprite inventorySprite(inventoryTexture);
+	sf::Vector2f scale = CalculateInventoryScale();
+	sf::Vector2f position = CalculateInventoryPosition();
 
-	// Dorim:
-	// - înălțimea = 1/3 din m_BoardLength
-	// - lățimea = 2/3 din m_BoardLength
-
-	float targetHeight = m_BoardLength / 3.f;
-	float targetWidth = m_BoardLength * (2.f / 3.f);
-
-	// Obține dimensiunile originale ale texturii
-	float texWidth = static_cast<float>(inventoryTexture.getSize().x);
-	float texHeight = static_cast<float>(inventoryTexture.getSize().y);
-
-	// Calculează scaling pe x și y separat
-	float scaleX = targetWidth / texWidth;
-	float scaleY = targetHeight / texHeight;
-
-	inventorySprite.setScale(sf::Vector2f(scaleX, scaleY));
-
-	// Poziționare: în dreapta tablei + puțin spațiu
-	sf::Vector2f offset(m_BoardCellSize * 0.95f, 0.f);
-	float posX = m_BoardPosition.x + m_BoardLength + offset.x;
-	float posY = m_BoardPosition.y + m_BoardLength - targetHeight;
-
-	inventorySprite.setPosition(sf::Vector2f(posX, posY));
+	inventorySprite.setScale(scale);
+	inventorySprite.setPosition(position);
 
 	window.draw(inventorySprite);
+
+	// Set animation time in between 0 and total time
+	m_InventoryHighlightTimer += deltaTime;
+	while (m_InventoryHighlightTimer > m_InventoryHighlightTotalTime)
+	{
+		m_InventoryHighlightTimer -= m_InventoryHighlightTotalTime;
+	}
+
+	// Draw pieces
+	const auto& deck = inventory.GetDeck();
+	for (int i = 0; i < deck.size(); i++)
+	{
+		PieceType pieceType = deck[i];
+
+		const auto& texture = ResourceManager::GetInstance().GetPieceTexture(pieceType);
+		float spriteScale = Inventory::s_SlotSize.x * scale.x / texture.getSize().x;
+		sf::Sprite piece(texture);
+		// Calculate inventory slot position
+		int rank = i / 4;
+		int file = i % 4;
+		sf::Vector2f spritePosition = Inventory::CalculateSlotPosition(position, scale, sf::Vector2i(file, rank));
+
+		piece.setPosition(spritePosition);
+		piece.setScale(sf::Vector2f(spriteScale, spriteScale));
+		window.draw(piece);
+	}
+
+	// Highlight selected piece
+	if (selectedSlotIndex != Constants::NullPosition)
+	{
+		float outlineThickness = m_InventoryHighlightThickness * scale.x / scale.y;
+		sf::RectangleShape highlightTile(
+			Inventory::s_SlotSize.componentWiseMul(scale) - sf::Vector2f(outlineThickness, outlineThickness));
+
+		sf::Vector2f tilePosition = Inventory::CalculateSlotPosition(position, scale, selectedSlotIndex);
+		// Add thickness offset
+		tilePosition += sf::Vector2f(outlineThickness, outlineThickness);
+
+		float totalTimeSeconds = m_InventoryHighlightTotalTime.asSeconds();
+		// The first half of the animation the transparency increases,
+		// whilst on the second half it decreases
+		float keyFrame = Animation::RiseAndFall(m_InventoryHighlightTimer.asSeconds(), totalTimeSeconds / 2);
+		// Normalize in range [0, 1]
+		float tHighlight = keyFrame / (totalTimeSeconds / 2);
+		// Use ease out animation
+		tHighlight = Animation::EaseInQuadric(tHighlight);
+
+		// Lerp the transparency
+		sf::Color fillColor = m_ColorPreviousMove;
+		fillColor.a = Lerp(30, 150, tHighlight);
+		sf::Color outlineColor = m_ColorSelectSquare;
+		outlineColor.a = Lerp(30, 255, tHighlight);
+
+		highlightTile.setFillColor(fillColor);
+		highlightTile.setOutlineColor(m_ColorSelectSquare);
+		highlightTile.setOutlineThickness(outlineThickness);
+		highlightTile.setPosition(tilePosition);
+
+		window.draw(highlightTile);
+	}
 }
 
-void Renderer::DrawResourceBars(sf::RenderWindow& window)
+void Renderer::DrawResourceBars(sf::RenderWindow& window, int flux, int gold) const
 {
-	const auto& goldTex = ResourceManager::GetInstance().GetTexture(Textures::Gold_Bar_0);
-	const auto& fluxTex = ResourceManager::GetInstance().GetTexture(Textures::Flux_Bar_0);
+	const auto& fluxTex = ResourceManager::GetInstance().GetTexture(Textures::Flux_Bar_ + std::to_string(flux));
+	const auto& goldTex = ResourceManager::GetInstance().GetTexture(Textures::Gold_Bar_ + std::to_string(gold));
 
 	sf::Sprite goldSprite(goldTex);
 	sf::Sprite fluxSprite(fluxTex);
@@ -260,12 +337,6 @@ void Renderer::DrawResourceBars(sf::RenderWindow& window)
 	window.draw(fluxSprite);
 }
 
-
-void Renderer::DrawHUD(sf::RenderWindow& window, const sf::Vector2u& screenSize, int boardTileSize)
-{
-	// TODO: (Lungu)
-}
-
 sf::Vector2f Renderer::GetBoardPosition() const
 {
 	return m_BoardPosition;
@@ -279,6 +350,39 @@ float Renderer::GetBoardSize() const
 float Renderer::GetBoardCellSize() const
 {
 	return m_BoardCellSize;
+}
+
+sf::Vector2f Renderer::CalculateInventoryPosition() const
+{
+	float targetHeight = m_BoardLength / 3.f;
+
+	sf::Vector2f offset(m_BoardCellSize * 0.95f, 0.f);
+	float posX = m_BoardPosition.x + m_BoardLength + offset.x;
+	float posY = m_BoardPosition.y + m_BoardLength - targetHeight;
+	return { posX, posY };
+}
+
+sf::Vector2f Renderer::CalculateInventoryScale() const
+{
+	const auto& inventoryTexture = ResourceManager::GetInstance().GetTexture("inventory");
+
+	sf::Sprite inventorySprite(inventoryTexture);
+
+	// Dorim:
+	// - înălțimea = 1/3 din m_BoardLength
+	// - lățimea = 2/3 din m_BoardLength
+	float targetHeight = m_BoardLength / 3.f;
+	float targetWidth = m_BoardLength * (2.f / 3.f);
+
+	// Obține dimensiunile originale ale texturii
+	float texWidth = static_cast<float>(inventoryTexture.getSize().x);
+	float texHeight = static_cast<float>(inventoryTexture.getSize().y);
+
+	// Calculează scaling pe x și y separat
+	float scaleX = targetWidth / texWidth;
+	float scaleY = targetHeight / texHeight;
+
+	return { scaleX, scaleY };
 }
 
 sf::Vector2f Renderer::CalculateTilePosition(uint32_t windowHeight, PiecePosition position)

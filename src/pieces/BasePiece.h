@@ -26,9 +26,13 @@ public:
 	// Maybe do this more elegantly
 	void GetLegalMovesWrapper(PiecePosition piecePosition, std::vector<ActionMove>& legalMoves)
 	{
+		if (HasEffect(Effect::Stun))
+		{
+			// No legal moves
+			return;
+		}
+
 		GetLegalMoves(piecePosition, legalMoves);
-		// TODO: cast ray to see if path is blocked
-		ProcessEffects(legalMoves);
 	}
 
 	static bool CastRay(const BoardMatrix& board, PiecePosition piecePosition, ActionMove move) {
@@ -57,10 +61,13 @@ public:
 		// Clear old position
 		board[piecePosition.y][piecePosition.x] = nullptr;
 	}
-	// Add extra effects to sprite, like changing color, adding another sprite overlayed etc.
-	// Board position and scale are automatically calculated into the sprite beforehand
-	virtual void Render(sf::Sprite& sprite, sf::RenderWindow& window, const sf::Shader& pieceShader, bool isSelectedPiece)
+	
+	// Handles all of the render steps common for all pieces
+	void RenderWrapper(sf::Sprite& sprite, sf::RenderWindow& window, const sf::Shader& pieceShader, bool isSelectedPiece, float tEffect)
 	{
+		EffectTint(sprite, tEffect);
+
+		// Handle being picked up with the mouse
 		if (isSelectedPiece && Global::MouseLeftPressed)
 		{
 			// Piece is dragged with mouse
@@ -71,48 +78,70 @@ public:
 			sprite.setOrigin(sf::Vector2f(texture.getSize().x / 2.f, texture.getSize().y / 2.f));
 		}
 
-		EffectTint(sprite);
+		Render(sprite, window, pieceShader, isSelectedPiece);
+	}
 
+	// Add extra effects to sprite, like changing color, adding another sprite overlayed etc.
+	// Board position and scale are automatically calculated into the sprite beforehand
+	virtual void Render(sf::Sprite& sprite, sf::RenderWindow& window, const sf::Shader& pieceShader, bool isSelectedPiece)
+	{
 		window.draw(sprite, &pieceShader);
 	}
 
-	virtual void EffectTint(sf::Sprite& sprite)
+	virtual void EffectTint(sf::Sprite& sprite, float tEffect)
 	{
-		for (auto effect : m_Effects)
+		sf::Color color;
+
+		// Dont know if unaffected pieces should have the effect "None" or should have an empty vector, could cause a bug.
+		if (m_Effects.empty())
+		{
+			return;
+		}
+
+		for (auto& effect : m_Effects)
 		{
 			switch (std::get<0>(effect))
 			{
 			case Effect::Alchemist_Shield:
-				sprite.setColor(sf::Color(0, 255, 0, 64)); // Green color with transparency
+				// Green color with transparency
+				color = sf::Color(0, 255, 0, 150);
+				color.g = Lerp(150, 230, tEffect);
 				break;
 			case Effect::Stun:
-				sprite.setColor(sf::Color(0, 0, 0, 128)); // Black color with transparency
+				// Black color with transparency
+				color = sf::Color(0, 0, 0); 
+				color.a = Lerp(70, 150, tEffect);
 				break;
 			case Effect::Hex:
-				sprite.setColor(sf::Color(255, 0, 0, 64)); // Red color with transparency
+				color.b = 0;
+				// Transition from red to green
+				if (tEffect < 0.5)
+					color.r = Lerp(100, 200, tEffect * 2);
+				else
+					color.g = Lerp(150, 100, (tEffect - 0.5) * 2);
+				// Transparency
+				color.a = Lerp(70, 150, tEffect); 
 				break;
 			case Effect::Curse:
-				sprite.setColor(sf::Color(100, 0, 255, 100)); // Violet semitransparent
+			{
+				// Purple to violet semitransparent
+				const sf::Color purple = sf::Color(135, 5, 189, 100);
+				const sf::Color violet = sf::Color(224, 3, 172, 100);
+
+				color = Lerp(purple, violet, tEffect); 
 				break;
+			}
 			default:
 				break;
 			}
 		}
 
-		// Dont know if unaffected pieces should have the effect "None" or should have an empty vector, could cause a bug.
-		if (m_Effects.empty())
-		{
-			sprite.setColor(sf::Color(255, 255, 255)); // Reset to original color
-		}
+		sprite.setColor(color);
 	}
-
-	void ProcessEffects(std::vector<ActionMove>& legalMoves) {
-		for (auto effect : m_Effects)
+	
+	void UpdateEffects() {
+		for (auto& effect : m_Effects)
 		{
-
-			// Could produce a bug if function is called without making a move
-			// Maybe should be called after the move is made, not whenever polling legal moves
-			// For now it works, but could be a problem in the future
 			if (std::get<1>(effect) > 0)
 			{
 				std::get<1>(effect)--;
@@ -132,10 +161,6 @@ public:
 						RemoveEffect(std::get<0>(debuff));
 					}
 				break;
-			// A stunned piece has no legal moves
-			case Effect::Stun:
-				legalMoves.clear();
-				break;
 			case Effect::Hex:
 				if (m_UpgradeLevel > 1)
 				{
@@ -152,9 +177,8 @@ public:
 				break;
 			}
 		}
-
-		// After processing all effects, effects vector should be empty
 	}
+
 	// For a given attack move, checks if move is among valid ones
 	ActionMove BasePiece::IsLegalMove(PieceMove move, MoveType moveType)
 	{
@@ -170,7 +194,6 @@ public:
 
 		return Constants::NullActionMove;
 	}
-
 	
 	virtual PieceType GetPieceType() = 0;
 	PieceColor GetPieceColor() const
@@ -186,14 +209,13 @@ public:
 	bool IsMarkedForDeletion() const { return m_MarkedForDeletion; }
 	void ClearDeletionMark() { m_MarkedForDeletion = false; }
 
-	virtual void AddEffect(Effect effect, int lifetime)
+	void AddEffect(Effect effect, int lifetime)
 	{
 		m_Effects.push_back(std::make_tuple(effect, lifetime));
 	}
 
-
 	// Copy pasted from llm, dont understand it
-	virtual void RemoveEffect(Effect effect)
+	void RemoveEffect(Effect effect)
 	{
 		// Use remove_if with a custom predicate to find tuples where the first element matches 'effect'
 		auto it = std::remove_if(m_Effects.begin(), m_Effects.end(),
@@ -206,6 +228,14 @@ public:
 		{
 			m_Effects.erase(it, m_Effects.end());
 		}
+	}
+
+	bool HasEffect(Effect effect)
+	{
+		for (auto& it = m_Effects.begin(); it != m_Effects.end(); it++)
+			if (std::get<0>(*it) == effect)
+				return true;
+		return false;
 	}
 
 protected:

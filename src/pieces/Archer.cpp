@@ -12,49 +12,24 @@ void Archer::GetRange(PiecePosition piecePosition, std::vector<ActionMove>& lega
 			if (dy != 0 || dx != 0)
 			{
 				PiecePosition targetSquare = piecePosition + sf::Vector2i(dx, dy);
-				legalMoves.push_back(ActionMove(targetSquare, MoveType::Move));
-				legalMoves.push_back(ActionMove(targetSquare, MoveType::Action));
+				if (IsCellInBounds(targetSquare, m_Board->GetSize()))
+				{
+					legalMoves.push_back(ActionMove(targetSquare, MoveType::Move));
+				}
 			}
 
-	switch (m_UpgradeLevel)
-	{
-	case 1:
-		for (int dy = -2; dy <= 2; dy++)
-			for (int dx = -2; dx <= 2; dx++)
-				if ((dx == 0 || dy == 0 || abs(dx) == abs(dy)) && (dx != 0 || dy != 0))
+	int range = m_UpgradeLevel + 1;
+	for (int dy = -range; dy <= range; dy++)
+		for (int dx = -range; dx <= range; dx++)
+			if ((dx == 0 || dy == 0 || abs(dx) == abs(dy)) && (dx != 0 || dy != 0))
+			{
+				PiecePosition targetSquare = piecePosition + sf::Vector2i(dx, dy);
+				if (IsCellInBounds(targetSquare, m_Board->GetSize()))
 				{
-					PiecePosition targetSquare = piecePosition + sf::Vector2i(dx, dy);
 					legalMoves.push_back(ActionMove(targetSquare, MoveType::Move));
 					legalMoves.push_back(ActionMove(targetSquare, MoveType::Action));
 				}
-		break;
-	case 2:
-		for (int dy = -3; dy <= 3; dy++)
-			for (int dx = -3; dx <= 3; dx++)
-				if ((dx == 0 || dy == 0 || abs(dx) == abs(dy)) && (dx != 0 || dy != 0))
-				{
-					PiecePosition targetSquare = piecePosition + sf::Vector2i(dx, dy);
-					if (IsCellInBounds(targetSquare, m_Board->GetSize()))
-					{
-						legalMoves.push_back(ActionMove(targetSquare, MoveType::Move));
-						legalMoves.push_back(ActionMove(targetSquare, MoveType::Action));
-					}
-				}
-		break;
-	case 3:
-		for (int dy = -4; dy <= 4; dy++)
-			for (int dx = -4; dx <= 4; dx++)
-				if ((dx == 0 || dy == 0 || abs(dx) == abs(dy)) && (dx != 0 || dy != 0))
-				{
-					PiecePosition targetSquare = piecePosition + sf::Vector2i(dx, dy);
-					if (IsCellInBounds(targetSquare, m_Board->GetSize()))
-					{
-						legalMoves.push_back(ActionMove(targetSquare, MoveType::Move));
-						legalMoves.push_back(ActionMove(targetSquare, MoveType::Action));
-					}
-				}
-		break;
-	}
+			}
 }
 
 void Archer::GetLegalMoves(sf::Vector2i piecePosition, std::vector<ActionMove>& legalMoves)

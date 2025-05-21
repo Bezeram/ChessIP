@@ -95,6 +95,7 @@ set(SOURCE_FILES
     ${CMAKE_SOURCE_DIR}/src/ResourceManager.cpp
     ${CMAKE_SOURCE_DIR}/src/Application.cpp
     ${CMAKE_SOURCE_DIR}/src/SoundPlayer.cpp
+    ${CMAKE_SOURCE_DIR}/src/Inventory.cpp
 )
 
 # Header files
@@ -105,6 +106,7 @@ set(HEADER_FILES
     ${CMAKE_SOURCE_DIR}/src/Application.h
     ${CMAKE_SOURCE_DIR}/src/Utils.h
     ${CMAKE_SOURCE_DIR}/src/SoundPlayer.h
+    ${CMAKE_SOURCE_DIR}/src/Inventory.h
 )
 
 # Grouping files into filters

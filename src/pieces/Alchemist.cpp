@@ -9,94 +9,39 @@ void Alchemist::GetRange(sf::Vector2i piecePosition, std::vector<ActionMove>& le
 {
 	legalMoves.push_back(ActionMove(piecePosition, MoveType::Action));
 
-	switch (Alchemist::m_UpgradeLevel)
-	{
-	case 1:
-		for (int dy = -1; dy <= 1; dy++)
-			for (int dx = -1; dx <= 1; dx++)
+	int range = (m_UpgradeLevel == 1) ? 1 : 2;
+	for (int dy = -range; dy <= range; dy++)
+		for (int dx = -range; dx <= range; dx++)
+		{
+			PiecePosition targetSquare = piecePosition + sf::Vector2i(dx, dy);
+			if (IsCellInBounds(targetSquare, m_Board->GetSize()))
 			{
-				PiecePosition targetSquare = piecePosition + sf::Vector2i(dx, dy);
-				if (IsCellInBounds(targetSquare, m_Board->GetSize()))
-				{
-					legalMoves.push_back(ActionMove(targetSquare, MoveType::Move));
-				}
+				legalMoves.push_back(ActionMove(targetSquare, MoveType::Move));
 			}
-		break;
-	default:
-		for (int dy = -2; dy <= 2; dy++)
-			for (int dx = -2; dx <= 2; dx++)
-				if (abs(dx) + abs(dy) <= 2)
-				{
-					PiecePosition targetSquare = piecePosition + sf::Vector2i(dx, dy);
-					if (IsCellInBounds(targetSquare, m_Board->GetSize()))
-					{
-						legalMoves.push_back(ActionMove(targetSquare, MoveType::Move));
-					}
-				}
-		break;
-	}
+		}
 }
 
 void Alchemist::GetLegalMoves(sf::Vector2i piecePosition, std::vector<ActionMove>& legalMoves)
 {
 	const BoardMatrix& boardMatrix = m_Board->GetBoard();
+	int range = (m_UpgradeLevel == 1) ? 1 : 2;
 
-	switch (Alchemist::m_UpgradeLevel) 
-	{
-		case 1:
-			for (int dy = -1; dy <= 1; dy++)
-				for (int dx = -1; dx <= 1; dx++)
+	legalMoves.push_back(ActionMove(piecePosition, MoveType::Action));
+
+	for (int dy = -range; dy <= range; dy++)
+		for (int dx = -range; dx <= range; dx++)
+		{
+			PiecePosition targetSquare = piecePosition + sf::Vector2i(dx, dy);
+			if (IsCellInBounds(targetSquare, m_Board->GetSize()))
+			{
+				const auto& targetPiece = boardMatrix[targetSquare.y][targetSquare.x];
+				if (targetPiece.get() == nullptr || !m_Board->IsTargetFriendly(PieceMove(piecePosition, targetSquare)))
 				{
-					PiecePosition targetSquare = piecePosition + sf::Vector2i(dx, dy);
-					if (IsCellInBounds(targetSquare, m_Board->GetSize()))
-					{
-						const auto& targetPiece = boardMatrix[targetSquare.y][targetSquare.x];
-						if (targetPiece.get() == nullptr)
-						{
-							// Check if the target square is not occupied by a friendly piece
-							if (!m_Board->IsTargetFriendly(PieceMove(piecePosition, targetSquare)))
-							{
-								legalMoves.push_back(ActionMove(targetSquare, MoveType::Move));
-							}
-						}
-						else
-						{
-							if (targetSquare == piecePosition)
-							{
-								legalMoves.push_back(ActionMove(targetSquare, MoveType::Action));
-							}
-						}
-					}
+					// Check if the target square is not occupied by a friendly piece
+					legalMoves.push_back(ActionMove(targetSquare, MoveType::Move));
 				}
-			break;
-		default:
-			for (int dy = -2; dy <= 2; dy++)
-				for (int dx = -2; dx <= 2; dx++)
-					if (abs(dx) + abs(dy) <= 2)
-					{
-						PiecePosition targetSquare = piecePosition + sf::Vector2i(dx, dy);
-						if (IsCellInBounds(targetSquare, m_Board->GetSize()))
-						{
-							const auto& targetPiece = boardMatrix[targetSquare.y][targetSquare.x];
-							if (targetPiece.get() == nullptr)
-							{
-								// Check if the target square is not occupied by a friendly piece
-								if (!m_Board->IsTargetFriendly(PieceMove(piecePosition, targetSquare)))
-								{
-									legalMoves.push_back(ActionMove(targetSquare, MoveType::Move));
-								}
-							}
-							else
-							{
-								if (targetSquare == piecePosition)
-								{
-									legalMoves.push_back(ActionMove(targetSquare, MoveType::Action));
-								}
-							}
-						}
-					}
-			break;
-	}
+			}
+		}
 }
 
 void Alchemist::ExecuteMove(BoardMatrix& board, PiecePosition piecePosition, ActionMove move)
@@ -115,38 +60,29 @@ void Alchemist::ExecuteMove(BoardMatrix& board, PiecePosition piecePosition, Act
 		// Ability used
 		std::vector <BasePiece*> piecesToCleanse;
 		// Add all nearby pieces, including self, to a list
-		switch (Alchemist::m_UpgradeLevel)
+		int range = (m_UpgradeLevel == 1) ? 1 : 2;
+
+		for (int dy = -range; dy <= range; dy++)
 		{
-			case 1:
-				for (int dy = -1; dy <= 1; dy++)
-					for (int dx = -1; dx <= 1; dx++)
+			for (int dx = -range; dx <= range; dx++)
+			{
+				PiecePosition targetPosition = { piecePosition.x + dx, piecePosition.y + dy };
+				if (IsCellInBounds(targetPosition, m_Board->GetSize()))
+				{
+					BasePiece* piece = board[targetPosition.y][targetPosition.x].get();
+					if (piece != nullptr && piece->GetPieceType() != PieceType::None)
 					{
-						BasePiece *piece = board[piecePosition.y + dy][piecePosition.x + dx].get();
-						if (piece != nullptr && piece->GetPieceType() != PieceType::None)
-						{
-							piecesToCleanse.push_back(piece);
-						}
+						piecesToCleanse.push_back(piece);
 					}
-				break;
-			default:
-				for (int dy = -2; dy <= 2; dy++)
-					for (int dx = -2; dx <= 2; dx++)
-						if (abs(dy) + abs(dx) <= 2)
-							{
-								BasePiece* piece = board[piecePosition.y + dy][piecePosition.x + dx].get();
-								if (piece != nullptr && piece->GetPieceType() != PieceType::None)
-								{
-									piecesToCleanse.push_back(piece);
-								}
-							}
-				break;
+				}
+			}
 		}
 
 		// Cleanse the negative effects off all pieces on the list
 		for (BasePiece* piece : piecesToCleanse)
 		{
 			// If any other piece uses the cleanse mechanic, it should be modularized into a function
-			for (auto effect : piece->GetEffects())
+			for (const auto& effect : piece->GetEffects())
 			{
 				// If the effect is negative, remove it
 				if (!IsEffectBuff(std::get<0>(effect)))
@@ -161,7 +97,6 @@ void Alchemist::ExecuteMove(BoardMatrix& board, PiecePosition piecePosition, Act
 				piece->AddEffect(Effect::Alchemist_Shield, 1);
 			}
 		}
-
 	}
 }
 

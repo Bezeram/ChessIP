@@ -177,6 +177,14 @@ bool Board::MakeMove(PiecePosition piecePosition, ActionMove actionMove)
 	return true;
 }
 
+void Board::Update()
+{
+	// Update effects
+	for (int rank = 0; rank < m_Size; rank++)
+		for (int file = 0; file < m_Size; file++)
+			m_Board[rank][file]->UpdateEffects();
+}
+
 PiecePosition Board::GetWhiteKingPosition() const
 {
 	for (int rank = 0; rank < m_Size; rank++)
@@ -219,12 +227,12 @@ void Board::UpdateResources()
 
 	if (m_IsWhitesTurn)
 	{
-		m_WhiteFlux++;
-		if (m_WhiteFlux > 9)
-			m_WhiteFlux = 9;
-		m_WhiteGold += whiteKingPosition.y;
-		if (m_WhiteGold > 9)
-			m_WhiteGold = 9;
+		m_Flux++;
+		if (m_Flux > 9)
+			m_Flux = 9;
+		m_Gold += whiteKingPosition.y;
+		if (m_Gold > 9)
+			m_Gold = 9;
 	}
 	else
 	{

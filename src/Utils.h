@@ -108,6 +108,23 @@ namespace Constants
 {
     const inline static PiecePosition NullPosition = { -1, -1 };
     const inline static ActionMove NullActionMove = ActionMove(PiecePosition(-1, -1));
+    const inline static std::unordered_map<PieceType, int> PieceTypeToFluxCost =
+    {
+        { PieceType::None, 0 },
+        { PieceType::White_King,        999 },  { PieceType::Black_King,        999 },
+        { PieceType::White_Witch,       4 },    { PieceType::Black_Witch,       4 },
+        { PieceType::White_Knight,      3 },    { PieceType::Black_Knight,      3 },
+        { PieceType::White_Alchemist,   4 },    { PieceType::Black_Alchemist,   4 },
+        { PieceType::White_Archer,      3 },    { PieceType::Black_Archer,      3 },
+        { PieceType::White_Builder,     2 },    { PieceType::Black_Builder,     2 },
+        { PieceType::White_GrimReaper,  3 },    { PieceType::Black_GrimReaper,  3 },
+        { PieceType::White_PlagueDoctor,3 },    { PieceType::Black_PlagueDoctor,3 },
+        { PieceType::White_Rogue,       3 },    { PieceType::Black_Rogue,       3 },
+        { PieceType::White_Trebuchet,   3 },    { PieceType::Black_Trebuchet,   3 },
+        { PieceType::White_Warlord,     5 },    { PieceType::Black_Warlord,     5 },
+        { PieceType::White_Samurai,     4 },    { PieceType::Black_Samurai,     4 },
+        { PieceType::White_Dragon,      6 },    { PieceType::Black_Dragon,      6 }
+    };
 }
 
 namespace Textures
@@ -249,7 +266,7 @@ inline bool IsCellInBounds(PiecePosition cellIndex, int boardSize)
 
 namespace Global
 {
-    inline float AdjustableK = 0.1f;
+    inline float AdjustableK = 1.f;
     inline bool MouseLeftPressed = false;
 }
 
@@ -293,6 +310,37 @@ inline WindowSettings ParseWindowConfig(const std::string& filePath)
     }
 
     return settings;
+}
+
+namespace Animation
+{
+    inline float EaseOutCubic(float t) {
+        t = Clamp(t, 0.f, 1.f);
+        return 1 - pow(1 - t, 3);
+    }
+
+    inline float EaseInCubic(float t) {
+        t = Clamp(t, 0.f, 1.f);
+        return t * t * t;
+    }
+
+    inline float EaseInQuadric(float t) {
+        t = Clamp(t, 0.f, 1.f);
+        return t * t;
+    }
+
+    inline float EaseInOutCubic(float t) {
+        t = Clamp(t, 0.f, 1.f);
+        return t < 0.5 ? 4 * t * t * t : 1 - std::pow(-2 * t + 2, 3) / 2;
+    }
+
+    // Function which increases linearly from 0 to the peak and then back down in the same fashion.
+    // Peak is reached at x=peak.
+    // Completes a cycle after the value peak*2.
+    inline float RiseAndFall(float x, float peak)
+    {
+        return peak - std::abs(x - peak);
+    }
 }
 
 

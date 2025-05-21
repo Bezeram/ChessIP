@@ -4,6 +4,7 @@
 #include <SFML/Graphics.hpp>
 
 #include "Board.h"
+#include "Inventory.h"
 
 class Renderer
 {
@@ -14,15 +15,17 @@ public:
 		Board is drawn from white's perspective, from the top left square, left to right;
 	*/
 	void Renderer::DrawBackground(sf::RenderWindow& window);
-	void DrawBoard(sf::RenderWindow& window, const Board& board, PiecePosition selectedSquare, MoveType moveType, const PieceMove& previousMove);
+	void DrawBoard(sf::RenderWindow& window, const Board& board, PiecePosition selectedSquare, 
+		MoveType moveType, const PieceMove& previousMove, sf::Time deltaTime);
 	void CalculateBoardProperties(const sf::Vector2u& screenSize, int boardTileSize);
-	void Renderer::DrawInventory(sf::RenderWindow& window);
-	void DrawResourceBars(sf::RenderWindow& window);
-	void DrawHUD(sf::RenderWindow& window, const sf::Vector2u& screenSize, int boardTileSize);
+	void Renderer::DrawInventory(sf::RenderWindow& window, Inventory inventory, sf::Vector2i selectedSlotIndex, sf::Time deltaTime);
+	void DrawResourceBars(sf::RenderWindow& window, int flux, int gold) const;
 
 	sf::Vector2f GetBoardPosition() const;
 	float GetBoardSize() const;
 	float GetBoardCellSize() const;
+	sf::Vector2f CalculateInventoryPosition() const;
+	sf::Vector2f CalculateInventoryScale() const;
 
 	sf::Vector2f CalculateTilePosition(uint32_t windowHeight, PiecePosition position);
 
@@ -38,9 +41,17 @@ private:
 
 	sf::Color m_ColorDarkSquare = { 0, 0, 0 };
 	sf::Color m_ColorWhiteSquare = { 255, 255, 255 };
-	sf::Color m_ColorSelectSquare = { 255, 122, 0 };
+	sf::Color m_ColorSelectSquare = { 255, 122, 0, 127 };
 	sf::Color m_ColorPreviousMove = { 255, 209, 0, 125 };
 
-	sf::Color m_ColorLegalMove = { 255, 30, 30 };
-	sf::Color m_ColorLegalAction = { 162, 0, 219 };
+	sf::Color m_ColorIllegalMove = { 255, 30, 30, 127 };
+	sf::Color m_ColorLegalMove = { 255, 174, 0, 127 };
+	sf::Color m_ColorLegalAction = { 162, 0, 219, 127 };
+
+	sf::Time m_InventoryHighlightTimer = sf::Time::Zero;
+	sf::Time m_InventoryHighlightTotalTime = sf::seconds(2.5f);
+	float m_InventoryHighlightThickness = 1.f;
+
+	sf::Time m_EffectAnimationTimer = sf::Time::Zero;
+	sf::Time m_EffectAnimationTotalTime = sf::seconds(6.f);
 };
