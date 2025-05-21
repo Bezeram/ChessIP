@@ -249,7 +249,7 @@ inline bool IsCellInBounds(PiecePosition cellIndex, int boardSize)
 
 namespace Global
 {
-    inline float AdjustableK = 0.1f;
+    inline float AdjustableK = 1.f;
     inline bool MouseLeftPressed = false;
 }
 
@@ -293,6 +293,29 @@ inline WindowSettings ParseWindowConfig(const std::string& filePath)
     }
 
     return settings;
+}
+
+namespace Animation
+{
+    inline float EaseOutCubic(float t) {
+        t = Clamp(t, 0.f, 1.f);
+        return 1 - pow(1 - t, 3);
+    }
+
+    inline float EaseInCubic(float t) {
+        t = Clamp(t, 0.f, 1.f);
+        return t * t * t;
+    }
+
+    inline float EaseInQuadric(float t) {
+        t = Clamp(t, 0.f, 1.f);
+        return t * t;
+    }
+
+    inline float EaseInOutCubic(float t) {
+        t = Clamp(t, 0.f, 1.f);
+        return t < 0.5 ? 4 * t * t * t : 1 - std::pow(-2 * t + 2, 3) / 2;
+    }
 }
 
 

@@ -194,45 +194,85 @@ void Renderer::CalculateBoardProperties(const sf::Vector2u& screenSize, int boar
 	m_BoardLength = resolution.y - boardPadding.y * 2.f;
 	m_BoardCellSize = m_BoardLength / (float)boardGridSize;
 	// Calculate board position (centralised according to screen, drawn from the bottom left)
-	float boardPositionX = (resolution.x - m_BoardLength) / 8.f;
+	float boardPositionX = (resolution.x - m_BoardLength) / (float)boardGridSize;
 	float boardPositionY = resolution.y * m_BoardPadding01.y;
 	m_BoardPosition = sf::Vector2f(boardPositionX, boardPositionY);
 }
 
-void Renderer::DrawInventory(sf::RenderWindow& window)
+void Renderer::DrawInventory(sf::RenderWindow& window, Inventory inventory, sf::Vector2i selectedSlotIndex, sf::Time animationTimer) const
 {
 	const auto& inventoryTexture = ResourceManager::GetInstance().GetTexture("inventory");
 
 	sf::Sprite inventorySprite(inventoryTexture);
+	sf::Vector2f scale = CalculateInventoryScale();
+	sf::Vector2f position = CalculateInventoryPosition();
 
-	// Dorim:
-	// - înălțimea = 1/3 din m_BoardLength
-	// - lățimea = 2/3 din m_BoardLength
-
-	float targetHeight = m_BoardLength / 3.f;
-	float targetWidth = m_BoardLength * (2.f / 3.f);
-
-	// Obține dimensiunile originale ale texturii
-	float texWidth = static_cast<float>(inventoryTexture.getSize().x);
-	float texHeight = static_cast<float>(inventoryTexture.getSize().y);
-
-	// Calculează scaling pe x și y separat
-	float scaleX = targetWidth / texWidth;
-	float scaleY = targetHeight / texHeight;
-
-	inventorySprite.setScale(sf::Vector2f(scaleX, scaleY));
-
-	// Poziționare: în dreapta tablei + puțin spațiu
-	sf::Vector2f offset(m_BoardCellSize * 0.95f, 0.f);
-	float posX = m_BoardPosition.x + m_BoardLength + offset.x;
-	float posY = m_BoardPosition.y + m_BoardLength - targetHeight;
-
-	inventorySprite.setPosition(sf::Vector2f(posX, posY));
+	inventorySprite.setScale(scale);
+	inventorySprite.setPosition(position);
 
 	window.draw(inventorySprite);
+
+	// Set animation time in between 0 and total time
+	while (animationTimer > m_InventoryHighlightTime)
+	{
+		animationTimer -= m_InventoryHighlightTime;
+	}
+
+	// Draw pieces
+	const auto& deck = inventory.GetDeck();
+	for (int i = 0; i < deck.size(); i++)
+	{
+		PieceType pieceType = deck[i];
+
+		const auto& texture = ResourceManager::GetInstance().GetPieceTexture(pieceType);
+		float spriteScale = Inventory::s_SlotSize.x * scale.x / texture.getSize().x;
+		sf::Sprite piece(texture);
+		// Calculate inventory slot position
+		int rank = i / 4;
+		int file = i % 4;
+		sf::Vector2f spritePosition = Inventory::CalculateSlotPosition(position, scale, sf::Vector2i(file, rank));
+
+		piece.setPosition(spritePosition);
+		piece.setScale(sf::Vector2f(spriteScale, spriteScale));
+		window.draw(piece);
+	}
+
+	// Highlight selected piece
+	if (selectedSlotIndex != Constants::NullPosition)
+	{
+		float outlineThickness = m_InventoryHighlightThickness * scale.x / scale.y;
+		sf::RectangleShape highlightTile(
+			Inventory::s_SlotSize.componentWiseMul(scale) - sf::Vector2f(outlineThickness, outlineThickness));
+
+		sf::Vector2f tilePosition = Inventory::CalculateSlotPosition(position, scale, selectedSlotIndex);
+		// Add thickness offset
+		tilePosition += sf::Vector2f(outlineThickness, outlineThickness);
+
+		float totalTimeSeconds = m_InventoryHighlightTime.asSeconds();
+		// The first half of the animation the transparency increases,
+		// whilst on the second half it decreases
+		float keyframe = totalTimeSeconds / 2 - std::abs(animationTimer.asSeconds() - totalTimeSeconds / 2);
+		// Calculate t for lerp
+		float tHighlight = keyframe / (totalTimeSeconds / 2);
+		// Use ease out animation
+		tHighlight = Animation::EaseInQuadric(tHighlight);
+
+		// Lerp the transparency
+		sf::Color fillColor = m_ColorPreviousMove;
+		fillColor.a = Lerp(30, 150, tHighlight);
+		sf::Color outlineColor = m_ColorSelectSquare;
+		outlineColor.a = Lerp(30, 255, tHighlight);
+
+		highlightTile.setFillColor(fillColor);
+		highlightTile.setOutlineColor(m_ColorSelectSquare);
+		highlightTile.setOutlineThickness(outlineThickness);
+		highlightTile.setPosition(tilePosition);
+
+		window.draw(highlightTile);
+	}
 }
 
-void Renderer::DrawResourceBars(sf::RenderWindow& window)
+void Renderer::DrawResourceBars(sf::RenderWindow& window) const
 {
 	const auto& goldTex = ResourceManager::GetInstance().GetTexture(Textures::Gold_Bar_0);
 	const auto& fluxTex = ResourceManager::GetInstance().GetTexture(Textures::Flux_Bar_0);
@@ -260,12 +300,6 @@ void Renderer::DrawResourceBars(sf::RenderWindow& window)
 	window.draw(fluxSprite);
 }
 
-
-void Renderer::DrawHUD(sf::RenderWindow& window, const sf::Vector2u& screenSize, int boardTileSize)
-{
-	// TODO: (Lungu)
-}
-
 sf::Vector2f Renderer::GetBoardPosition() const
 {
 	return m_BoardPosition;
@@ -279,6 +313,39 @@ float Renderer::GetBoardSize() const
 float Renderer::GetBoardCellSize() const
 {
 	return m_BoardCellSize;
+}
+
+sf::Vector2f Renderer::CalculateInventoryPosition() const
+{
+	float targetHeight = m_BoardLength / 3.f;
+
+	sf::Vector2f offset(m_BoardCellSize * 0.95f, 0.f);
+	float posX = m_BoardPosition.x + m_BoardLength + offset.x;
+	float posY = m_BoardPosition.y + m_BoardLength - targetHeight;
+	return { posX, posY };
+}
+
+sf::Vector2f Renderer::CalculateInventoryScale() const
+{
+	const auto& inventoryTexture = ResourceManager::GetInstance().GetTexture("inventory");
+
+	sf::Sprite inventorySprite(inventoryTexture);
+
+	// Dorim:
+	// - înălțimea = 1/3 din m_BoardLength
+	// - lățimea = 2/3 din m_BoardLength
+	float targetHeight = m_BoardLength / 3.f;
+	float targetWidth = m_BoardLength * (2.f / 3.f);
+
+	// Obține dimensiunile originale ale texturii
+	float texWidth = static_cast<float>(inventoryTexture.getSize().x);
+	float texHeight = static_cast<float>(inventoryTexture.getSize().y);
+
+	// Calculează scaling pe x și y separat
+	float scaleX = targetWidth / texWidth;
+	float scaleY = targetHeight / texHeight;
+
+	return { scaleX, scaleY };
 }
 
 sf::Vector2f Renderer::CalculateTilePosition(uint32_t windowHeight, PiecePosition position)
