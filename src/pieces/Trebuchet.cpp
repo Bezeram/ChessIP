@@ -16,7 +16,44 @@ void Trebuchet::GetRange(PiecePosition piecePosition, std::vector<ActionMove>& l
 	}
 
 	// Atac pe offseturi predefinite
-	AddAttackOffsets(legalMoves, piecePosition, m_UpgradeLevel);
+	std::vector<sf::Vector2i> offsets;
+
+	int level = m_UpgradeLevel;
+	if (level >= 1)
+	{
+		offsets = {
+			{  2,  0 }, { -2,  0 }, {  0,  2 }, {  0, -2 },
+			{  2,  1 }, { -2,  1 }, {  2, -1 }, { -2, -1 },
+			{  1,  2 }, { -1,  2 }, {  1, -2 }, { -1, -2 }
+		};
+	}
+	if (level >= 2)
+	{
+		offsets.insert(offsets.end(), {
+			{  3,  0 }, { -3,  0 }, {  0,  3 }, {  0, -3 },
+			{  3,  1 }, { -3,  1 }, {  3, -1 }, { -3, -1 },
+			{  1,  3 }, { -1,  3 }, {  1, -3 }, { -1, -3 }
+			});
+	}
+	if (level >= 3)
+	{
+		offsets.insert(offsets.end(), {
+			{  4,  0 }, { -4,  0 }, {  0,  4 }, {  0, -4 },
+			{  4,  1 }, { -4,  1 }, {  4, -1 }, { -4, -1 },
+			{  1,  4 }, { -1,  4 }, {  1, -4 }, { -1, -4 }
+			});
+	}
+
+	PiecePosition center = piecePosition;
+	for (const auto& offset : offsets)
+	{
+		PiecePosition pos = center + offset;
+		if (!IsCellInBounds(pos, m_Board->GetSize()))
+			continue;
+
+		// Este o piesă inamică -> poate fi atacată
+		legalMoves.push_back(ActionMove(pos, MoveType::Action));
+	}
 }
 
 void Trebuchet::GetLegalMoves(sf::Vector2i piecePosition, std::vector<ActionMove>& legalMoves)
@@ -38,7 +75,6 @@ void Trebuchet::GetLegalMoves(sf::Vector2i piecePosition, std::vector<ActionMove
 	}
 
 	// Atac pe offseturi predefinite
-	std::vector<sf::Vector2i> offsets;
 	AddAttackOffsets(legalMoves, piecePosition, m_UpgradeLevel);
 }
 

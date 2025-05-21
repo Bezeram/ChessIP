@@ -2,7 +2,7 @@
 
 Application::Application(WindowSettings settings)
     : m_Window(sf::RenderWindow(
-        (settings.Resolution.x == 0 || settings.Resolution.y == 0) ? sf::VideoMode::getDesktopMode() : sf::VideoMode(settings.Resolution),
+        (settings.Resolution.x == 0 || settings.Resolution.y == 0) ? sf::VideoMode(sf::Vector2u(1920, 1080)) : sf::VideoMode(settings.Resolution),
         "Chess9", sf::Style::Default, settings.State)
     )
     , m_Inventory(m_DefaultDeck)
