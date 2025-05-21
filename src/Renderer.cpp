@@ -72,12 +72,12 @@ void Renderer::DrawBoard(sf::RenderWindow& window, const Board& board, PiecePosi
 		};
 
 	/// Get legal moves
-	std::vector<ActionMove> legalMoves;
+	std::vector<ActionMove> maybeLegalMoves;
 	if (selectedPiecePosition != Constants::NullPosition)
 	{
 		const auto& selectedPiece = board[selectedPiecePosition];
 		if (selectedPiece.get() != nullptr)
-			selectedPiece->GetLegalMovesWrapper(selectedPiecePosition, legalMoves);
+			selectedPiece->GetRange(selectedPiecePosition, maybeLegalMoves);
 	}
 
 	/// Draw grid board
@@ -108,7 +108,7 @@ void Renderer::DrawBoard(sf::RenderWindow& window, const Board& board, PiecePosi
 	if (selectedPiecePosition != Constants::NullPosition)
 	{
 		// Legal moves
-		for (const auto& move : legalMoves)
+		for (const auto& move : maybeLegalMoves)
 		{
 			// Only consider the specified move type
 			if (move.MoveType == moveType)
