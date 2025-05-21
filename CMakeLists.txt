@@ -107,6 +107,7 @@ set(HEADER_FILES
     ${CMAKE_SOURCE_DIR}/src/Utils.h
     ${CMAKE_SOURCE_DIR}/src/SoundPlayer.h
     ${CMAKE_SOURCE_DIR}/src/Inventory.h
+    ${CMAKE_SOURCE_DIR}/src/PieceFactory.h
 )
 
 # Grouping files into filters
