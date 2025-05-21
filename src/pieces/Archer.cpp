@@ -12,7 +12,10 @@ void Archer::GetRange(PiecePosition piecePosition, std::vector<ActionMove>& lega
 			if (dy != 0 || dx != 0)
 			{
 				PiecePosition targetSquare = piecePosition + sf::Vector2i(dx, dy);
-				legalMoves.push_back(ActionMove(targetSquare, MoveType::Move));
+				if (IsCellInBounds(targetSquare, m_Board->GetSize()))
+				{
+					legalMoves.push_back(ActionMove(targetSquare, MoveType::Move));
+				}
 			}
 
 	int range = m_UpgradeLevel + 1;

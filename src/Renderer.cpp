@@ -130,7 +130,7 @@ void Renderer::DrawBoard(sf::RenderWindow& window, const Board& board, PiecePosi
 				}
 				if (!isLegal)
 				{
-					moveColor = sf::Color(2, 2, 2, 200);
+					moveColor = m_ColorIllegalMove;
 				}
 
 				drawSquare(move.TargetSquare, moveColor);
