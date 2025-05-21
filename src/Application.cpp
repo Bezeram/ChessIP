@@ -92,6 +92,7 @@ void Application::EventHandler()
 
             MoveHandler_MousePressed(mousePressed);
             InventoryHandler_MousePressed(mousePressed);
+            PiecePlacerHandler_MousePressed(mousePressed);
         }
         else if (const auto* mouseReleased = event->getIf<sf::Event::MouseButtonReleased>())
         {
@@ -220,6 +221,11 @@ void Application::InventoryHandler_MousePressed(const sf::Event::MouseButtonPres
     // Get position
     sf::Vector2f mousePosition = sf::Vector2f(buttonPressed->position.x, buttonPressed->position.y);
 
+    // If it's on the board immediately return
+    sf::Vector2i targetSquare = m_Renderer.MouseCellIndex(m_Window.getSize().y, mousePosition);
+    if (IsCellInBounds(targetSquare, m_Board->GetSize()))
+        return;
+
     sf::Vector2f inventoryPosition = m_Renderer.CalculateInventoryPosition();
     sf::Vector2f inventoryScale = m_Renderer.CalculateInventoryScale();
     // Constant texture pixel sizes
@@ -265,4 +271,29 @@ void Application::InventoryHandler_MousePressed(const sf::Event::MouseButtonPres
 
     // Reset selection
     m_SelectedInventorySlot = Constants::NullPosition;
+}
+
+void Application::PiecePlacerHandler_MousePressed(const sf::Event::MouseButtonPressed* buttonPressed)
+{
+    if (m_SelectedInventorySlot == Constants::NullPosition || !m_Board->IsWhitesMove())
+        return;
+    
+    int indexPiece = m_SelectedInventorySlot.y * 4 + m_SelectedInventorySlot.x;
+    PieceType pieceType = m_Inventory.GetDeckPiece(indexPiece);
+
+    sf::Vector2f mousePosition = sf::Vector2f(buttonPressed->position);
+    sf::Vector2i targetSquare = m_Renderer.MouseCellIndex(m_Window.getSize().y, mousePosition);
+    if (IsCellInBounds(targetSquare, m_Board->GetSize()))
+    {
+        auto& selectedPiece = (*m_Board)[targetSquare];
+
+        if (selectedPiece.get() == nullptr && m_Board->GetFlux() >= Constants::PieceTypeToFluxCost.at(pieceType))
+        {
+            // Place a new piece at the specified location
+            // drain flux
+            selectedPiece.reset(PieceFactory::Create(pieceType, GetPieceColor(pieceType), m_Board));
+
+            m_Board->IncreaseFlux(-Constants::PieceTypeToFluxCost.at(pieceType));
+        }
+    }
 }

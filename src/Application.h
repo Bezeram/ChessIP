@@ -7,6 +7,7 @@
 #include "Board.h"
 #include "SoundPlayer.h"
 #include "Inventory.h"
+#include "PieceFactory.h"
 
 class Application
 {
@@ -32,9 +33,10 @@ private:
 	sf::Vector2i m_SelectedInventorySlot = Constants::NullPosition;
 
 	void MoveHandler_MousePressed(const sf::Event::MouseButtonPressed* buttonPressed);
-	void MoveHandler_MouseReleased(const sf::Event::MouseButtonReleased* buttonReleased);
-
 	void InventoryHandler_MousePressed(const sf::Event::MouseButtonPressed* buttonPressed);
+	void PiecePlacerHandler_MousePressed(const sf::Event::MouseButtonPressed* buttonPressed);
+
+	void MoveHandler_MouseReleased(const sf::Event::MouseButtonReleased* buttonReleased);
 
 	std::shared_ptr<Board> m_Board;
 	Renderer m_Renderer;

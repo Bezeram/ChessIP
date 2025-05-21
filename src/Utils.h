@@ -108,6 +108,23 @@ namespace Constants
 {
     const inline static PiecePosition NullPosition = { -1, -1 };
     const inline static ActionMove NullActionMove = ActionMove(PiecePosition(-1, -1));
+    const inline static std::unordered_map<PieceType, int> PieceTypeToFluxCost =
+    {
+        { PieceType::None, 0 },
+        { PieceType::White_King,        999 },  { PieceType::Black_King,        999 },
+        { PieceType::White_Witch,       4 },    { PieceType::Black_Witch,       4 },
+        { PieceType::White_Knight,      3 },    { PieceType::Black_Knight,      3 },
+        { PieceType::White_Alchemist,   4 },    { PieceType::Black_Alchemist,   4 },
+        { PieceType::White_Archer,      3 },    { PieceType::Black_Archer,      3 },
+        { PieceType::White_Builder,     2 },    { PieceType::Black_Builder,     2 },
+        { PieceType::White_GrimReaper,  3 },    { PieceType::Black_GrimReaper,  3 },
+        { PieceType::White_PlagueDoctor,3 },    { PieceType::Black_PlagueDoctor,3 },
+        { PieceType::White_Rogue,       3 },    { PieceType::Black_Rogue,       3 },
+        { PieceType::White_Trebuchet,   3 },    { PieceType::Black_Trebuchet,   3 },
+        { PieceType::White_Warlord,     5 },    { PieceType::Black_Warlord,     5 },
+        { PieceType::White_Samurai,     4 },    { PieceType::Black_Samurai,     4 },
+        { PieceType::White_Dragon,      6 },    { PieceType::Black_Dragon,      6 }
+    };
 }
 
 namespace Textures
