@@ -290,10 +290,10 @@ void Renderer::DrawInventory(sf::RenderWindow& window, Inventory inventory, sf::
 	}
 }
 
-void Renderer::DrawResourceBars(sf::RenderWindow& window) const
+void Renderer::DrawResourceBars(sf::RenderWindow& window, int flux, int gold) const
 {
-	const auto& goldTex = ResourceManager::GetInstance().GetTexture(Textures::Gold_Bar_0);
-	const auto& fluxTex = ResourceManager::GetInstance().GetTexture(Textures::Flux_Bar_0);
+	const auto& fluxTex = ResourceManager::GetInstance().GetTexture(Textures::Flux_Bar_ + std::to_string(flux));
+	const auto& goldTex = ResourceManager::GetInstance().GetTexture(Textures::Gold_Bar_ + std::to_string(gold));
 
 	sf::Sprite goldSprite(goldTex);
 	sf::Sprite fluxSprite(fluxTex);

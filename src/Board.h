@@ -32,8 +32,8 @@ public:
     std::unique_ptr<BasePiece>& operator[](PiecePosition position);
     const std::unique_ptr<BasePiece>& operator[](PiecePosition position) const;
 
-	int GetWhiteFlux() const { return m_WhiteFlux; }
-	int GetWhiteGold() const { return m_WhiteGold; }
+	int GetFlux() const { return m_WhiteFlux; }
+	int GetGold() const { return m_WhiteGold; }
 
     bool IsTargetFriendly(const PieceMove& move) const;
     bool IsValidPieceByTurn(PiecePosition position) const;

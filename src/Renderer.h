@@ -19,7 +19,7 @@ public:
 		MoveType moveType, const PieceMove& previousMove, sf::Time deltaTime);
 	void CalculateBoardProperties(const sf::Vector2u& screenSize, int boardTileSize);
 	void Renderer::DrawInventory(sf::RenderWindow& window, Inventory inventory, sf::Vector2i selectedSlotIndex, sf::Time deltaTime);
-	void DrawResourceBars(sf::RenderWindow& window) const;
+	void DrawResourceBars(sf::RenderWindow& window, int flux, int gold) const;
 
 	sf::Vector2f GetBoardPosition() const;
 	float GetBoardSize() const;
