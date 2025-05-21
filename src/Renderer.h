@@ -48,9 +48,9 @@ private:
 	sf::Color m_ColorLegalAction = { 162, 0, 219 };
 
 	sf::Time m_InventoryHighlightTimer = sf::Time::Zero;
-	sf::Time m_InventoryHighlightTime = sf::seconds(2.5f);
+	sf::Time m_InventoryHighlightTotalTime = sf::seconds(2.5f);
 	float m_InventoryHighlightThickness = 1.f;
 
 	sf::Time m_EffectAnimationTimer = sf::Time::Zero;
-	sf::Time m_EffectAnimationTime = sf::seconds(2.5f);
+	sf::Time m_EffectAnimationTotalTime = sf::seconds(6.f);
 };

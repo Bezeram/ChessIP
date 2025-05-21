@@ -104,7 +104,7 @@ public:
 			{
 			case Effect::Alchemist_Shield:
 				// Green color with transparency
-				color = sf::Color(0, 255, 0, 64);
+				color = sf::Color(0, 255, 0, 150);
 				color.g = Lerp(150, 230, tEffect);
 				break;
 			case Effect::Stun:

@@ -151,13 +151,14 @@ void Renderer::DrawBoard(sf::RenderWindow& window, const Board& board, PiecePosi
 		// Update timer
 		m_EffectAnimationTimer += deltaTime;
 		// Keep in range [0, animationTime]
-		while (m_EffectAnimationTimer > m_EffectAnimationTime)
-			m_EffectAnimationTimer -= m_EffectAnimationTime;
+		while (m_EffectAnimationTimer > m_EffectAnimationTotalTime)
+			m_EffectAnimationTimer -= m_EffectAnimationTotalTime;
 
 		// Calculate keyframe
-		float animationTime = m_EffectAnimationTime.asSeconds();
-		float keyFrame = Animation::RiseAndFall(m_EffectAnimationTime.asSeconds(), animationTime);
-		float tEffect = keyFrame / animationTime;
+		float animationTime = m_EffectAnimationTotalTime.asSeconds();
+		float keyFrame = Animation::RiseAndFall(m_EffectAnimationTimer.asSeconds(), animationTime / 2);
+		float tEffect = keyFrame / (animationTime / 2);
+		tEffect = Animation::EaseOutCubic(tEffect);
 		// tEffect is passed in the piece->RenderWrapper function below
 
 		const ResourceManager& rm = ResourceManager::GetInstance();
@@ -230,9 +231,9 @@ void Renderer::DrawInventory(sf::RenderWindow& window, Inventory inventory, sf::
 
 	// Set animation time in between 0 and total time
 	m_InventoryHighlightTimer += deltaTime;
-	while (m_InventoryHighlightTimer > m_InventoryHighlightTime)
+	while (m_InventoryHighlightTimer > m_InventoryHighlightTotalTime)
 	{
-		m_InventoryHighlightTimer -= m_InventoryHighlightTime;
+		m_InventoryHighlightTimer -= m_InventoryHighlightTotalTime;
 	}
 
 	// Draw pieces
@@ -265,7 +266,7 @@ void Renderer::DrawInventory(sf::RenderWindow& window, Inventory inventory, sf::
 		// Add thickness offset
 		tilePosition += sf::Vector2f(outlineThickness, outlineThickness);
 
-		float totalTimeSeconds = m_InventoryHighlightTime.asSeconds();
+		float totalTimeSeconds = m_InventoryHighlightTotalTime.asSeconds();
 		// The first half of the animation the transparency increases,
 		// whilst on the second half it decreases
 		float keyFrame = Animation::RiseAndFall(m_InventoryHighlightTimer.asSeconds(), totalTimeSeconds / 2);
