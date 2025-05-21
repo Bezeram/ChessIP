@@ -31,17 +31,14 @@ void Application::Run()
     while (m_IsRunning)
     {
         sf::Time deltaTime = clock.restart();
-        // Update animation timer
-        m_InventoryHighlightTimer += deltaTime;
 
         EventHandler();
 
         m_Window.clear();
 
-        m_Window.setView(m_Viewport);
         m_Renderer.DrawBackground(m_Window);
-        m_Renderer.DrawBoard(m_Window, *m_Board, m_SelectedSquare, m_MoveType, m_PreviousMove);
-        m_Renderer.DrawInventory(m_Window, m_Inventory, m_SelectedInventorySlot, m_InventoryHighlightTimer);
+        m_Renderer.DrawBoard(m_Window, *m_Board, m_SelectedSquare, m_MoveType, m_PreviousMove, deltaTime);
+        m_Renderer.DrawInventory(m_Window, m_Inventory, m_SelectedInventorySlot, deltaTime);
         m_Renderer.DrawResourceBars(m_Window);
 
         m_Window.display();
@@ -67,6 +64,7 @@ void Application::EventHandler()
             sf::Vector2f newSize = sf::Vector2f(resized->size.x, resized->size.y);
             m_Viewport.setCenter(newSize / 2.f);
             m_Viewport.setSize(newSize);
+            m_Window.setView(m_Viewport);
         }
         else if (const auto* keyPressed = event->getIf<sf::Event::KeyPressed>())
         {

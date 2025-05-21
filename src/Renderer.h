@@ -15,9 +15,10 @@ public:
 		Board is drawn from white's perspective, from the top left square, left to right;
 	*/
 	void Renderer::DrawBackground(sf::RenderWindow& window);
-	void DrawBoard(sf::RenderWindow& window, const Board& board, PiecePosition selectedSquare, MoveType moveType, const PieceMove& previousMove);
+	void DrawBoard(sf::RenderWindow& window, const Board& board, PiecePosition selectedSquare, 
+		MoveType moveType, const PieceMove& previousMove, sf::Time deltaTime);
 	void CalculateBoardProperties(const sf::Vector2u& screenSize, int boardTileSize);
-	void Renderer::DrawInventory(sf::RenderWindow& window, Inventory inventory, sf::Vector2i selectedSlotIndex, sf::Time animationTimer) const;
+	void Renderer::DrawInventory(sf::RenderWindow& window, Inventory inventory, sf::Vector2i selectedSlotIndex, sf::Time deltaTime);
 	void DrawResourceBars(sf::RenderWindow& window) const;
 
 	sf::Vector2f GetBoardPosition() const;
@@ -46,6 +47,10 @@ private:
 	sf::Color m_ColorLegalMove = { 255, 30, 30 };
 	sf::Color m_ColorLegalAction = { 162, 0, 219 };
 
+	sf::Time m_InventoryHighlightTimer = sf::Time::Zero;
 	sf::Time m_InventoryHighlightTime = sf::seconds(2.5f);
 	float m_InventoryHighlightThickness = 1.f;
+
+	sf::Time m_EffectAnimationTimer = sf::Time::Zero;
+	sf::Time m_EffectAnimationTime = sf::seconds(2.5f);
 };

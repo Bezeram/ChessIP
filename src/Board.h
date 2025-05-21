@@ -40,6 +40,8 @@ public:
     bool IsWhitesMove() const;
     bool MakeMove(PiecePosition piecePosition, ActionMove actionMove);
 
+    void Update();
+
 	PiecePosition GetWhiteKingPosition() const;
 	PiecePosition GetBlackKingPosition() const;
 

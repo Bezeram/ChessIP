@@ -41,7 +41,8 @@ void Renderer::DrawBackground(sf::RenderWindow& window)
 	window.draw(sprite);
 }
 
-void Renderer::DrawBoard(sf::RenderWindow& window, const Board& board, PiecePosition selectedPiecePosition, MoveType moveType, const PieceMove& previousMove)
+void Renderer::DrawBoard(sf::RenderWindow& window, const Board& board, PiecePosition selectedPiecePosition, 
+	MoveType moveType, const PieceMove& previousMove, sf::Time deltaTime)
 {
 	CalculateBoardProperties(window.getSize(), board.GetSize());
 
@@ -139,11 +140,26 @@ void Renderer::DrawBoard(sf::RenderWindow& window, const Board& board, PiecePosi
 		if (!skipPreviousMoveRender[1])
 			drawSquare(previousMove.TargetSquare, m_ColorPreviousMove);
 	}
+
 	
 	/// Draw pieces (from the top to bottom, left to right)
 	// 
 	// The position of a piece is counted from the bottom-left, going left to right and bottom-top
 	{
+		// Update effect animation timer
+		// Calculate effect tint keyframe
+		// Update timer
+		m_EffectAnimationTimer += deltaTime;
+		// Keep in range [0, animationTime]
+		while (m_EffectAnimationTimer > m_EffectAnimationTime)
+			m_EffectAnimationTimer -= m_EffectAnimationTime;
+
+		// Calculate keyframe
+		float animationTime = m_EffectAnimationTime.asSeconds();
+		float keyFrame = Animation::RiseAndFall(m_EffectAnimationTime.asSeconds(), animationTime);
+		float tEffect = keyFrame / animationTime;
+		// tEffect is passed in the piece->RenderWrapper function below
+
 		const ResourceManager& rm = ResourceManager::GetInstance();
 		// Render piece inner function
 		auto renderPiece = [&](PiecePosition position)
@@ -162,8 +178,8 @@ void Renderer::DrawBoard(sf::RenderWindow& window, const Board& board, PiecePosi
 				sprite.setPosition(drawPosition);
 				sprite.setScale(sf::Vector2f(scale, scale));
 
-				// Sprite is finally rendered using its own function
-				piece->Render(sprite, window, m_PieceShader, isSelectedPiece);
+				// Sprite is rendered using a wrapper, which calls an overriden function where the sprite is drawn
+				piece->RenderWrapper(sprite, window, m_PieceShader, isSelectedPiece, tEffect);
 			};
 
 		for (int rank = 0; rank < board.GetSize(); rank++)
@@ -199,7 +215,7 @@ void Renderer::CalculateBoardProperties(const sf::Vector2u& screenSize, int boar
 	m_BoardPosition = sf::Vector2f(boardPositionX, boardPositionY);
 }
 
-void Renderer::DrawInventory(sf::RenderWindow& window, Inventory inventory, sf::Vector2i selectedSlotIndex, sf::Time animationTimer) const
+void Renderer::DrawInventory(sf::RenderWindow& window, Inventory inventory, sf::Vector2i selectedSlotIndex, sf::Time deltaTime)
 {
 	const auto& inventoryTexture = ResourceManager::GetInstance().GetTexture("inventory");
 
@@ -213,9 +229,10 @@ void Renderer::DrawInventory(sf::RenderWindow& window, Inventory inventory, sf::
 	window.draw(inventorySprite);
 
 	// Set animation time in between 0 and total time
-	while (animationTimer > m_InventoryHighlightTime)
+	m_InventoryHighlightTimer += deltaTime;
+	while (m_InventoryHighlightTimer > m_InventoryHighlightTime)
 	{
-		animationTimer -= m_InventoryHighlightTime;
+		m_InventoryHighlightTimer -= m_InventoryHighlightTime;
 	}
 
 	// Draw pieces
@@ -251,9 +268,9 @@ void Renderer::DrawInventory(sf::RenderWindow& window, Inventory inventory, sf::
 		float totalTimeSeconds = m_InventoryHighlightTime.asSeconds();
 		// The first half of the animation the transparency increases,
 		// whilst on the second half it decreases
-		float keyframe = totalTimeSeconds / 2 - std::abs(animationTimer.asSeconds() - totalTimeSeconds / 2);
-		// Calculate t for lerp
-		float tHighlight = keyframe / (totalTimeSeconds / 2);
+		float keyFrame = Animation::RiseAndFall(m_InventoryHighlightTimer.asSeconds(), totalTimeSeconds / 2);
+		// Normalize in range [0, 1]
+		float tHighlight = keyFrame / (totalTimeSeconds / 2);
 		// Use ease out animation
 		tHighlight = Animation::EaseInQuadric(tHighlight);
 

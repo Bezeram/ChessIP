@@ -177,6 +177,14 @@ bool Board::MakeMove(PiecePosition piecePosition, ActionMove actionMove)
 	return true;
 }
 
+void Board::Update()
+{
+	// Update effects
+	for (int rank = 0; rank < m_Size; rank++)
+		for (int file = 0; file < m_Size; file++)
+			m_Board[rank][file]->UpdateEffects();
+}
+
 PiecePosition Board::GetWhiteKingPosition() const
 {
 	for (int rank = 0; rank < m_Size; rank++)

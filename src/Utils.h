@@ -316,6 +316,14 @@ namespace Animation
         t = Clamp(t, 0.f, 1.f);
         return t < 0.5 ? 4 * t * t * t : 1 - std::pow(-2 * t + 2, 3) / 2;
     }
+
+    // Function which increases linearly from 0 to the peak and then back down in the same fashion.
+    // Peak is reached at x=peak.
+    // Completes a cycle after the value peak*2.
+    inline float RiseAndFall(float x, float peak)
+    {
+        return peak - std::abs(x - peak);
+    }
 }
 
 

@@ -51,5 +51,5 @@ private:
 		PieceType::White_Witch,
 	};
 	Inventory m_Inventory;
-	sf::Time m_InventoryHighlightTimer = sf::Time::Zero;
+	sf::Time m_EffectAnimationTimer = sf::Time::Zero;
 };
