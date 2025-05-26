@@ -44,7 +44,7 @@ void Board::Init1v1Game(std::shared_ptr<Board>& boardRef)
 		m_Board[whiteRank][kingFile] = std::make_unique<King>(boardRef, PieceColor::White);
 	}
 	{
-		m_Board[whiteRank][kingFile + 1] = std::make_unique<Archer>(boardRef, PieceColor::White, 3);
+		m_Board[whiteRank][kingFile + 1] = std::make_unique<Archer>(boardRef, PieceColor::White, 1);
 	}
 	{
 		m_Board[whiteRank][kingFile + 2] = std::make_unique<Alchemist>(boardRef, PieceColor::White, 3);
@@ -161,6 +161,8 @@ bool Board::MakeMove(PiecePosition piecePosition, ActionMove actionMove)
 
 	// Update flux and gold
 	UpdateResources();
+	// Update board (effects)
+	Update();
 
 	// Șterge piesele afectate de Curse
 	for (int y = 0; y < m_Size; ++y) {
@@ -182,7 +184,12 @@ void Board::Update()
 	// Update effects
 	for (int rank = 0; rank < m_Size; rank++)
 		for (int file = 0; file < m_Size; file++)
-			m_Board[rank][file]->UpdateEffects();
+		{
+			if (m_Board[rank][file] != nullptr)
+			{
+				m_Board[rank][file]->UpdateEffects();
+			}
+		}
 }
 
 PiecePosition Board::GetWhiteKingPosition() const

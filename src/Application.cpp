@@ -85,6 +85,20 @@ void Application::EventHandler()
                     Global::AdjustableK += 0.5f;
                 std::cout << "K: " << Global::AdjustableK << std::endl;
             }
+
+            if (keyPressed->scancode == sf::Keyboard::Scan::U)
+            {
+                if (m_SelectedSquare != Constants::NullPosition)
+				{
+					const auto& selectedPiece = (*m_Board)[m_SelectedSquare];
+                    int cost = Constants::PieceTypeToGoldCost.at(selectedPiece->GetPieceType());
+					if (selectedPiece.get() != nullptr && m_Board->GetGold() >= cost)
+					{
+						selectedPiece->Upgrade();
+                        m_Board->IncreaseGold(-cost);
+					}
+				}
+            }
         }
         else if (const auto* mousePressed = event->getIf<sf::Event::MouseButtonPressed>())
         {

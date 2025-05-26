@@ -35,6 +35,14 @@ public:
 		GetLegalMoves(piecePosition, legalMoves);
 	}
 
+	void Upgrade()
+	{
+		if (m_UpgradeLevel < 3)
+		{
+			m_UpgradeLevel++;
+		}
+	}
+
 	static bool CastRay(const BoardMatrix& board, PiecePosition piecePosition, ActionMove move) {
 		PiecePosition targetSquare = move.TargetSquare;
 		int dx = targetSquare.x - piecePosition.x;
@@ -110,7 +118,7 @@ public:
 			case Effect::Stun:
 				// Black color with transparency
 				color = sf::Color(0, 0, 0); 
-				color.a = Lerp(70, 150, tEffect);
+				color.a = Lerp(150, 200, tEffect);
 				break;
 			case Effect::Hex:
 				color.b = 0;
@@ -120,7 +128,7 @@ public:
 				else
 					color.g = Lerp(150, 100, (tEffect - 0.5) * 2);
 				// Transparency
-				color.a = Lerp(70, 150, tEffect); 
+				color.a = Lerp(200, 240, tEffect); 
 				break;
 			case Effect::Curse:
 			{
@@ -140,16 +148,9 @@ public:
 	}
 	
 	void UpdateEffects() {
-		for (auto& effect : m_Effects)
+		for (int i = 0; i < m_Effects.size();)
 		{
-			if (std::get<1>(effect) > 0)
-			{
-				std::get<1>(effect)--;
-			}
-			else
-			{
-				RemoveEffect(std::get<0>(effect));
-			}
+			auto& effect = m_Effects[i];
 
 			switch (std::get<0>(effect))
 			{
@@ -175,6 +176,16 @@ public:
 				break;
 			default:
 				break;
+			}
+
+			if (std::get<1>(effect) > 0)
+			{
+				std::get<1>(effect)--;
+				i++;
+			}
+			else
+			{
+				RemoveEffect(std::get<0>(effect));
 			}
 		}
 	}
