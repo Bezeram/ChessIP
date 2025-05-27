@@ -36,6 +36,13 @@ void Application::Run()
 
         m_Window.clear();
 
+        // Check if Kings are on table
+        if (m_Board->GetWhiteKingPosition() == Constants::NullPosition ||
+            m_Board->GetBlackKingPosition() == Constants::NullPosition)
+        {
+            m_Board->ResetBoard(m_Board);
+        }
+
         m_Renderer.DrawBackground(m_Window);
         m_Renderer.DrawBoard(m_Window, *m_Board, m_SelectedSquare, m_MoveType, m_PreviousMove, deltaTime);
         m_Renderer.DrawInventory(m_Window, m_Inventory, m_SelectedInventorySlot, deltaTime);

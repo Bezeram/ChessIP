@@ -14,8 +14,8 @@ Renderer::Renderer(const sf::Vector2u& screenSize, int boardTileSize)
 			vec4 color = texColor * gl_Color;
 
 			// Discard almost-transparent pixels to avoid white outlines
-			if (color.a < 0.5)
-				discard;
+			//if (color.a < 0.5)
+				//discard;
 
 			gl_FragColor = color;
 		}
