@@ -1,4 +1,4 @@
-#include "Application.h"
+﻿#include "Application.h"
 
 Application::Application(WindowSettings settings)
     : m_Window(sf::RenderWindow(
@@ -31,25 +31,32 @@ void Application::Run()
     while (m_IsRunning)
     {
         sf::Time deltaTime = clock.restart();
-
-        EventHandler();
+        EventHandler(); // actualizează și mouse-ul
 
         m_Window.clear();
 
-        // Check if Kings are on table
-        if (m_Board->GetWhiteKingPosition() == Constants::NullPosition ||
-            m_Board->GetBlackKingPosition() == Constants::NullPosition)
+        if (m_IsInMenu)
         {
-            m_Board->ResetBoard(m_Board);
+            // === MENU MODE ===
+            m_Renderer.DrawBackground(m_Window);
+            m_Renderer.DrawMenu(m_Window);
+        }
+        else
+        {
+            // === GAME MODE ===
+            if (m_Board->GetWhiteKingPosition() == Constants::NullPosition ||
+                m_Board->GetBlackKingPosition() == Constants::NullPosition)
+            {
+                m_Board->ResetBoard(m_Board);
+            }
+
+            m_Renderer.DrawBackground(m_Window);
+            m_Renderer.DrawBoard(m_Window, *m_Board, m_SelectedSquare, m_MoveType, m_PreviousMove, deltaTime);
+            m_Renderer.DrawInventory(m_Window, m_Inventory, m_SelectedInventorySlot, deltaTime);
+            m_Renderer.DrawResourceBars(m_Window, m_Board->GetFlux(), m_Board->GetGold());
         }
 
-        m_Renderer.DrawBackground(m_Window);
-        m_Renderer.DrawBoard(m_Window, *m_Board, m_SelectedSquare, m_MoveType, m_PreviousMove, deltaTime);
-        m_Renderer.DrawInventory(m_Window, m_Inventory, m_SelectedInventorySlot, deltaTime);
-        m_Renderer.DrawResourceBars(m_Window, m_Board->GetFlux(), m_Board->GetGold());
-
         m_Window.display();
-
         SoundPlayer::GetInstance().Update();
     }
 }
@@ -111,9 +118,23 @@ void Application::EventHandler()
         {
             Global::MouseLeftPressed = true;
 
-            MoveHandler_MousePressed(mousePressed);
-            InventoryHandler_MousePressed(mousePressed);
-            PiecePlacerHandler_MousePressed(mousePressed);
+            if (m_IsInMenu)
+            {
+                sf::Vector2f mousePos = m_Window.mapPixelToCoords(sf::Mouse::getPosition(m_Window));
+                sf::FloatRect playBounds = m_Renderer.GetPlayButtonBounds();
+
+                if (playBounds.contains(mousePos))
+                {
+                    m_IsInMenu = false;
+                    return;
+                }
+            }
+            else
+            {
+                MoveHandler_MousePressed(mousePressed);
+                InventoryHandler_MousePressed(mousePressed);
+                PiecePlacerHandler_MousePressed(mousePressed);
+            }
         }
         else if (const auto* mouseReleased = event->getIf<sf::Event::MouseButtonReleased>())
         {

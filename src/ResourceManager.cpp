@@ -41,6 +41,12 @@ void ResourceManager::LoadAssets()
 	// Background
 	AddTexture(Paths::Textures + "background.png", "background");
 
+	// Play
+	AddTexture(Paths::Textures + "play.png", "play", true);
+
+	// Title
+	AddTexture(Paths::Textures + "title.png", "title", true);
+
 	// Inventory
 	AddTexture(Paths::Textures + "inventory.png", "inventory", true);
 

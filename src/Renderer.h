@@ -20,6 +20,7 @@ public:
 	void CalculateBoardProperties(const sf::Vector2u& screenSize, int boardTileSize);
 	void Renderer::DrawInventory(sf::RenderWindow& window, Inventory inventory, sf::Vector2i selectedSlotIndex, sf::Time deltaTime);
 	void DrawResourceBars(sf::RenderWindow& window, int flux, int gold) const;
+	void DrawMenu(sf::RenderWindow& window);
 
 	sf::Vector2f GetBoardPosition() const;
 	float GetBoardSize() const;
@@ -30,6 +31,9 @@ public:
 	sf::Vector2f CalculateTilePosition(uint32_t windowHeight, PiecePosition position);
 
 	sf::Vector2i MouseCellIndex(int windowHeight, const sf::Vector2f& mousePosition) const;
+
+	sf::FloatRect GetPlayButtonBounds() const;
+
 private:
 	sf::Shader m_PieceShader;
 
@@ -54,4 +58,6 @@ private:
 
 	sf::Time m_EffectAnimationTimer = sf::Time::Zero;
 	sf::Time m_EffectAnimationTotalTime = sf::seconds(6.f);
+
+	sf::FloatRect m_PlayButtonBounds;
 };
