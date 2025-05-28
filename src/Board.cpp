@@ -53,6 +53,9 @@ void Board::Init1v1Game(std::shared_ptr<Board>& boardRef)
 		m_Board[whiteRank][kingFile + 3] = std::make_unique<Witch>(boardRef, PieceColor::White, 3);
 	}
 	{
+		m_Board[blackRank][kingFile + 4] = std::make_unique<Builder>(boardRef, PieceColor::White, 3);
+	}
+	{
 		m_Board[whiteRank][kingFile - 1] = std::make_unique<Trebuchet>(boardRef, PieceColor::White, 3);
 	}
 	{
@@ -77,6 +80,9 @@ void Board::Init1v1Game(std::shared_ptr<Board>& boardRef)
 	}
 	{
 		m_Board[blackRank][kingFile + 3] = std::make_unique<Witch>(boardRef, PieceColor::Black, 3);
+	}
+	{
+		m_Board[blackRank][kingFile + 4] = std::make_unique<Builder>(boardRef, PieceColor::Black, 3);
 	}
 	{
 		m_Board[blackRank][kingFile - 1] = std::make_unique<Trebuchet>(boardRef, PieceColor::Black, 3);

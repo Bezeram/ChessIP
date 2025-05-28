@@ -26,6 +26,8 @@ public:
             return new Rogue(boardRef, PieceColor::White);
         case PieceType::White_Trebuchet:
             return new Trebuchet(boardRef, PieceColor::White);
+        case PieceType::White_Builder:
+            return new Builder(boardRef, PieceColor::White);
         case PieceType::Black_King:
             return new King(boardRef, PieceColor::Black);
         case PieceType::Black_Witch:
@@ -44,6 +46,8 @@ public:
             return new Rogue(boardRef, PieceColor::Black);
         case PieceType::Black_Trebuchet:
             return new Trebuchet(boardRef, PieceColor::Black);
+        case PieceType::Black_Builder:
+            return new Builder(boardRef, PieceColor::Black);
         default:
             throw "[PieceFactory] Bruh i don't know that piece.";
 		}
