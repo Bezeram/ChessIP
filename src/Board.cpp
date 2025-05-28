@@ -210,16 +210,6 @@ bool Board::MakeMove(PiecePosition piecePosition, ActionMove actionMove)
 
 	// Flip turn
 	m_IsWhitesTurn = !m_IsWhitesTurn;
-
-	// Flip board swapping pieces on opposite ranks (line 0 with line m_Size - 1 etc.)
-	for (int i = 0; i < m_Size / 2; i++)
-		for (int j = 0; j < m_Size; j++)
-		{
-			std::unique_ptr<BasePiece> temp = std::move(m_Board[i][j]);
-			m_Board[i][j] = std::move(m_Board[m_Size - i - 1][j]);
-			m_Board[m_Size - i - 1][j] = std::move(m_Board[i][j]);
-		}
-
 	return true;
 }
 
@@ -290,7 +280,7 @@ void Board::UpdateResources()
 		m_BlackFlux++;
 		if (m_BlackFlux > 9)
 			m_BlackFlux = 9;
-		m_BlackGold += blackKingPosition.y;
+		m_BlackGold += m_Size - 1 - blackKingPosition.y;
 		if (m_BlackGold > 9)
 			m_BlackGold = 9;
 	}
