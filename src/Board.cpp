@@ -191,7 +191,7 @@ bool Board::IsWhitesMove() const
 bool Board::MakeMove(PiecePosition piecePosition, ActionMove actionMove)
 {
 	const auto& selectedPiece = (*this)[piecePosition];
-	selectedPiece->ExecuteMove(m_Board, piecePosition, actionMove);
+	selectedPiece->ExecuteMoveWrapper(m_Board, piecePosition, actionMove);
 
 	// Update flux and gold
 	UpdateResources();
@@ -210,6 +210,8 @@ bool Board::MakeMove(PiecePosition piecePosition, ActionMove actionMove)
 
 	// Flip turn
 	m_IsWhitesTurn = !m_IsWhitesTurn;
+
+	
 	return true;
 }
 

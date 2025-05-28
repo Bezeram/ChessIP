@@ -5,7 +5,7 @@ Builder::Builder(std::shared_ptr<Board> board, PieceColor color, uint32_t upgrad
 {
 }
 
-void Builder::GetRange(sf::Vector2i piecePosition, std::vector<ActionMove>& legalMoves)
+void Builder::GetRange(PiecePosition piecePosition, std::vector<ActionMove>& legalMoves)
 {
 	for (int dy = -2; dy <= 2; dy++)
 		for (int dx = -2; dx <= 2; dx++)

@@ -23,12 +23,17 @@ SoundPlayer::SoundPlayer()
     // Initialize any default settings here
 }
 
+SoundPlayer::~SoundPlayer()
+{
+    delete s_SoundPlayer;
+}
+
 void SoundPlayer::PlaySound(const std::string& name)
 {
     if (m_muted) return;
 
     try {
-        const auto& buffer = ResourceManager::GetInstance().GetSound(name.c_str());
+        const auto& buffer = ResourceManager::GetInstance().GetSoundBuffer(name.c_str());
 
         // Create a NEW sound object (not unique_ptr) and store it directly
         m_activeSounds.emplace_back(new sf::Sound(buffer));

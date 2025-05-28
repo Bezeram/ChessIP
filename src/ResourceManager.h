@@ -25,7 +25,7 @@ public:
 
 	const sf::Texture& GetTexture(const std::string& key) const;
 	const sf::Font& GetFont(const std::string& key) const ;
-	const sf::SoundBuffer& GetSound(const std::string& key) const;
+	const sf::SoundBuffer& GetSoundBuffer(const std::string& key) const;
 private:
 	void LoadAssets();
 	ResourceManager();

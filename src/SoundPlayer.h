@@ -26,7 +26,7 @@ public:
 
 private:
     SoundPlayer(); // Private constructor for singleton
-    ~SoundPlayer() = default;
+    ~SoundPlayer();
 
     static inline SoundPlayer* s_SoundPlayer = nullptr;
 

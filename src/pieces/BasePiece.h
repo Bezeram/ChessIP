@@ -6,6 +6,7 @@
 #include <utility>
 
 #include "../Utils.h"
+#include "../SoundPlayer.h"
 
 class Board;
 class BasePiece;
@@ -61,6 +62,20 @@ public:
 	virtual void GetLegalMoves(PiecePosition piecePosition, std::vector<ActionMove>& legalMoves) = 0;
 	// By default it moves the piece to the corepondent square
 	// Assumes the move is valid
+
+	void ExecuteMoveWrapper(BoardMatrix& board, PiecePosition piecePosition, ActionMove move)
+	{
+		// Play sounds
+		bool isNormalMove = move.MoveType == MoveType::Move;
+		bool isCapture = move.MoveType == MoveType::Action &&
+			board[move.TargetSquare.y][move.TargetSquare.x] != nullptr;
+
+		std::string moveSoundName = (isCapture) ? "capture1" : (isNormalMove) ? "move1" : "move2";
+		SoundPlayer::GetInstance().PlaySound(moveSoundName);
+
+		ExecuteMove(board, piecePosition, move);
+	}
+
 	virtual void ExecuteMove(BoardMatrix& board, PiecePosition piecePosition, ActionMove move)
 	{
 		PiecePosition targetSquare = move.TargetSquare;

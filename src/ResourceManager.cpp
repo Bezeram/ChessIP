@@ -205,7 +205,7 @@ const sf::Font& ResourceManager::GetFont(const std::string& key) const
 	return it->second;
 }
 
-const sf::SoundBuffer& ResourceManager::GetSound(const std::string& key) const
+const sf::SoundBuffer& ResourceManager::GetSoundBuffer(const std::string& key) const
 {
 	auto it = m_Sounds.find(key);
 	if (it == m_Sounds.end()) 
