@@ -53,6 +53,7 @@ void Application::Run()
             m_Renderer.DrawBackground(m_Window);
             m_Renderer.DrawBoard(m_Window, *m_Board, m_SelectedSquare, m_MoveType, m_PreviousMove, deltaTime);
             m_Renderer.DrawInventory(m_Window, m_Inventory, m_SelectedInventorySlot, deltaTime);
+            m_Renderer.DrawInfo(m_Window);
             m_Renderer.DrawResourceBars(m_Window, m_Board->GetFlux(), m_Board->GetGold());
         }
 
