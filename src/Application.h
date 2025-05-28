@@ -26,6 +26,7 @@ private:
 	sf::RenderWindow m_Window;
 	sf::View m_Viewport;
 	bool m_IsRunning = true;
+	bool m_IsInMenu = true;
 		
 	PieceMove m_PreviousMove = { Constants::NullPosition, Constants::NullPosition };
 	PiecePosition m_SelectedSquare = Constants::NullPosition;

@@ -47,10 +47,10 @@ void Board::Init1v1Game(std::shared_ptr<Board>& boardRef)
 		m_Board[whiteRank][kingFile + 1] = std::make_unique<Archer>(boardRef, PieceColor::White, 1);
 	}
 	{
-		m_Board[whiteRank][kingFile + 2] = std::make_unique<Alchemist>(boardRef, PieceColor::White, 3);
+		m_Board[whiteRank][kingFile + 2] = std::make_unique<Alchemist>(boardRef, PieceColor::White, 1);
 	}
 	{
-		m_Board[whiteRank][kingFile + 3] = std::make_unique<Witch>(boardRef, PieceColor::White, 3);
+		m_Board[whiteRank][kingFile + 3] = std::make_unique<Witch>(boardRef, PieceColor::White, 1);
 	}
 	{
 		m_Board[blackRank][kingFile + 4] = std::make_unique<Builder>(boardRef, PieceColor::White, 3);
@@ -59,13 +59,13 @@ void Board::Init1v1Game(std::shared_ptr<Board>& boardRef)
 		m_Board[whiteRank][kingFile - 1] = std::make_unique<Trebuchet>(boardRef, PieceColor::White, 3);
 	}
 	{
-		m_Board[whiteRank][kingFile - 2] = std::make_unique<Rogue>(boardRef, PieceColor::White, 3);
+		m_Board[whiteRank][kingFile - 2] = std::make_unique<Rogue>(boardRef, PieceColor::White, 1);
 	}
 	{
-		m_Board[whiteRank][kingFile - 3] = std::make_unique<GrimReaper>(boardRef, PieceColor::White, 3);
+		m_Board[whiteRank][kingFile - 3] = std::make_unique<GrimReaper>(boardRef, PieceColor::White, 1);
 	}
 	{
-		m_Board[whiteRank][kingFile - 4] = std::make_unique<PlagueDoctor>(boardRef, PieceColor::White, 3);
+		m_Board[whiteRank][kingFile - 4] = std::make_unique<PlagueDoctor>(boardRef, PieceColor::White, 1);
 	}
 
 	// Black
@@ -73,13 +73,13 @@ void Board::Init1v1Game(std::shared_ptr<Board>& boardRef)
 		m_Board[blackRank][kingFile] = std::make_unique<King>(boardRef, PieceColor::Black);
 	}
 	{
-		m_Board[blackRank][kingFile + 1] = std::make_unique<Archer>(boardRef, PieceColor::Black, 3);
+		m_Board[blackRank][kingFile + 1] = std::make_unique<Archer>(boardRef, PieceColor::Black, 1);
 	}
 	{
-		m_Board[blackRank][kingFile + 2] = std::make_unique<Alchemist>(boardRef, PieceColor::Black, 3);
+		m_Board[blackRank][kingFile + 2] = std::make_unique<Alchemist>(boardRef, PieceColor::Black, 1);
 	}
 	{
-		m_Board[blackRank][kingFile + 3] = std::make_unique<Witch>(boardRef, PieceColor::Black, 3);
+		m_Board[blackRank][kingFile + 1] = std::make_unique<Witch>(boardRef, PieceColor::Black, 1);
 	}
 	{
 		m_Board[blackRank][kingFile + 4] = std::make_unique<Builder>(boardRef, PieceColor::Black, 3);
@@ -88,14 +88,34 @@ void Board::Init1v1Game(std::shared_ptr<Board>& boardRef)
 		m_Board[blackRank][kingFile - 1] = std::make_unique<Trebuchet>(boardRef, PieceColor::Black, 3);
 	}
 	{
-		m_Board[blackRank][kingFile - 2] = std::make_unique<Rogue>(boardRef, PieceColor::Black, 2);
+		m_Board[blackRank][kingFile - 2] = std::make_unique<Rogue>(boardRef, PieceColor::Black, 1);
 	}
 	{
-		m_Board[blackRank][kingFile - 3] = std::make_unique<GrimReaper>(boardRef, PieceColor::Black, 3);
+		m_Board[blackRank][kingFile - 1] = std::make_unique<GrimReaper>(boardRef, PieceColor::Black, 1);
 	}
 	{
-		m_Board[blackRank][kingFile - 4] = std::make_unique<PlagueDoctor>(boardRef, PieceColor::Black, 3);
+		m_Board[blackRank][kingFile - 4] = std::make_unique<PlagueDoctor>(boardRef, PieceColor::Black, 1);
 	}
+}
+
+void Board::ResetBoard(std::shared_ptr<Board>& boardRef)
+{
+	for (int i = 0; i < m_Size; i++)
+		for (int j = 0; j < m_Size; j++)
+			m_Board[i][j].reset();
+
+	int kingFile = m_Size / 2;
+	int whiteRank = 0;
+	int blackRank = m_Size - 1;
+	m_Board[blackRank][kingFile] = std::make_unique<King>(boardRef, PieceColor::Black);
+	m_Board[whiteRank][kingFile] = std::make_unique<King>(boardRef, PieceColor::White);
+		
+	// Reset resources
+	m_WhiteFlux = 0;
+	m_WhiteGold = 0;
+
+	m_BlackFlux = 0;
+	m_BlackGold = 0;
 }
 
 const BoardMatrix& Board::GetBoard() const
@@ -240,12 +260,12 @@ void Board::UpdateResources()
 
 	if (m_IsWhitesTurn)
 	{
-		m_Flux++;
-		if (m_Flux > 9)
-			m_Flux = 9;
-		m_Gold += whiteKingPosition.y;
-		if (m_Gold > 9)
-			m_Gold = 9;
+		m_WhiteFlux++;
+		if (m_WhiteFlux > 9)
+			m_WhiteFlux = 9;
+		m_WhiteGold += whiteKingPosition.y;
+		if (m_WhiteGold > 9)
+			m_WhiteGold = 9;
 	}
 	else
 	{

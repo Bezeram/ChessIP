@@ -14,8 +14,8 @@ Renderer::Renderer(const sf::Vector2u& screenSize, int boardTileSize)
 			vec4 color = texColor * gl_Color;
 
 			// Discard almost-transparent pixels to avoid white outlines
-			if (color.a < 0.5)
-				discard;
+			//if (color.a < 0.5)
+				//discard;
 
 			gl_FragColor = color;
 		}
@@ -26,6 +26,42 @@ Renderer::Renderer(const sf::Vector2u& screenSize, int boardTileSize)
 
 	// Calculate rendered board properties
 	CalculateBoardProperties(screenSize, boardTileSize);
+}
+
+void Renderer::DrawMenu(sf::RenderWindow& window)
+{
+	const auto& titleTex = ResourceManager::GetInstance().GetTexture("title");
+	const auto& playTex = ResourceManager::GetInstance().GetTexture("play");
+
+	sf::Sprite titleSprite(titleTex);
+	sf::Sprite playSprite(playTex);
+
+	// Obține dimensiunile ferestrei
+	auto winSize = window.getSize();
+
+	// Centrează titlul sus
+	sf::Vector2f titlePos(
+		(winSize.x - titleTex.getSize().x) / 2.f,
+		winSize.y * 0.15f
+	);
+	titleSprite.setPosition(titlePos);
+
+	playSprite.setScale(sf::Vector2f(0.5f, 0.5f));
+
+	// Obține dimensiunea butonului scalat
+	sf::FloatRect playBounds = playSprite.getGlobalBounds();
+
+	// Poziționare centrat jos
+	sf::Vector2f playPos(
+		(winSize.x - playBounds.size.x) / 2.f,
+		winSize.y * 0.6f
+	);
+	playSprite.setPosition(playPos);
+
+	m_PlayButtonBounds = playSprite.getGlobalBounds();
+
+	window.draw(titleSprite);
+	window.draw(playSprite);
 }
 
 void Renderer::DrawBackground(sf::RenderWindow& window)
@@ -398,4 +434,9 @@ sf::Vector2i Renderer::MouseCellIndex(int windowHeight, const sf::Vector2f& mous
 	return sf::Vector2i(
 		int((std::floor((mousePosition.x - m_BoardPosition.x) / m_BoardCellSize))),
 		int((windowHeight - (mousePosition.y - m_BoardPosition.y)) / m_BoardCellSize) - 1);
+}
+
+sf::FloatRect Renderer::GetPlayButtonBounds() const
+{
+	return m_PlayButtonBounds;
 }

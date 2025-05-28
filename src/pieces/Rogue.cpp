@@ -80,8 +80,8 @@ void Rogue::ExecuteMove(BoardMatrix& board, PiecePosition piecePosition, ActionM
             targetPiece.reset();
 
             // Aplică efectele direct pe obiectul *roguePiece*
-            roguePiece->AddEffect(Effect::Alchemist_Shield, 1);
-            roguePiece->AddEffect(Effect::Hex, 1);
+            roguePiece->AddEffect(Effect::Alchemist_Shield, 2);
+            roguePiece->AddEffect(Effect::Stun, 2);
 
             // Pune Rogue la noua locație
             board[move.TargetSquare.y][move.TargetSquare.x] = std::move(roguePiece);
