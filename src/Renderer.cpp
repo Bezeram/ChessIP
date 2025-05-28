@@ -345,6 +345,23 @@ void Renderer::DrawInventory(sf::RenderWindow& window, Inventory inventory, sf::
 	}
 }
 
+void Renderer::DrawInfo(sf::RenderWindow& window)
+{
+	const auto& infoTexture = ResourceManager::GetInstance().GetTexture("info");
+
+	sf::Sprite infoSprite(infoTexture);
+	sf::Vector2f scale = CalculateInventoryScale();
+	sf::Vector2f position = CalculateInventoryPosition();
+
+	float offsetY = m_BoardCellSize * 3.35f; // ajustează după cum vrei
+	position.y -= offsetY;
+
+	infoSprite.setScale(scale);
+	infoSprite.setPosition(position);
+
+	window.draw(infoSprite);
+}
+
 void Renderer::DrawResourceBars(sf::RenderWindow& window, int flux, int gold) const
 {
 	const auto& fluxTex = ResourceManager::GetInstance().GetTexture(Textures::Flux_Bar_ + std::to_string(flux));
