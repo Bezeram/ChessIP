@@ -44,16 +44,18 @@ void Application::Run()
         else
         {
             // === GAME MODE ===
-            if (m_Board->GetWhiteKingPosition() == Constants::NullPosition ||
+            /*if (m_Board->GetWhiteKingPosition() == Constants::NullPosition ||
                 m_Board->GetBlackKingPosition() == Constants::NullPosition)
             {
                 m_Board->ResetBoard(m_Board);
-            }
-
+            }*/
             m_Renderer.DrawBackground(m_Window);
             m_Renderer.DrawBoard(m_Window, *m_Board, m_SelectedSquare, m_MoveType, m_PreviousMove, deltaTime);
             m_Renderer.DrawInventory(m_Window, m_Inventory, m_SelectedInventorySlot, deltaTime);
-            m_Renderer.DrawResourceBars(m_Window, m_Board->GetFlux(), m_Board->GetGold());
+
+            // Draw the resource bars associated with the current player's move
+            Board::ResourcesType activePlayerResources = m_Board->GetActivePlayerResources();
+            m_Renderer.DrawResourceBars(m_Window, activePlayerResources.flux, activePlayerResources.gold);
         }
 
         m_Window.display();

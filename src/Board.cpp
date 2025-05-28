@@ -134,6 +134,14 @@ void Board::DeletePieceAt(PiecePosition position)
 	m_Board[position.y][position.x].reset();
 }
 
+Board::ResourcesType Board::GetActivePlayerResources() const
+{
+	if (IsWhitesMove())
+		return { m_WhiteFlux, m_WhiteGold };
+	else
+		return { m_BlackFlux, m_BlackGold };
+}
+
 bool Board::IsTargetFriendly(const PieceMove& move) const
 {
 	// Board bounds
@@ -202,6 +210,16 @@ bool Board::MakeMove(PiecePosition piecePosition, ActionMove actionMove)
 
 	// Flip turn
 	m_IsWhitesTurn = !m_IsWhitesTurn;
+
+	// Flip board swapping pieces on opposite ranks (line 0 with line m_Size - 1 etc.)
+	for (int i = 0; i < m_Size / 2; i++)
+		for (int j = 0; j < m_Size; j++)
+		{
+			std::unique_ptr<BasePiece> temp = std::move(m_Board[i][j]);
+			m_Board[i][j] = std::move(m_Board[m_Size - i - 1][j]);
+			m_Board[m_Size - i - 1][j] = std::move(m_Board[i][j]);
+		}
+
 	return true;
 }
 
