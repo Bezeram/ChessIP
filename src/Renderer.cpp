@@ -356,8 +356,8 @@ void Renderer::DrawResourceBars(sf::RenderWindow& window, int flux, int gold) co
 	// Dimensiuni dorite: înălțimea să fie 1/10 din tabla
 	float targetHeight = m_BoardLength / 8.f;
 
-	float goldScale = targetHeight * 1.2f / static_cast<float>(goldTex.getSize().y);
-	float fluxScale = targetHeight * 1.2f / static_cast<float>(fluxTex.getSize().y);
+	float goldScale = targetHeight * 1.20f / static_cast<float>(goldTex.getSize().y);
+	float fluxScale = targetHeight * 1.20f / static_cast<float>(fluxTex.getSize().y);
 
 	goldSprite.setScale(sf::Vector2f(goldScale, goldScale));
 	fluxSprite.setScale(sf::Vector2f(fluxScale, fluxScale));
