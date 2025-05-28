@@ -47,6 +47,13 @@ public:
         m_WhiteGold = Clamp(m_WhiteGold, 0, 9);
     }
 
+    struct ResourcesType
+    {
+        int flux;
+        int gold;
+    };
+    ResourcesType GetActivePlayerResources() const;
+
     bool IsTargetFriendly(const PieceMove& move) const;
     bool IsValidPieceByTurn(PiecePosition position) const;
     bool IsWhitesMove() const;
